@@ -1,0 +1,362 @@
+agents_and_agentic:
+  four_layer_architecture:
+    definition: A comprehensive framework for building AI agents structured into four progressive layers, each building upon the previous. Foundation layer establishes the core infrastructure (LLM selection, API setup, and environment configuration). Core layer adds the essential agent capabilities (memory systems, tool integration, and planning mechanisms). Intelligence layer enables multi-agent collaboration and continuous learning. Production layer ensures monitoring, scaling, and operational reliability. Together these layers form a complete path from prototype to enterprise deployment.
+    core_concepts:
+    - concept_name: Foundation Layer
+      explanation: The bottom layer encompasses LLM selection (choosing the right base model for your use case), API setup and authentication, environment configuration, and basic infrastructure provisioning. This layer determines the raw capability and cost structure of the system. Critical decisions here include model size, deployment method (API vs on-premise), and initial scaling infrastructure. A solid foundation prevents costly rework downstream.
+    - concept_name: Core Layer
+      explanation: Builds on foundation with four essential agent components. Memory systems (short-term context windows, long-term knowledge bases) enable agents to maintain state across interactions. Tools provide action capabilities beyond text generation (APIs, code execution, database access). Planning mechanisms break complex goals into subtasks. These components work together to create an agent loop. The core layer is where agents shift from conversational AI to autonomous executors.
+    - concept_name: Intelligence Layer
+      explanation: Introduces multi-agent systems where specialized agents collaborate on complex problems. Agents can delegate tasks, share knowledge, and learn from collective experiences. This layer enables emergent behaviors impossible with single agents. Implementation patterns include crew-based architectures, hierarchical agent teams, and peer-to-peer agent networks. The intelligence layer is where real business value multiplies.
+    - concept_name: Production Layer
+      explanation: Provides operational infrastructure for deployed agents including monitoring (performance metrics, error tracking), scaling mechanisms (horizontal/vertical scaling), versioning and rollback capabilities, and compliance/governance frameworks. This layer ensures agents remain reliable, auditable, and secure in production. Often overlooked but critical for enterprise adoption.
+    how_it_works:
+    - step: 1
+      description: Layer 1 (Foundation) is provisioned first — select LLM, configure authentication, set up environment
+    - step: 2
+      description: Layer 2 (Core) adds memory, tools, and planning on top of the foundation
+    - step: 3
+      description: Layer 3 (Intelligence) enables multiple agents to orchestrate across core capabilities
+    - step: 4
+      description: Layer 4 (Production) wraps everything with monitoring, scaling, and governance
+    - step: 5
+      description: Iterate and improve each layer based on production feedback and changing requirements
+    design_decisions:
+      when_to_use:
+      - Enterprise agent deployments requiring all four layers
+      - Systems that must scale from prototype to production
+      - Multi-agent systems with complex orchestration needs
+      - Organizations prioritizing operational excellence and governance
+      when_to_avoid:
+      - Simple single-agent chatbot prototypes (core layer sufficient)
+      - One-off experiments or research projects
+      - Systems with minimal operational requirements
+      trade_offs:
+      - More layers = higher initial complexity but better scalability
+      - Full implementation = higher cost but better governance and reliability
+      - Each layer adds engineering overhead but multiplies robustness
+    sources:
+    - 'LL01: How to Build AI Agent Playbook 2025 — 4-layer architecture framework'
+
+  agent_types:
+    definition: A taxonomy of AI agents classified by their primary function and operational purpose. Different agent types serve distinct business needs and require different design patterns. Conversational agents maintain dialogue with users. Task agents execute specific workflows autonomously. Knowledge agents retrieve and synthesize information. Creative agents generate novel content. Autonomous agents pursue complex multi-step goals with minimal human intervention. Understanding agent types helps match technology to business requirements.
+    core_concepts:
+    - concept_name: Conversational Agents
+      explanation: Designed for natural dialogue with users, maintaining context across multi-turn conversations. These agents understand intent, ask clarifying questions, and adapt responses based on user preferences. Implementation focuses on conversation management, context preservation, and natural language understanding. Best used for customer support, tutoring, and interactive assistance where dialogue quality matters more than task execution speed.
+    - concept_name: Task Agents
+      explanation: Specialized executors for specific workflows like invoice processing, report generation, or data entry. Task agents follow defined procedures with tool invocation at key steps. They focus on correctness, completeness, and auditability rather than conversational naturalness. Typically deployed for high-volume, repetitive business processes where ROI depends on accuracy and speed.
+    - concept_name: Knowledge Agents
+      explanation: Retrieve, synthesize, and reason over information from multiple sources (documents, databases, knowledge bases). These agents combine search, summarization, and analysis capabilities. They excel at literature reviews, research synthesis, and competitive analysis. Knowledge agents are essential for any organization managing large document repositories or needing rapid information synthesis.
+    - concept_name: Creative Agents
+      explanation: Generate novel content (marketing copy, design concepts, music, code) by combining learned patterns with novel recombination. Creative agents require high-quality training data and mechanisms to evaluate output novelty and quality. Less deterministic than task agents but increasingly valuable for ideation and rapid prototyping.
+    - concept_name: Autonomous Agents
+      explanation: Pursue complex, long-horizon goals with minimal human guidance, adapting plans based on feedback and changing environment. These agents combine planning, tool use, learning, and self-reflection. Highest capability but also highest complexity and risk. Deployment requires robust governance, clear success metrics, and careful monitoring.
+    how_it_works:
+    - step: 1
+      description: Identify the business need or use case to address
+    - step: 2
+      description: Match the use case to appropriate agent type(s) based on required capabilities
+    - step: 3
+      description: Design agent architecture and tool set for the selected type
+    - step: 4
+      description: Implement and test agent behavior on representative scenarios
+    - step: 5
+      description: Deploy with appropriate monitoring and human oversight
+    design_decisions:
+      when_to_use:
+      - Conversational for customer-facing support and engagement
+      - Task for high-volume, repetitive business processes
+      - Knowledge for document-heavy analysis and research
+      - Creative for content generation and ideation
+      - Autonomous for strategic, multi-step planning
+      when_to_avoid:
+      - Conversational agents for deterministic task execution
+      - Task agents for situations requiring human judgment
+      - Autonomous agents in safety-critical domains without guardrails
+      trade_offs:
+      - Conversational = higher UX quality but lower task efficiency
+      - Task = reliable execution but limited to predefined workflows
+      - Autonomous = maximum flexibility but highest governance complexity
+    sources:
+    - 'LL01: How to Build AI Agent Playbook 2025 — agent types taxonomy'
+
+  design_principles:
+    definition: Five foundational principles for building robust, maintainable, and effective AI agents. These principles guide architectural decisions and implementation patterns. Modularity enables agents to be composed from reusable components. Statefulness allows agents to maintain context and adapt behavior. Tool augmentation provides agents with real-world action capabilities. Self-improvement enables agents to learn and refine strategies. Together these principles ensure agents are both powerful and manageable at scale.
+    core_concepts:
+    - concept_name: Modularity
+      explanation: Design agents as compositions of independent, replaceable components (memory modules, tool adapters, reasoning strategies). Modular design enables testing components in isolation, swapping implementations, and scaling development across teams. Anti-pattern is monolithic agents where everything is tightly coupled. Modularity is the foundation for production-grade agent systems.
+    - concept_name: Statefulness
+      explanation: Agents maintain internal state across interactions including conversation history, learned context, current goals, and progress tracking. Statefulness enables agents to adapt behavior based on past experience. Implementation requires persistent storage (databases, cache layers) and careful state schema design. Stateless systems cannot sustain agent-like behavior across multi-turn interactions.
+    - concept_name: Tool Augmentation
+      explanation: Agents must access tools (APIs, code execution, databases, search engines) to take actions beyond text generation. Tool augmentation transforms agents from responders to executors. Tool selection is a core reasoning task. Poor tool design creates bottlenecks; well-designed tools multiply agent effectiveness. Tool abstraction enables agents to compose multiple tools into complex workflows.
+    - concept_name: Self-Improvement
+      explanation: Agents that collect feedback (from outcomes, user corrections, performance metrics) and adjust behavior become more effective over time. Self-improvement mechanisms include learning from failures, refining tool selection strategies, and updating knowledge bases. Without feedback loops, agents cannot improve beyond initial training. Self-improvement is what separates static systems from truly autonomous agents.
+    - concept_name: Continuous Evolution
+      explanation: Agent systems must adapt to changing requirements, new tools, and evolving business needs. Evolution mechanisms include A/B testing different agent prompts, adding new capabilities, and deprecating ineffective strategies. Design systems for continuous improvement rather than static deployment. Governance frameworks must balance innovation velocity with stability.
+    how_it_works:
+    - step: 1
+      description: Identify each design principle required for your specific agent use case
+    - step: 2
+      description: Architect components to satisfy each principle (e.g., separate memory modules for statefulness)
+    - step: 3
+      description: Implement tool interfaces and feedback collection for self-improvement
+    - step: 4
+      description: Test each principle in isolation and in combination
+    - step: 5
+      description: Monitor adherence to principles in production and refactor when violations emerge
+    design_decisions:
+      when_to_use:
+      - All enterprise agent deployments should follow these principles
+      - Systems requiring maintainability across team changes
+      - Agents that must adapt to new tools or requirements
+      - Long-lived systems that must evolve over years
+      when_to_avoid:
+      - Simple single-purpose prototypes (principles add overhead)
+      - One-person projects with minimal complexity
+      - Research experiments where iteration speed matters more than maintainability
+      trade_offs:
+      - Modularity adds upfront architectural work but enables team scaling
+      - Statefulness adds complexity but enables sophisticated behavior
+      - Tool augmentation multiplies capability but requires careful integration
+    sources:
+    - 'LL01: How to Build AI Agent Playbook 2025 — design principles'
+
+  four_phase_implementation:
+    definition: A structured approach to building agents from concept to optimization. Design phase clarifies requirements and agent architecture. Development phase implements components and integration. Deployment phase moves agents to production with monitoring. Optimization phase improves performance based on production feedback. Following this sequence reduces rework and ensures agents are production-ready. Each phase has distinct activities, outputs, and success criteria.
+    core_concepts:
+    - concept_name: Design Phase
+      explanation: Define agent requirements, identify use cases and success metrics, sketch architecture, and document design decisions. Key activities include stakeholder interviews, competitive analysis, architecture sketching, and prototype planning. Outputs include requirements document, architecture diagram, data flow diagram, and implementation roadmap. Skipping design phase creates technical debt downstream.
+    - concept_name: Development Phase
+      explanation: Implement agent components including LLM integration, memory systems, tool wrappers, planning logic, and testing frameworks. Development is iterative with regular integration testing. Key activities include component implementation, unit testing, integration testing, and documentation. Outputs include working components, test suites, and deployment instructions. Well-structured development enables efficient scaling.
+    - concept_name: Deployment Phase
+      explanation: Move agents from development to production including infrastructure setup, monitoring configuration, access control, and rollout planning. Deployment includes canary releases, shadow testing, and gradual rollout to reduce risk. Key activities include environment provisioning, health checks, alerting setup, and staff training. Deployment is where theory meets operational reality.
+    - concept_name: Optimization Phase
+      explanation: Improve agent performance based on production metrics and user feedback. Optimization includes prompt refinement, tool performance tuning, memory management, and cost reduction. Key activities include metrics analysis, A/B testing, user feedback collection, and iterative refinement. Optimization is continuous; production systems should continuously improve.
+    how_it_works:
+    - step: 1
+      description: Design phase produces requirements and architecture
+    - step: 2
+      description: Development phase implements components and validates functionality
+    - step: 3
+      description: Deployment phase moves agents to production with monitoring
+    - step: 4
+      description: Optimization phase analyzes metrics and iterates on improvements
+    - step: 5
+      description: Cycle back to design for new requirements or major refactoring
+    design_decisions:
+      when_to_use:
+      - All professional agent development should follow this framework
+      - Teams needing structured governance and oversight
+      - Projects with significant business impact requiring rigor
+      when_to_avoid:
+      - Rapid prototyping where agility matters more than rigor
+      - Research projects exploring novel approaches
+      - Small internal tools with minimal users
+      trade_offs:
+      - Structured phases add process overhead but reduce risk and rework
+      - More ceremony but better team alignment and handoffs
+      - Slower initial delivery but faster long-term value creation
+    sources:
+    - 'LL01: How to Build AI Agent Playbook 2025 — 4-phase implementation'
+
+  maturity_model:
+    definition: A four-level model describing agent system maturity from initial deployment to advanced autonomous operations. Level 1 agents handle single-domain tasks with human oversight. Level 2 agents operate across multiple domains with reduced human interaction. Level 3 agents coordinate multi-agent systems for complex workflows. Level 4 agents achieve advanced autonomy with continuous learning. The model helps organizations assess current maturity and plan capability development.
+    core_concepts:
+    - concept_name: Level 1 Maturity
+      explanation: Single-domain agents handling specific tasks with significant human oversight. Agents operate within narrow domains where success criteria are clear. Human-in-the-loop at critical decision points. Example agents include task-specific automation, simple chatbots, or document processors. L1 systems are lower risk but also lower impact. Most organizations start here.
+    - concept_name: Level 2 Maturity
+      explanation: Multi-domain agents operating with reduced human oversight. Agents handle broader classes of problems and adapt across contexts. Feedback loops enable continuous improvement. Example agents include customer support systems, research assistants, or complex task automation. L2 systems generate significant value but require robust governance.
+    - concept_name: Level 3 Maturity
+      explanation: Multi-agent systems coordinating to solve enterprise-scale problems. Individual agents specialize; coordination mechanisms enable collaboration. Complex workflows span multiple tools and systems. Example systems include enterprise process automation, supply chain optimization, or knowledge synthesis networks. L3 requires sophisticated orchestration and governance.
+    - concept_name: Level 4 Maturity
+      explanation: Highly autonomous agents with continuous learning and self-improvement capabilities. Agents adapt strategies, acquire new capabilities, and operate with minimal human direction. Learning loops enable behavior improvement over time. L4 systems achieve maximum business impact but require careful ethical and operational governance.
+    how_it_works:
+    - step: 1
+      description: Assess current agent system against maturity level criteria
+    - step: 2
+      description: Identify gaps and capabilities needed to reach next level
+    - step: 3
+      description: Plan development sprints to close gaps incrementally
+    - step: 4
+      description: Validate maturity improvements through testing and metrics
+    - step: 5
+      description: Plan for next maturity level once current level is stable
+    design_decisions:
+      when_to_use:
+      - All organizations building agent capabilities should use this model
+      - Planning technology investments and capability roadmaps
+      - Communicating with stakeholders about agent advancement
+      when_to_avoid:
+      - Using maturity as prescriptive (some use cases don't need L4)
+      - Forcing progression before organization is ready
+      trade_offs:
+      - Higher maturity = more value but more complexity and governance overhead
+      - Lower maturity = simpler to manage but limited business impact
+    sources:
+    - 'LL01: How to Build AI Agent Playbook 2025 — 4-level maturity model'
+
+  enterprise_use_cases:
+    definition: Real-world applications of AI agents across enterprise domains, spanning Finance (18 use cases), Education (11 use cases), and Private Lending (2 use cases). Each use case has distinct requirements, success metrics, and implementation patterns. Understanding proven use cases helps organizations identify where agents deliver highest ROI and informs platform architecture decisions.
+    core_concepts:
+    - concept_name: Finance Domain Agents
+      explanation: Finance is the most mature and valuable domain for agent deployment. Common use cases include invoice processing (automatic extraction, validation, routing), document comparison (comparing contracts or statements), earnings call analysis (extracting key data and insights), spreadsheet assistance (automated calculations and analysis), and reconciliation (matching records across systems). Other finance agents handle CapEx classification, KYC (Know Your Customer) verification, refund/expense processing, 10-Q/10-K extraction, investor scoring, FAQ generation, valuation modeling, portfolio rebalancing, cash-flow forecasting, buy/sell recommendations, competitive analysis, due diligence, and vendor analysis. Finance use cases typically offer clear ROI through time savings and error reduction.
+    - concept_name: Education Domain Agents
+      explanation: Education agents personalize learning and automate administration. Common use cases include scholarship matching (identifying relevant opportunities for students), academic advising (recommending courses and career paths), course assistants (providing tutoring and support), writing feedback (evaluating essays and suggesting improvements), IT support (resolving technical issues), library research (finding relevant sources), spreadsheet assistance (analyzing grades and trends), facilities booking (reserving campus resources), career matching (aligning student interests to job opportunities), accreditation support, and grant finding. Education agents typically improve student outcomes and reduce administrative burden on faculty.
+    - concept_name: Private Lending Agents
+      explanation: Lending processes involve complex document review and decision-making. Agent use cases include term sheet drafting (generating initial loan documents with key terms) and loan file review (validating completeness and compliance). These agents reduce cycle time and improve consistency in lending workflows.
+    how_it_works:
+    - step: 1
+      description: Identify business process with high manual effort or error rates
+    - step: 2
+      description: Map process to proven agent use case in knowledge base
+    - step: 3
+      description: Adapt patterns and tools for your specific context
+    - step: 4
+      description: Pilot with smaller portion of workflow before full deployment
+    - step: 5
+      description: Monitor metrics and iterate on implementation
+    design_decisions:
+      when_to_use:
+      - Any organization with processes matching documented use cases
+      - Finance, education, or lending organizations
+      - High-volume, repetitive workflows amenable to automation
+      when_to_avoid:
+      - One-off processes unlikely to benefit from agents
+      - Processes requiring extensive human judgment
+      - Domains without proven agent success patterns
+      trade_offs:
+      - Proven use cases = lower risk but may require customization
+      - Following patterns enables faster deployment than greenfield development
+    real_world_applications:
+    - Finance use cases demonstrating 20-40% time savings and 10-20% error reduction
+    - Education use cases improving student satisfaction and reducing advising workload
+    - Lending use cases accelerating underwriting cycle time
+    sources:
+    - 'LL02: AI Agents 65+ Use Cases (StackAI) — Finance (18), Education (11), Private Lending (2)'
+
+  market_trends_2026:
+    definition: Five major trends in AI agent adoption and evolution from Google's 2026 report analyzing executive adoption, workflow integration, customer engagement, security automation, and talent upskilling. These trends indicate where agent technology is heading and where investments are flowing. Organizations should align strategies with these trends to stay competitive.
+    core_concepts:
+    - concept_name: Agents as Digital Workforce
+      explanation: 52% of executives have deployed agents in production, indicating rapid shift from pilot to operational status. Agents are becoming integral to business operations rather than experimental. Organizations treating agents as core workforce capability rather than novelty are capturing most value. This trend will accelerate as agent reliability improves and more use cases prove ROI.
+    - concept_name: Agents for Every Workflow
+      explanation: From manufacturing to healthcare to e-commerce, agents are being applied to every significant business process. Agentic e-commerce is emerging as a major category with AP2 protocol enabling standardized agent-to-platform communication. No workflow is too complex or too simple for agent application. This trend indicates massive expansion of addressable market.
+    - concept_name: Customer Concierge Agents
+      explanation: 49% adoption rate of customer service agents, with examples like Home Depot Magic Apron (personalized shopping assistance) and Danfoss systems (80% automation of customer inquiries). These agents improve customer satisfaction while reducing support costs. Concierge agents are becoming expected service baseline in consumer and B2B markets.
+    - concept_name: Security Automation Agents
+      explanation: 82% of security operations centers experience alert fatigue; 46% are deploying agents to handle routine security tasks. Examples include Torq achieving 90% automation of tier-1 security alerts. Security agents are critical for managing overwhelming alert volumes and improving response times. This trend will continue as threat volumes increase.
+    - concept_name: Talent Upskilling
+      explanation: 82% of executives value learning and development; 61% of employees use AI tools daily. The AI skill half-life is only 4 years, meaning skills become outdated quickly. Organizations prioritizing continuous learning around agents are building sustainable competitive advantage. This trend indicates need for ongoing training and culture change initiatives.
+    how_it_works:
+    - step: 1
+      description: Assess organization alignment with each trend
+    - step: 2
+      description: Identify where trends create strategic opportunities
+    - step: 3
+      description: Prioritize agent investments aligned with trend momentum
+    - step: 4
+      description: Build capabilities (tools, platforms, talent) to capture trend benefits
+    - step: 5
+      description: Monitor trend evolution and adjust strategy accordingly
+    design_decisions:
+      when_to_use:
+      - Strategic planning and investment decisions
+      - Competitive positioning and market timing
+      - Stakeholder alignment on agent importance
+      when_to_avoid:
+      - Using trends as prescriptive (not all trends apply to all organizations)
+      - Chasing trends without clear business alignment
+      trade_offs:
+      - Riding trends = capture market opportunity but must invest ahead of certainty
+      - Conservative approach = lower risk but risk competitive disadvantage
+    sources:
+    - 'LL03: Google Report on AI Agents 2026 — 5 trends affecting 52% executives with production agents'
+
+  ai_paradigm_comparison:
+    definition: Clear distinctions between three related but distinct concepts often confused in marketing and discussion. Generative AI is reactive content generation responding to prompts. Agentic AI plans and reasons within boundaries before acting. AI Agents are fully autonomous systems executing multi-step tasks with learning capabilities. Understanding these distinctions prevents deploying wrong technology and setting wrong expectations. Each paradigm has appropriate use cases.
+    core_concepts:
+    - concept_name: Generative AI Definition
+      explanation: Generative AI systems respond to user prompts by generating content (text, images, code, audio). They are fundamentally reactive — they generate when asked but don't pursue goals independently. Generative AI excels at one-shot generation tasks but cannot sustain extended autonomous operations. Tools like ChatGPT, DALL-E, and GitHub Copilot exemplify generative AI. Generative AI is not agentic AI; it's a building block used within agents.
+    - concept_name: Agentic AI Definition
+      explanation: Agentic AI systems plan and reason about how to accomplish goals within defined boundaries. They are proactive — they can identify needed actions without explicit direction. Agentic AI decomposes complex goals into steps, selects appropriate tools, and adapts plans based on feedback. However, agentic AI operates within boundaries set by humans and does not pursue learning or continuous self-improvement. Agentic AI is positioned between generative AI (pure generation) and full agents (autonomous learning).
+    - concept_name: AI Agents Definition
+      explanation: AI agents are fully autonomous systems that execute multi-step goals, learn from experience, and adapt strategies over time. Agents perceive environments, reason about optimal actions, execute actions, observe results, and improve performance. True agents can modify their own behavior, acquire new capabilities, and operate with minimal human direction. AI agents represent the highest autonomy level but also highest complexity and governance needs.
+    - concept_name: Matching Technology to Use Case
+      explanation: Choose generative AI for one-shot creation tasks. Choose agentic AI for structured processes requiring planning and reasoning within guardrails. Choose agents for complex, open-ended problems requiring adaptation and learning. Wrong tool selection leads to either over-engineering (too complex for the task) or ceiling effects (insufficient capability). Tool mismatch is a leading cause of AI project failure.
+    how_it_works:
+    - step: 1
+      description: Characterize the problem — is it generation, planning, or autonomous execution?
+    - step: 2
+      description: Assess autonomy requirements — how much human guidance is needed?
+    - step: 3
+      description: Match problem to paradigm that provides needed capability at reasonable cost
+    - step: 4
+      description: Implement using appropriate frameworks and tools for chosen paradigm
+    - step: 5
+      description: Monitor and adjust if problem characteristics or requirements change
+    design_decisions:
+      when_to_use:
+      - Making technology selection decisions
+      - Evaluating marketing claims about AI systems
+      - Communicating requirements to development teams
+      when_to_avoid:
+      - Forcing all problems into single paradigm
+      - Assuming higher autonomy = better solution
+      trade_offs:
+      - Lower autonomy = simpler and lower cost but limited capability
+      - Higher autonomy = more powerful but more complex and governance overhead
+    sources:
+    - 'LL04: Gen AI vs Agentic AI vs AI Agents — clear paradigm distinctions'
+
+  rag_fundamentals:
+    definition: Retrieval-Augmented Generation (RAG) is a technique that augments generative AI with external knowledge through document retrieval before generation. RAG enables agents to answer questions grounded in specific documents or databases rather than relying solely on training data. RAG is foundational for knowledge agents, document Q&A systems, and any application requiring current or proprietary information. Understanding RAG enables smarter system design choices.
+    core_concepts:
+    - concept_name: RAG Architecture Pattern
+      explanation: RAG follows retrieve-then-generate pattern. First, a retrieval system finds relevant documents based on query. Second, a generative model uses retrieved documents to produce grounded responses. This two-stage process ensures answers cite specific sources and remain current with document updates. RAG trades latency and cost (extra retrieval step) for accuracy and groundedness.
+    - concept_name: Embedding-Based Retrieval
+      explanation: Modern RAG uses embeddings (dense vector representations) to find semantically similar documents. Query and documents are converted to embeddings; similarity is computed using cosine distance or other metrics. Embedding-based retrieval enables semantic search (finding conceptually related documents even with different wording). Vector databases (Pinecone, Weaviate, Chroma) provide efficient large-scale retrieval.
+    - concept_name: Chunking Strategies
+      explanation: Documents must be split into chunks for retrieval. Naive splitting (fixed-size chunks) loses context. Better strategies include semantic chunking (splitting at meaningful boundaries), content-defined chunking (splitting based on document structure), and recursive chunking (hierarchical splitting). Chunk size and overlap dramatically affect retrieval quality and costs. Seven different chunking methods exist with distinct tradeoffs.
+    - concept_name: Context Window Management
+      explanation: Generative models have context windows (max tokens they can process). Large context windows enable processing more retrieved documents but increase latency and cost. RAG systems must select most relevant documents (top-k retrieval) to fit context windows. Techniques like contextual compression summarize documents before inclusion. Context window management is critical for RAG cost and quality.
+    - concept_name: Evaluation and Optimization
+      explanation: RAG quality depends on retrieval quality, generation quality, and their interaction. Evaluation includes retrieval metrics (did relevant docs get retrieved?), generation metrics (was answer correct and grounded?), and end-to-end metrics (did system answer user question?). Optimization targets include improving embedding models, refining chunking strategies, tuning retrieval parameters, and improving prompts.
+    how_it_works:
+    - step: 1
+      description: Prepare documents — clean, structure, and format for retrieval
+    - step: 2
+      description: Choose chunking strategy appropriate for document type and retrieval needs
+    - step: 3
+      description: Create embeddings for all chunks using chosen embedding model
+    - step: 4
+      description: Index embeddings in vector database for efficient retrieval
+    - step: 5
+      description: At query time, retrieve relevant chunks and feed to generative model
+    design_decisions:
+      when_to_use:
+      - Any system requiring knowledge grounded in specific documents
+      - Organizations with large document repositories (policies, knowledge bases)
+      - Applications needing current information beyond training data
+      - Knowledge agents, document Q&A, customer support enhancement
+      when_to_avoid:
+      - Simple generative tasks without knowledge grounding needs
+      - Small knowledge bases fitting in LLM context window
+      - Situations where hallucination/creativity is desired over accuracy
+      trade_offs:
+      - RAG adds latency and cost (extra retrieval step) but improves accuracy and groundedness
+      - More documents = better coverage but slower retrieval and more context to process
+      - Fine chunking = better granularity but more retrieval overhead
+    sources:
+    - 'LL06: 7 Different Chunking Methods for RAG — comprehensive coverage of chunking strategies'
+
+_source_metadata:
+  files_created: 1
+  version: 1.0
+  last_updated: '2026-04-23'
+  owner: Padmasani Srimadhan
+  sources:
+  - 'LL01: How to Build AI Agent Playbook 2025'
+  - 'LL02: AI Agents 65+ Use Cases (StackAI)'
+  - 'LL03: Google Report on AI Agents 2026'
+  - 'LL04: Gen AI vs Agentic AI vs AI Agents'
+  - 'LL06: 7 Different Chunking Methods for RAG'

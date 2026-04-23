@@ -1,0 +1,346 @@
+architecture_patterns:
+  - name: "Single Agent"
+    description: "One LLM with tools. Simplest pattern — agent reasons and acts in a loop."
+    best_for: "Focused tasks with clear boundaries, Q&A, simple automation"
+    complexity: "Low"
+    scalability: "Limited"
+    control: "Full — single decision maker"
+    failure_mode: "Single point of failure"
+  - name: "Pipeline"
+    description: "Sequential chain of specialized agents. Each agent handles one step."
+    best_for: "ETL workflows, content pipelines, multi-stage processing"
+    complexity: "Low-Medium"
+    scalability: "Moderate"
+    control: "Linear — easy to debug"
+    failure_mode: "Chain breaks if any stage fails"
+  - name: "Supervisor-Workers"
+    description: "Central supervisor delegates tasks to specialized worker agents."
+    best_for: "Complex tasks requiring multiple skills, customer support triage"
+    complexity: "Medium"
+    scalability: "Good"
+    control: "Centralized — supervisor has full visibility"
+    failure_mode: "Supervisor bottleneck, cascading failures"
+  - name: "Swarm"
+    description: "Peer-to-peer agents that negotiate and collaborate dynamically."
+    best_for: "Highly parallel tasks, creative brainstorming, distributed analysis"
+    complexity: "High"
+    scalability: "Excellent"
+    control: "Distributed — harder to monitor"
+    failure_mode: "Coordination failures, consensus deadlocks"
+  - name: "Hierarchical"
+    description: "Multi-level delegation with managers and workers at each level."
+    best_for: "Enterprise workflows, large-scale orchestration, org-mirroring"
+    complexity: "Very High"
+    scalability: "Excellent"
+    control: "Layered — requires clear chain of command"
+    failure_mode: "Complexity explosion, communication overhead"
+  - name: "State Machine"
+    description: "Explicit state transitions define agent behavior. Each state has allowed actions and transitions."
+    best_for: "Regulated workflows, approval chains, compliance-driven processes"
+    complexity: "Medium-High"
+    scalability: "Good"
+    control: "Maximum — every transition is explicit and auditable"
+    failure_mode: "State explosion, rigid to changing requirements"
+
+frameworks:
+  - name: "LangGraph"
+    language: "Python/JS"
+    control_level: "High"
+    learning_curve: "Steep"
+    best_for: "Stateful workflows, complex branching, production deployments"
+    state_management: "Built-in state graph with typed channels"
+  - name: "CrewAI"
+    language: "Python"
+    control_level: "Medium"
+    learning_curve: "Moderate"
+    best_for: "Role-based multi-agent, rapid prototyping"
+    state_management: "Shared memory + task results"
+  - name: "AG2 (AutoGen)"
+    language: "Python"
+    control_level: "Medium"
+    learning_curve: "Moderate"
+    best_for: "Conversational multi-agent, code generation"
+    state_management: "Message history"
+  - name: "Claude Agent SDK"
+    language: "Python"
+    control_level: "High"
+    learning_curve: "Low"
+    best_for: "Claude-native agents, tool-use patterns, agentic coding"
+    state_management: "Conversation context + tool results"
+  - name: "Semantic Kernel"
+    language: "C#/Python"
+    control_level: "High"
+    learning_curve: "Steep"
+    best_for: "Enterprise .NET integration, plugin architecture"
+    state_management: "Kernel memory + planners"
+  - name: "Phidata"
+    language: "Python"
+    control_level: "Medium"
+    learning_curve: "Low"
+    best_for: "Quick agent prototyping, knowledge-based agents"
+    state_management: "Built-in storage + memory"
+
+model_tiers:
+  - model: "Claude Opus"
+    tier: "Premium"
+    capability: "Highest reasoning, nuanced analysis, complex governance"
+    cost: "High (~$15/MTok input, $75/MTok output)"
+    latency: "Higher (5-15s)"
+    best_for: "Governance reviews, complex analysis, strategic decisions"
+  - model: "Claude Sonnet"
+    tier: "Standard"
+    capability: "Strong reasoning, good balance of speed and intelligence"
+    cost: "Medium (~$3/MTok input, $15/MTok output)"
+    latency: "Moderate (2-5s)"
+    best_for: "Advisory, content generation, code review, templates"
+  - model: "Claude Haiku"
+    tier: "Fast"
+    capability: "Quick classification, extraction, routing"
+    cost: "Low (~$0.25/MTok input, $1.25/MTok output)"
+    latency: "Fast (<1s)"
+    best_for: "Classification, routing, extraction, search, high-volume tasks"
+
+risk_matrix:
+  - stakes: "High"
+    error_visibility: "Easy"
+    classification: "Medium Risk"
+    approach: "Standard testing + monitoring. Errors are caught quickly."
+  - stakes: "High"
+    error_visibility: "Hard"
+    classification: "Critical Risk"
+    approach: "Maximum governance. Human-in-the-loop, extensive testing, continuous monitoring."
+  - stakes: "Low"
+    error_visibility: "Easy"
+    classification: "Low Risk"
+    approach: "Lightweight oversight. Good candidate for full automation."
+  - stakes: "Low"
+    error_visibility: "Hard"
+    classification: "Medium Risk"
+    approach: "Enhanced monitoring. Errors accumulate silently — need drift detection."
+
+evaluation_presets:
+  - slug: customer-support
+    name: "Customer Support Agent"
+    description: "Evaluate an agent designed for customer service triage, response generation, and escalation."
+    dimensions:
+      - name: "Response Accuracy"
+        weight: 0.25
+        metric: "Correct resolution rate"
+        threshold_good: 0.90
+        threshold_acceptable: 0.80
+        measurement: "% of queries resolved correctly without escalation"
+      - name: "Latency"
+        weight: 0.15
+        metric: "P95 response time"
+        threshold_good: "< 3s"
+        threshold_acceptable: "< 8s"
+        measurement: "End-to-end response time at 95th percentile"
+      - name: "Escalation Rate"
+        weight: 0.15
+        metric: "% escalated to human"
+        threshold_good: "< 15%"
+        threshold_acceptable: "< 30%"
+        measurement: "Percentage of interactions requiring human handoff"
+      - name: "Customer Satisfaction"
+        weight: 0.20
+        metric: "CSAT score"
+        threshold_good: 4.5
+        threshold_acceptable: 4.0
+        measurement: "Post-interaction survey score (1-5)"
+      - name: "Guardrail Compliance"
+        weight: 0.15
+        metric: "Policy violation rate"
+        threshold_good: "< 0.1%"
+        threshold_acceptable: "< 1%"
+        measurement: "% of responses violating brand/safety guidelines"
+      - name: "Cost Efficiency"
+        weight: 0.10
+        metric: "Cost per resolution"
+        threshold_good: "< $0.50"
+        threshold_acceptable: "< $2.00"
+        measurement: "Average LLM cost per resolved ticket"
+
+  - slug: code-generation
+    name: "Code Generation Agent"
+    description: "Evaluate an agent designed for code writing, review, and debugging assistance."
+    dimensions:
+      - name: "Code Correctness"
+        weight: 0.30
+        metric: "Test pass rate"
+        threshold_good: 0.85
+        threshold_acceptable: 0.70
+        measurement: "% of generated code passing unit tests on first attempt"
+      - name: "Security"
+        weight: 0.20
+        metric: "Vulnerability rate"
+        threshold_good: "0 critical"
+        threshold_acceptable: "< 2 medium"
+        measurement: "SAST findings in generated code"
+      - name: "Completion Speed"
+        weight: 0.10
+        metric: "Generation time"
+        threshold_good: "< 10s"
+        threshold_acceptable: "< 30s"
+        measurement: "Time to generate a complete function/module"
+      - name: "Code Quality"
+        weight: 0.20
+        metric: "Linting score"
+        threshold_good: 0.95
+        threshold_acceptable: 0.85
+        measurement: "% of code passing lint rules without modification"
+      - name: "Context Utilization"
+        weight: 0.10
+        metric: "Context accuracy"
+        threshold_good: 0.90
+        threshold_acceptable: 0.75
+        measurement: "Correctly referencing existing codebase patterns"
+      - name: "Cost per Task"
+        weight: 0.10
+        metric: "Token cost"
+        threshold_good: "< $0.10"
+        threshold_acceptable: "< $0.50"
+        measurement: "Average LLM cost per coding task"
+
+  - slug: research-analysis
+    name: "Research & Analysis Agent"
+    description: "Evaluate an agent designed for research synthesis, report generation, and analytical tasks."
+    dimensions:
+      - name: "Accuracy"
+        weight: 0.25
+        metric: "Factual correctness"
+        threshold_good: 0.95
+        threshold_acceptable: 0.85
+        measurement: "% of claims verified against source material"
+      - name: "Comprehensiveness"
+        weight: 0.20
+        metric: "Coverage score"
+        threshold_good: 0.90
+        threshold_acceptable: 0.75
+        measurement: "% of relevant sources/topics covered"
+      - name: "Citation Quality"
+        weight: 0.15
+        metric: "Citation accuracy"
+        threshold_good: 0.95
+        threshold_acceptable: 0.85
+        measurement: "% of citations correctly attributed and verifiable"
+      - name: "Reasoning Quality"
+        weight: 0.20
+        metric: "Logic score"
+        threshold_good: 4.5
+        threshold_acceptable: 3.5
+        measurement: "Expert rating of analytical reasoning (1-5)"
+      - name: "Bias Detection"
+        weight: 0.10
+        metric: "Bias flag rate"
+        threshold_good: "< 2%"
+        threshold_acceptable: "< 5%"
+        measurement: "% of outputs flagged for potential bias"
+      - name: "Turnaround Time"
+        weight: 0.10
+        metric: "Report time"
+        threshold_good: "< 2 min"
+        threshold_acceptable: "< 10 min"
+        measurement: "Time to produce a complete research brief"
+
+  - slug: data-pipeline
+    name: "Data Pipeline Agent"
+    description: "Evaluate an agent designed for ETL, data transformation, and data quality tasks."
+    dimensions:
+      - name: "Data Accuracy"
+        weight: 0.30
+        metric: "Transform correctness"
+        threshold_good: 0.99
+        threshold_acceptable: 0.95
+        measurement: "% of records correctly transformed"
+      - name: "Throughput"
+        weight: 0.15
+        metric: "Records/second"
+        threshold_good: 1000
+        threshold_acceptable: 100
+        measurement: "Processing rate at steady state"
+      - name: "Error Handling"
+        weight: 0.20
+        metric: "Recovery rate"
+        threshold_good: 0.95
+        threshold_acceptable: 0.85
+        measurement: "% of errors automatically recovered from"
+      - name: "Schema Compliance"
+        weight: 0.15
+        metric: "Schema validation"
+        threshold_good: 1.00
+        threshold_acceptable: 0.98
+        measurement: "% of output records matching target schema"
+      - name: "Monitoring"
+        weight: 0.10
+        metric: "Observability"
+        threshold_good: "Full"
+        threshold_acceptable: "Partial"
+        measurement: "Coverage of logging, metrics, and alerting"
+      - name: "Cost Efficiency"
+        weight: 0.10
+        metric: "Cost per 1K records"
+        threshold_good: "< $0.01"
+        threshold_acceptable: "< $0.10"
+        measurement: "LLM + infra cost per 1,000 records processed"
+
+  - slug: content-creation
+    name: "Content Creation Agent"
+    description: "Evaluate an agent designed for writing marketing copy, articles, or creative content."
+    dimensions:
+      - name: "Content Quality"
+        weight: 0.25
+        metric: "Editor rating"
+        threshold_good: 4.5
+        threshold_acceptable: 3.5
+        measurement: "Human editor rating (1-5) of output quality"
+      - name: "Brand Consistency"
+        weight: 0.20
+        metric: "Brand alignment"
+        threshold_good: 0.95
+        threshold_acceptable: 0.85
+        measurement: "% adherence to brand voice guidelines"
+      - name: "Originality"
+        weight: 0.15
+        metric: "Plagiarism score"
+        threshold_good: "< 5%"
+        threshold_acceptable: "< 15%"
+        measurement: "Similarity match against existing content"
+      - name: "SEO Effectiveness"
+        weight: 0.15
+        metric: "SEO score"
+        threshold_good: 0.85
+        threshold_acceptable: 0.70
+        measurement: "Keyword coverage, readability, meta quality"
+      - name: "Production Speed"
+        weight: 0.15
+        metric: "Time to draft"
+        threshold_good: "< 30s"
+        threshold_acceptable: "< 2 min"
+        measurement: "Time to generate a complete first draft"
+      - name: "Revision Rate"
+        weight: 0.10
+        metric: "Edit rounds"
+        threshold_good: "< 1"
+        threshold_acceptable: "< 3"
+        measurement: "Average number of human revision rounds needed"
+
+autonomy_levels:
+  - level: "L0"
+    name: "Manual"
+    description: "No AI involvement. Fully human-driven process."
+  - level: "L1"
+    name: "Assistive"
+    description: "AI provides suggestions, human makes all decisions."
+  - level: "L2"
+    name: "Collaborative"
+    description: "AI drafts, human reviews and approves each action."
+  - level: "L3"
+    name: "Supervised Autonomous"
+    description: "AI acts independently with human monitoring and override capability."
+  - level: "L4"
+    name: "Highly Autonomous"
+    description: "AI operates with minimal oversight, escalating only edge cases."
+  - level: "L5"
+    name: "Fully Autonomous"
+    description: "AI operates independently with no human intervention required."
+

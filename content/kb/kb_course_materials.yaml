@@ -1,0 +1,148 @@
+course_materials:
+  status: reserved — awaiting Agentic AI course folder integration
+  planned_structure:
+  - Course modules and lessons
+  - Lab exercises and assignments
+  - Project work and implementations
+  - Instructor frameworks and methodologies
+  concept_glossary:
+    description: Quick-reference glossary mapping core terms to definitions, source chapters, and real-world product examples
+    source: Deep-Dive Materials - AI Agents Learning Guide Part 4
+    entries:
+    - term: Agent
+      definition: Autonomous entity that perceives, reasons, and acts
+      chapter: 1
+      real_world_example: Claude Code, GitHub Copilot
+    - term: Autoregression
+      definition: Generating output token-by-token
+      chapter: 1
+      real_world_example: How ChatGPT writes responses
+    - term: Test-time compute
+      definition: Extra processing during inference
+      chapter: 1
+      real_world_example: o1 thinking before answering
+    - term: Context window
+      definition: Maximum text LLM can process at once
+      chapter: 4
+      real_world_example: Claude 200K token limit
+    - term: RAG
+      definition: Retrieval-Augmented Generation
+      chapter: 4
+      real_world_example: Notion AI, Perplexity
+    - term: Vector database
+      definition: Storage for semantic similarity search
+      chapter: 4
+      real_world_example: Pinecone, Chroma
+    - term: Embedding
+      definition: Numerical representation of meaning
+      chapter: 4
+      real_world_example: How search finds similar docs
+    - term: Agentic RAG
+      definition: Agent-controlled retrieval
+      chapter: 4
+      real_world_example: Perplexity iterative search
+    - term: Tool calling
+      definition: LLM invoking external functions
+      chapter: 5
+      real_world_example: ChatGPT using code interpreter
+    - term: MCP
+      definition: Model Context Protocol
+      chapter: 5
+      real_world_example: Claude Desktop integrations
+    - term: JSON Schema
+      definition: Structured tool description
+      chapter: 5
+      real_world_example: OpenAI function calling format
+    - term: ReAct
+      definition: Reason + Act framework
+      chapter: 6
+      real_world_example: Claude Code agentic loop
+    - term: Task decomposition
+      definition: Breaking goals into subtasks
+      chapter: 6
+      real_world_example: Project planning
+    - term: Chain-of-Thought
+      definition: Step-by-step reasoning
+      chapter: 6
+      real_world_example: Let us think step by step prompting
+    - term: Reflexion
+      definition: Learning from past trajectories
+      chapter: 6
+      real_world_example: Agents improving from mistakes
+    - term: Self-Refine
+      definition: Iterative self-improvement
+      chapter: 6
+      real_world_example: AI editing its own outputs
+  practice_questions:
+    description: Bloom taxonomy practice questions at four levels for self-assessment
+    source: Deep-Dive Materials - AI Agents Learning Guide Part 5
+    level_1_recall:
+    - What are the three core components of an agent architecture?
+    - What does autoregressive mean in the context of LLMs?
+    - Name two examples of test-time compute techniques.
+    - What does RAG stand for and what does it do?
+    - What are the four types of memory discussed in Chapter 4?
+    level_2_understanding:
+    - Explain why a chatbot that only responds to user prompts is NOT a true agent.
+    - How does chain-of-thought prompting relate to autoregression?
+    - Why do reasoning LLMs (like o1) take longer to respond than regular LLMs?
+    - What problem does MCP (Model Context Protocol) solve?
+    - How does Agentic RAG differ from traditional RAG?
+    level_3_application:
+    - Design an AI agent to manage your email inbox — identify its sensors, reasoning component, and actuators.
+    - A user complains that an AI agent product is not smart. You discover it is just a regular LLM with a UI. Explain what
+      is missing.
+    - 'Compare two approaches to making an email-sorting AI better: (a) training on 10x more emails, or (b) letting it think
+      about each email for 10 seconds.'
+    level_4_analysis:
+    - Why is test-time compute particularly important for AI agents (as opposed to regular chatbots)?
+    - A company claims their product is the most advanced AI agent but it has no ability to remember between sessions or use
+      any tools. Is this claim justified?
+    - How does the autoregressive nature of LLMs both enable AND constrain agent behavior?
+  coursera_courses:
+    description: Three Coursera specialization courses on building AI agents and agentic workflows
+    courses:
+    - id: C01
+      title: Building AI Agents and Agentic Workflows - Course 1
+      modules:
+      - Fundamentals of Building AI Agents
+      - LCEL and Manual Tool Calling in LangChain
+      - Using Builtin Agents in LangChain
+      key_topics:
+      - AI system design framework
+      - tool calling
+      - LangChain agents
+      - LCEL
+      - SQL agents
+      - data analysis agents
+    - id: C02
+      title: Agentic AI with LangChain and LangGraph
+      modules:
+      - Introduction to LangGraph
+      - Self-Improving Agents
+      - Multi-Agent Systems and Agentic RAG
+      key_topics:
+      - LangGraph architecture
+      - ReAct agents
+      - Reflexion agents
+      - multi-agent systems
+      - agentic RAG
+      - agentic AI risks
+    - id: C03
+      title: Agentic AI with LangGraph, CrewAI, AutoGen and BeeAI
+      modules:
+      - Agentic Frameworks and Design Patterns
+      - CrewAI Fundamentals
+      - Alternative Frameworks (BeeAI and AG2)
+      key_topics:
+      - design patterns
+      - CrewAI
+      - AG2/AutoGen
+      - BeeAI
+      - orchestrator pattern
+      - evaluator-optimizer pattern
+_source_metadata:
+  split_from: agentic_ai_kb.yaml
+  version: 1.0-scaffold
+  last_updated: '2026-04-06'
+  owner: Padmasani Srimadhan

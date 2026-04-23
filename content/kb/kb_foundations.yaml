@@ -1,0 +1,1026 @@
+foundations:
+  what_is_an_agent:
+    definition: An AI agent is an autonomous software entity powered by a language model that perceives its environment, reasons
+      about goals, takes actions (including tool use), and iterates until a task is complete. Unlike chatbots (stateless Q&A)
+      or assistants (guided by user at each step), agents operate with sustained autonomy across multi-step tasks, maintaining
+      state and adapting plans dynamically. The core loop is Perceive → Reason → Act → Observe, implemented as a finite state
+      machine where LLM calls serve as transition functions between states.
+    core_concepts:
+    - concept_name: Agent vs Chatbot vs Assistant
+      explanation: Chatbots are stateless single-turn responders. Assistants follow user-directed steps. Agents operate autonomously
+        across multi-step tasks with self-directed planning, tool use, and iterative refinement. The key differentiator is
+        sustained autonomy — agents decide what to do next.
+    - concept_name: Autonomy Spectrum
+      explanation: Ranges from fully human-directed (assistant) to fully autonomous (agent). Most production systems sit in
+        between, with HITL checkpoints at critical decision points. The level of autonomy should match the risk profile of
+        the task domain.
+    - concept_name: Agency as Emergent Property
+      explanation: Agency emerges from the combination of an LLM backbone + tool access + memory + control flow. No single
+        component creates agency; it is the orchestrated interplay of reasoning, action, and state management.
+    - concept_name: FSM as Base Paradigm
+      explanation: Every agent framework (LangGraph, CrewAI, AutoGen) is fundamentally a finite state machine. States represent
+        agent processing phases, edges represent transitions (conditional or fixed), and the LLM acts as the transition function
+        deciding next state. LangGraph makes this explicit with StateGraph, nodes, edges, and conditional_edges.
+    - concept_name: Four Pillars of Agents (B09)
+      explanation: 'B09 frames agents through four essential pillars: (1) Memory — remembering context and past experiences,
+        (2) Tools — taking actions beyond text generation, (3) Planning — breaking down complex tasks into subtasks, (4) Reasoning
+        LLM — the brain that reads context, plans approach, selects tools, and interprets results. All four must work together
+        for true agency.'
+    - concept_name: Train-Time vs Test-Time Compute
+      explanation: 'Two paradigms for making AI smarter: train-time compute (bigger models during training) vs test-time compute
+        (letting the model think longer when answering). Modern reasoning LLMs (o1, o3, Claude) use test-time compute. Analogy:
+        studying for months vs taking extra time on a hard exam question. This is foundational to understanding why reasoning
+        models can use tools mid-thought (TIR).'
+    - concept_name: Five Agent Components (B03)
+      explanation: 'B03 identifies 5 essential agent components: (1) Profile/Persona — defines who the agent is, (2) Actions/Tool
+        Use — what the agent can do, (3) Memory/Knowledge — what the agent knows/remembers, (4) Reasoning/Evaluation — how
+        the agent thinks and assesses output quality, (5) Planning/Feedback — how the agent decomposes goals and improves
+        from results. All 5 must work together for a complete agentic system.'
+    - concept_name: Agent Profile Generation Methods (B03)
+      explanation: 'Three methods to create agent personas: (1) Handcrafted — manually authored profiles, most control but
+        least scalable. (2) LLM-Generated — use an LLM to generate diverse agent profiles from seed descriptions. (3) Data-Generated
+        — use evolutionary algorithms to evolve agent profiles through selection/mutation, enabling automated discovery of
+        effective persona configurations.'
+    - concept_name: Six Agent Components (B04)
+      explanation: 'B04 identifies 6 essential components of an AI agent: (1) LLM — the reasoning engine. (2) System Message
+        — defines persona, instructions, and constraints. (3) Knowledge Base — external data the agent can access (documents,
+        databases). (4) Memory — conversation history and learned context. (5) Tools — functions the agent can invoke (APIs,
+        code execution). (6) Orchestrator — the control layer that manages agent execution flow, tool routing, and decision-making.'
+    - concept_name: Agent Type Taxonomy (B04)
+      explanation: 'B04 classifies agents into 3 types by autonomy level: (1) Retrieval Agents — focus on information retrieval
+        and RAG, lowest autonomy, retrieve-then-generate pattern. (2) Task Agents — execute specific tasks using tools, moderate
+        autonomy, follow defined workflows. (3) Autonomous Agents — highest autonomy, self-directed goal pursuit with dynamic
+        planning, can create and modify their own sub-goals. Each type maps to different orchestration patterns and safety
+        requirements.'
+    - concept_name: Orchestrator as Agent Component (B04)
+      explanation: 'B04 elevates the orchestrator from mere infrastructure to a core agent component. The orchestrator manages:
+        autonomy (how independently the agent acts), abstraction (hiding complexity from the user), and modularity (composing
+        capabilities from interchangeable parts). It is the "control center" that coordinates LLM calls, tool routing, memory
+        access, and workflow execution.'
+    - concept_name: Agent vs Traditional Program vs Simple LLM Comparison
+      definition: 'Five-dimension comparison: Decisions (pre-coded vs single-inference vs dynamic multi-step), Memory (database
+        vs context-window vs short+long-term), Tools (hard-coded vs none vs dynamic selection), Adaptability (fixed vs prompt-dependent
+        vs self-correcting), Autonomy (none vs minimal vs high goal-driven)'
+      source_book: Deep-Dive Materials
+      deep_dive_source: Ch1 Infographic - Comparison Table
+    - concept_name: Four Pillars of Agents Framework
+      definition: 'The four components that transform an LLM into an agent: Memory (remembering context), Tools (taking actions),
+        Planning (breaking down tasks), and Reasoning LLM (the brain). These combine to create autonomous systems.'
+      source_book: Deep-Dive Materials
+      deep_dive_source: AI Agents Learning Guide - Ch1 Key Concepts
+    how_it_works:
+    - step: 1
+      description: 'PERCEIVE: Agent receives input (user query, environment observation, tool result) into its state.'
+    - step: 2
+      description: 'REASON: LLM processes current state (messages, memory, context) to decide next action — this is the core
+        ''thinking'' step, potentially using CoT, ReAct, or planning patterns.'
+    - step: 3
+      description: 'ACT: Agent executes chosen action — tool call, API request, code execution, or generating a response.'
+    - step: 4
+      description: 'OBSERVE: Agent receives action result, updates state, and evaluates whether to continue or terminate.'
+    - step: 5
+      description: 'ITERATE: If goal not met, loop back to REASON. Halting condition checks prevent infinite loops (max iterations,
+        tool-call absence, explicit ''FINAL ANSWER'' token).'
+    design_decisions:
+      when_to_use:
+      - Multi-step tasks requiring dynamic planning
+      - Tasks requiring tool use (search, code execution, API calls)
+      - Workflows where the path isn't fully predictable upfront
+      - Tasks needing iterative refinement based on intermediate results
+      when_to_avoid:
+      - Simple single-turn Q&A (use direct LLM call)
+      - Deterministic workflows with no branching (use a pipeline)
+      - When latency/cost constraints are extremely tight
+      - When full auditability of every decision is required and non-negotiable
+      trade_offs:
+      - 'Autonomy vs Control: More autonomy = harder to predict/audit, but more flexible'
+      - 'Cost vs Capability: Each reasoning loop = additional LLM calls = higher cost'
+      - 'Latency vs Quality: More iterations = better results but slower response'
+      - 'Complexity vs Reliability: Richer agent architecture = more failure modes'
+    implementation:
+      reference_architecture: 'LangGraph StateGraph with TypedDict state, conditional edges for tool routing, MemorySaver
+        for checkpointing. Pattern: START → call_model → should_continue → (tool_node | END)'
+      pseudocode: "state = {messages: [user_input]}\nwhile not halting_condition(state):\n  action = llm(state)\n  if action.tool_calls:\n\
+        \    result = execute_tool(action.tool_calls)\n    state.messages.append(result)\n  else:\n    return action.content"
+      code_scaffold: "from langgraph.graph import StateGraph, START, END\nfrom langgraph.prebuilt import create_react_agent\n\
+        from typing import TypedDict, Annotated, Sequence\nfrom langchain_core.messages import BaseMessage\nfrom langgraph.graph.message\
+        \ import add_messages\n\nclass AgentState(TypedDict):\n    messages: Annotated[Sequence[BaseMessage], add_messages]\n\
+        \ndef call_model(state: AgentState):\n    response = model.invoke(state['messages'])\n    return {'messages': [response]}\n\
+        \ndef should_continue(state: AgentState):\n    last = state['messages'][-1]\n    return 'tools' if last.tool_calls\
+        \ else 'end'\n\nworkflow = StateGraph(AgentState)\nworkflow.add_node('agent', call_model)\nworkflow.add_node('tools',\
+        \ tool_node)\nworkflow.add_edge(START, 'agent')\nworkflow.add_conditional_edges('agent', should_continue, {'tools':\
+        \ 'tools', 'end': END})\nworkflow.add_edge('tools', 'agent')\ngraph = workflow.compile(checkpointer=MemorySaver())"
+      libraries_and_tools:
+      - langgraph>=0.3
+      - langchain-core
+      - langchain-openai
+      - langsmith (observability)
+      configuration: 'LangGraph: StateGraph with TypedDict state, MemorySaver checkpointer, conditional_edges for routing'
+    real_world_applications:
+    - Research agents that search, synthesize, and write reports
+    - Coding agents that read specs, write code, run tests, and iterate
+    - Customer support agents with tool access to databases and ticketing systems
+    - Data analysis agents that write SQL, execute queries, interpret results
+    relationships:
+      depends_on: []
+      enables:
+      - architecture_and_patterns
+      - multi_agent_systems
+      compare_with: []
+    sources:
+    - 'B02 Ch1: ''From LLMs to Agents'' — agent definition, FSM mapping, LangGraph fundamentals'
+    - 'B02 Ch2: ''Architectures and Patterns'' — agent patterns and multi-agent coordination'
+    - 'B09 Ch1: Agent definition (perceive/reason/act/learn), four pillars (Memory, Tools, Planning, Reasoning LLM)'
+    - 'B09 Ch1: Train-time vs test-time compute, autoregressive generation as basis for reasoning'
+    - 'B18: Deep dive comparison table — Regular LLM vs AI Agent (5 dimensions)'
+    - 'B03 Ch1: Five agent components — Profile, Actions, Memory, Reasoning, Planning'
+    - 'B03 Ch1: Agent profile generation — handcrafted, LLM-generated, data-generated (evolutionary)'
+    - 'B04 Ch2: 6-component agent model — LLM, system message, knowledge base, memory, tools, orchestrator'
+    - 'B04 Ch2: Agent type taxonomy — retrieval agents, task agents, autonomous agents'
+    - 'B04 Ch3: Orchestrator as core component — autonomy, abstraction, modularity'
+    - 'Deep-Dive: An Illustrated Guide to AI Agents - Chapter 1 Deep Dive'
+    - 'Deep-Dive: Ch1 Introduction Infographic'
+    - 'Deep-Dive: AI Agents Learning Guide - Part 3 (Chapter 1 Deep Dive)'
+    real_world_analogies:
+    - analogy: Thermostat as simplest agent
+      explanation: A thermostat perceives (temperature sensor), reasons (compare to target), and acts (turn heating on/off)
+        — the same perceive-reason-act loop as LLM agents, just simpler
+      source: Illustrated Guide Ch1 Deep Dive
+    - analogy: Employee vs Consultant
+      explanation: A regular LLM is like a consultant you ask questions — an agent is like an employee who executes projects.
+        The consultant waits for your next prompt; the employee decides their own next action
+      source: AI Agents Learning Guide
+    - analogy: Self-driving car architecture
+      explanation: Cameras (sensors) → AI brain (reasoning) → Steering/braking (actuators) — maps directly to the agent architecture
+        pattern
+      source: AI Agents Learning Guide Ch1
+    common_misconceptions:
+    - misconception: Any AI that uses tools is an agent
+      reality: Using a tool once does not make something an agent. A calculator app uses a tool (math operations) but is not
+        an agent. Agents use tools as part of autonomous, goal-directed behavior in LOOPS.
+      source: Illustrated Guide Ch1 Deep Dive
+    - misconception: Agents are just chatbots with extra features
+      reality: The fundamental difference is autonomy. A chatbot responds to prompts; an agent pursues goals. Chatbots are
+        reactive; agents are proactive.
+      source: Illustrated Guide Ch1 Deep Dive
+    - misconception: Agents need to be super intelligent
+      reality: A thermostat is technically an agent. It perceives, reasons, and acts. LLM agents are just more capable versions
+        of a pattern that has existed for decades.
+      source: Illustrated Guide Ch1 Deep Dive
+    - misconception: If it is called an agent it must be one
+      reality: Marketing has muddied the waters. Many AI agents are just LLMs with fancy wrappers. True agents have the perception-reasoning-action
+        loop with genuine autonomy.
+      source: Illustrated Guide Ch1 Deep Dive
+    complexity_examples:
+    - level: simple
+      scenario: Siri weather reminder
+      not_agent: Asking Siri "What is the weather?" — single response, done
+      agent: Siri, remind me to bring an umbrella if it rains tomorrow — monitors weather, checks automatically, sends reminder
+        if needed, multiple autonomous steps
+    - level: intermediate
+      scenario: Email assistant
+      not_agent: Using ChatGPT to write an email for you — single task, manual prompt
+      agent: AI assistant that monitors inbox, drafts responses to routine queries, flags items needing attention, schedules
+        follow-ups — all without asking each time
+    - level: advanced
+      scenario: Claude Code bug fix
+      not_agent: Copilot autocompleting a line of code — single prediction
+      agent: Claude Code reads codebase (perception) → understands bug (reasoning) → searches files (action) → proposes fix
+        → runs tests → sees failure (feedback) → adjusts fix → tests pass → commits — all from one request
+  history_and_evolution:
+    definition: The historical development of AI agents from early rule-based systems and expert systems through reactive
+      agents, BDI architectures, and modern LLM-powered autonomous agents, tracing the intellectual lineage from cybernetics
+      to agentic AI.
+    core_concepts:
+    - concept_name: Symbolic AI Agents
+      explanation: ''
+    - concept_name: BDI Architecture (Belief-Desire-Intention)
+      explanation: ''
+    - concept_name: Reinforcement Learning Agents
+      explanation: ''
+    - concept_name: LLM-Powered Agents
+      explanation: ''
+    - concept_name: Foundation Model Agents
+      explanation: ''
+    how_it_works: []
+    design_decisions:
+      when_to_use: []
+      when_to_avoid: []
+      trade_offs: []
+    implementation:
+      reference_architecture: ''
+      pseudocode: ''
+      code_scaffold: ''
+      libraries_and_tools: []
+      configuration: ''
+    real_world_applications: []
+    relationships:
+      depends_on: []
+      enables:
+      - foundations.cognitive_architectures
+      compare_with: []
+    sources:
+    - 'B15: Integrating Artificial and Human Intelligence (Wiley, 2025)'
+    three_waves_of_ai:
+      wave_1_first_principles:
+        era: 1950s-1970s
+        technology: Symbolic AI, neural networks (first generation)
+        approach: Capture symbolic representations and logical constructs
+        outcome: Initial interest faded as general intelligence goal proved elusive
+        application: Highly constrained manufacturing/production with predictable responses
+      wave_2_expert_systems:
+        era: 1980s
+        technology: Expert systems
+        approach: Encapsulate expert human knowledge into systems for less predictable environments
+        outcome: Significant investment then faded; extended AI beyond constrained processes
+        application: Commercial aviation and other less-predictable domains
+      wave_3_deep_learning:
+        era: 2010s-present
+        technology: Deep learning, multilayer neural networks, LLMs
+        approach: Statistical machine learning with large datasets and specialized GPUs
+        breakthrough: Object recognition and similar tasks matching/exceeding human performance
+        limitation: Requires thousands of labeled images (vs humans learning from single example)
+        key_insight: Current systems excel at consistent, predictable responses but fail catastrophically in unpredictable
+          environments
+  agent_types_and_taxonomy:
+    definition: A classification framework for AI agents organized by architecture (reactive, deliberative, hybrid), autonomy
+      level (tool-using, semi-autonomous, fully autonomous), and application domain (conversational, task-oriented, research,
+      coding).
+    core_concepts:
+    - concept_name: Simple Reflex Agents
+      explanation: ''
+    - concept_name: Model-Based Agents
+      explanation: ''
+    - concept_name: Goal-Based Agents
+      explanation: ''
+    - concept_name: Utility-Based Agents
+      explanation: ''
+    - concept_name: Learning Agents
+      explanation: ''
+    - concept_name: Conversational Agents
+      explanation: ''
+    - concept_name: Task-Execution Agents
+      explanation: ''
+    - concept_name: Autonomous Agents
+      explanation: ''
+    - concept_name: Coding Agents
+      explanation: ''
+    - concept_name: Research Agents
+      explanation: ''
+    - concept_name: Actions Taxonomy (B03)
+      explanation: 'B03 categorizes agent actions along 4 dimensions: (1) Action Target — what the action operates on (environment,
+        tools, other agents, self). (2) Action Space — the set of all possible actions available to the agent. (3) Action
+        Impact — whether actions are reversible or irreversible, read-only or write. (4) Action Generation — how the agent
+        decides which action to take (LLM reasoning, rules, learned policy).'
+    - concept_name: Business Task Agent
+      definition: Agents designed to automate routine business processes and workflows, with a focus on efficiency and task
+        completion
+      source_book: B11
+      chapter: Ch 1-2
+      examples:
+      - Customer support automation
+      - Data entry automation
+      - Report generation
+      related_concepts: []
+    - concept_name: Conversational Agent
+      definition: Interactive agents designed for dialogue-based problem solving, maintaining context across multi-turn conversations
+      source_book: B11
+      chapter: Ch 1-3
+      examples:
+      - Chatbots
+      - Virtual assistants
+      - Interactive support systems
+      related_concepts: []
+    - concept_name: Research Agent
+      definition: Agents capable of gathering, synthesizing, and analyzing information from multiple sources
+      source_book: B11
+      chapter: Ch 1-2
+      examples:
+      - Literature review automation
+      - Market research
+      - Competitive analysis
+      related_concepts: []
+    - concept_name: Analytics Agent
+      definition: Specialized agents for data analysis, pattern recognition, and insight generation from structured data
+      source_book: B11
+      chapter: Ch 2
+      examples:
+      - Data exploration
+      - Trend analysis
+      - Anomaly detection
+      related_concepts: []
+    - concept_name: Developer Agent
+      definition: Agents that assist in software development tasks including code generation, testing, and documentation
+      source_book: B11
+      chapter: Ch 1-4
+      examples:
+      - Code generation
+      - Testing automation
+      - Documentation authoring
+      related_concepts: []
+    - concept_name: Domain-Specific Agent
+      definition: Specialized agents tailored for particular domains with domain-specific reasoning and knowledge
+      source_book: B11
+      chapter: Ch 2
+      examples:
+      - Legal document review
+      - Medical diagnosis support
+      - Financial analysis
+      related_concepts: []
+    - concept_name: Browser-Using Agent
+      definition: Agents capable of interacting with web interfaces for information gathering and task automation
+      source_book: B11
+      chapter: Ch 4
+      examples:
+      - Web navigation
+      - Form filling
+      - Information extraction
+      related_concepts: []
+    - concept_name: Agent Autonomy Spectrum
+      definition: A design framework positioning agents on a spectrum from fully scripted to fully autonomous based on autonomy
+        slider and decision-making capability
+      source_book: B11
+      chapter: Ch 2
+      examples:
+      - Scripted workflows
+      - Assisted decision-making
+      - Autonomous operation
+      related_concepts: []
+    how_it_works: []
+    design_decisions:
+      when_to_use: []
+      when_to_avoid: []
+      trade_offs: []
+    implementation:
+      reference_architecture: ''
+      pseudocode: ''
+      code_scaffold: ''
+      libraries_and_tools: []
+      configuration: ''
+    real_world_applications: []
+    relationships:
+      depends_on:
+      - foundations.what_is_an_agent
+      enables:
+      - architecture_and_patterns
+      - implementation_blueprints
+      compare_with: []
+    sources:
+    - 'B03 Ch1: Actions taxonomy — target, space, impact, generation dimensions'
+  cognitive_architectures:
+    definition: The internal reasoning structure that determines how an agent thinks, plans, and decides. Modern LLM-agent
+      cognitive architectures center on the Perceive-Reason-Act loop, implemented through patterns like ReAct (interleaved
+      reasoning+action), CoT (structured thinking), and Plan-and-Execute (upfront planning with adaptive execution). Each
+      maps to a distinct state machine topology in frameworks like LangGraph.
+    core_concepts:
+    - concept_name: Perception-Reasoning-Action Loop
+      explanation: The fundamental cognitive cycle. Perception = processing inputs and tool results. Reasoning = LLM inference
+        with context. Action = tool calls or response generation. The quality of each phase determines overall agent capability.
+    - concept_name: Inner Monologue / Chain of Thought
+      explanation: 'CoT serves as control flow for agents, not just a prompting trick. The chain of thought IS the agent''s
+        reasoning trace. Different CoT prompts optimize for different scenarios: step-by-step for math, pro/con for decisions,
+        checklist for validation, explain-then-answer for analysis.'
+    - concept_name: World Models
+      explanation: Agent's internal representation of its environment state. In LangGraph, this is the TypedDict state object
+        that accumulates messages, tool results, and intermediate computations. State design IS world model design.
+    - concept_name: Goal Decomposition
+      explanation: Breaking complex objectives into sub-goals. Can be upfront (plan-and-execute) or dynamic (ReAct discovers
+        subtasks during execution). Tree of Thought extends this with branching search over multiple decomposition paths.
+    - concept_name: Self-Reflection and Metacognition
+      explanation: Agent ability to evaluate its own outputs and reasoning quality. Implemented via separate reflection nodes,
+        evaluator agents, or RULER-style LLM-as-judge scoring. Critical for reducing hallucination and improving reliability.
+    - concept_name: Autoregressive Generation as Reasoning Basis
+      explanation: LLMs generate text one token at a time, each token depending on all previous tokens. This sequential, autoregressive
+        process enables step-by-step reasoning and extended thinking — each reasoning step builds on what came before. This
+        is the mechanistic foundation for CoT, ReAct, and all agent reasoning patterns.
+    - concept_name: Skeleton of Thought (B03)
+      explanation: A parallel reasoning approach where the LLM first generates a skeleton (outline) of the answer, then fills
+        in each section in parallel. Reduces sequential bottlenecks in complex reasoning tasks. Useful for long-form generation
+        where sections are relatively independent.
+    - concept_name: Agent Development Lifecycle (ADL)
+      definition: 'description: Structured iterative framework for developing autonomous agents, fundamentally diverging from
+        traditional software engineering. Emphasizes continuous learning and adaptation. | phases: {''phase'': ''1. Conceptualization
+        & Requirements'', ''focus'': ''Define problem space, agent goals, and success metrics'', ''key_activities'': [''Define
+        high-level agent goals'', ''Map goals to achievable sub-goals'', ''Set measurable success metrics (performance, alignment,
+        user trust)'', ''Determine operating environment and ethical/technical constraints'']}; {''phase'': ''2. Architecture
+        & Design'', ''focus'': ''Design internal architecture supporting agent goals'', ''key_activities'': [''Choose cognitive
+        models (ReAct, plan-and-execute, hierarchical)'', ''Design memory strategies (short-term, long-term, episodic)'',
+        ''Define communication flows and protocols'', ''Create Architectural Decision Records (ADRs)'']}; {''phase'': ''3.
+        Implementation & Integration'', ''focus'': ''Bring architecture to life using development frameworks'', ''key_activities'':
+        [''Select and integrate frameworks (LangChain, CrewAI, LangGraph)'', ''Implement cognitive components (reasoning,
+        perception, memory)'', ''Stitch modules via orchestration layers'', ''Validate through integration testing and behavior
+        validation'']}; {''phase'': ''4. Evaluation & Optimization'', ''focus'': ''Rigorous assessment and iterative improvement'',
+        ''key_activities'': [''Measure against success metrics'', ''Evaluate robustness under ambiguity'', ''Test in production
+        shadows'', ''Optimize planning depth, context usage, token efficiency''], ''metrics'': [''Task completion rate'',
+        ''Mean response time'', ''User satisfaction'', ''Tool invocation accuracy'', ''Feedback frequency'']}; {''phase'':
+        ''5. Governance & Lifecycle Management'', ''focus'': ''Ensure reliability, transparency, and compliance long-term'',
+        ''key_activities'': [''Proactive monitoring and log auditing'', ''Model versioning and rollback capabilities'', ''Security
+        patching and compliance auditing'', ''Ethical oversight and behavioral monitoring'']} | iteration_model: Continuous
+        loop from monitoring back to conceptualization for improvement | key_principle: Unlike static software, agent systems
+        must operate in dynamic, uncertain environments requiring continuous refinement'
+      source_book: B01
+      original_sources:
+      - 'B01: Chapter 1 - Agent Development Lifecycle'
+    - concept_name: Agentic AI Progression Framework
+      definition: 'description: Maturity model categorizing agent capabilities across autonomy, reasoning, and adaptability
+        dimensions | levels: {''level'': 0, ''name'': ''Manual Operations (Non-Agentic Systems)'', ''characteristics'': ''No
+        automation or intelligence; all actions require direct human execution and oversight'', ''autonomy'': ''None'', ''reasoning'':
+        ''None'', ''adaptability'': ''None'', ''example'': ''Financial analysts manually preparing reports, HR staff manually
+        entering employee data''}; {''level'': 1, ''name'': ''Reactive Agents (Rule-Based Automation)'', ''characteristics'':
+        ''Predefined deterministic behavior governed by simple conditional logic. Respond to specific triggers with programmed
+        actions.'', ''autonomy'': ''Stateless'', ''reasoning'': ''None (condition-based rules)'', ''adaptability'': ''None
+        (lack memory/learning)'', ''example'': ''Automated email responders, RPA bots extracting form data, smoke detectors'',
+        ''limitations'': ''Cannot generalize to unforeseen situations; unable to learn from experience''}; {''level'': 2,
+        ''name'': ''Tool-Using Agents (Augmented Execution)'', ''characteristics'': ''Parse natural language, select appropriate
+        tools based on context, and chain operations. Demonstrate emergent capabilities through tool composition.'', ''autonomy'':
+        ''Semi-intelligent orchestration'', ''reasoning'': ''Tool selection and composition'', ''adaptability'': ''Session-based
+        context'', ''example'': ''Document processing systems extracting info and uploading to databases; intelligent help
+        desk systems pulling knowledge bases'', ''key_capability'': ''Function calling and MCP-based tool integration''};
+        {''level'': 3, ''name'': ''Planning Agents (Contextual & Goal-Oriented)'', ''characteristics'': ''Decompose high-level
+        objectives into structured task sequences. Incorporate feedback from intermediate steps, adjust plans when encountering
+        obstacles.'', ''autonomy'': ''Goal-directed planning'', ''reasoning'': ''Strategic decomposition and re-planning'',
+        ''adaptability'': ''Persistent awareness across extended operations'', ''example'': ''Autonomous travel planners booking
+        flights/hotels dynamically; digital onboarding assistants coordinating training schedules'', ''significance'': ''Enables
+        complex, multi-stakeholder workflows with autonomous decision-making''}; {''level'': 4, ''name'': ''Learning Agents
+        (Adaptive & Evolving)'', ''characteristics'': ''Execute complex plans while continuously evolving capabilities through
+        experience. Incorporate feedback, develop personalized models, refine strategies.'', ''autonomy'': ''Full autonomous
+        execution with learning loops'', ''reasoning'': ''Adaptive and hypothesis-driven'', ''adaptability'': ''Learns and
+        improves over time'', ''example'': ''Personalized recommendation engines improving user profiles; fraud detection
+        adapting to new patterns; research agents designing experiments'', ''future_direction'': ''Highest maturity; requires
+        careful governance to prevent unintended behaviors''} | strategic_value: Helps organizations assess current implementation
+        maturity, identify capability gaps, and plan technology investments aligned with business objectives'
+      source_book: B01
+      original_sources:
+      - 'B01: Chapter 1 - Agentic AI Progression Framework'
+    - concept_name: Cognitive Architecture Framework
+      definition: 'description: Agents integrate key functions (perception, reasoning, planning, action, learning) into modular,
+        stateful framework supporting both reactivity and deliberation | core_integration: BDI (Belief-Desire-Intention) model
+        and similar frameworks provide foundation for managing beliefs about world, desires (goals), and intentions (chosen
+        plans) | key_principle: Modular design enables teams to build components in parallel; observability ensures transparency;
+        state management balances cost with responsiveness'
+      source_book: B01
+      original_sources:
+      - 'B01: Chapter 1 - Architecture of agents'
+    how_it_works: []
+    design_decisions:
+      when_to_use: []
+      when_to_avoid: []
+      trade_offs: []
+    implementation:
+      reference_architecture: ''
+      pseudocode: ''
+      code_scaffold: ''
+      libraries_and_tools: []
+      configuration: ''
+    real_world_applications: []
+    relationships:
+      depends_on:
+      - foundations.what_is_an_agent
+      enables:
+      - architecture_and_patterns
+      - memory_and_context
+      compare_with: []
+    sources:
+    - 'B02 Ch1: Cognitive loop, FSM mapping, state management'
+    - 'B02 Ch2: CoT as control flow, ReAct cognitive pattern, ToT branching'
+    - 'B02 Ch3: Reasoning models, MCTS as cognitive search, test-time compute'
+    - 'B09 Ch1: Autoregressive generation enables step-by-step reasoning, foundation for CoT and extended thinking'
+    - 'B03 Ch1: Skeleton of Thought — parallel reasoning via outline-first approach'
+    - 'B15: Integrating Artificial and Human Intelligence (Wiley, 2025)'
+    - 'B01: 30 Agents Every AI Engineer Must Build (Packt, 2025)'
+    bdi_architecture:
+      name: Belief-Desire-Intention (BDI) Architecture
+      description: Combines deliberation with means-ends reasoning. Agent acquires sensor input, forms beliefs about world
+        state, generates options/desires based on current beliefs and intentions, filters options through deliberation to
+        form intentions, selects actions consistent with intentions.
+      key_properties:
+      - 'Deliberative: Agent decides what to achieve (goal selection/formation)'
+      - 'Means-ends reasoning: Agent decides how to pursue goals'
+      - 'Intentional commitment: Selected alternatives become intentions that persist and constrain future reasoning'
+      - 'Proactive: Agent sets and works toward goals (vs reactive agents)'
+      - Supports intent projection and capability to reconsider intentions
+      process_cycle:
+      - Sense environment via sensors
+      - Form/revise beliefs about current and future states
+      - Generate options (desires) based on beliefs and current intentions
+      - Filter options through deliberation process
+      - Commit to selected options (become intentions)
+      - Select and execute actions consistent with intentions
+      agent_types:
+      - 'Cautious agents: Frequently reconsider intentions'
+      - 'Bold agents: Charge ahead without reconsidering intentions'
+      - 'Proactive social agents: More like teammates in human-agent teams'
+      implementation_considerations: Intuitive to understand but can be difficult to implement
+      advantages_over_alternatives:
+      - More human-like reasoning than purely reactive agents
+      - Enables complex goal-seeking behavior
+      - Supports explicit representation of goals and intentions
+      - Can be combined with reactive components in layered architectures
+    logic_based_architecture:
+      name: Logic-Based Architecture
+      description: AI agent designer symbolically codes world properties in database where property value combinations map
+        to actions.
+      example: If (water on windshield AND wipers off) → activate wipers at slow speed
+      advantages:
+      - Straightforward to implement
+      - System behavior predictable (designer can review logic for accuracy)
+      - Known information can be verified
+      limitations:
+      - Requires sensors to provide correct symbolic information
+      - Must anticipate all important conditions in database
+      - Processing time increases with logic statements (staleness problem)
+      - Difficult to represent procedural knowledge for complex systems
+      - Hard to handle all edge cases and unexpected conditions
+    reactive_architecture:
+      name: Reactive Architecture (Subsumption)
+      description: Intelligent behavior emerges as property of simple behaviors interacting with environment. Hierarchical
+        goal structure where lower-level goals prioritized over higher-level.
+      key_concept: Subsumption architecture
+      example: Robot collision avoidance (low-level) overrides navigation to destination (high-level)
+      mechanism: Agent executes behavioral rules upon environmental feedback
+      advantages:
+      - Simple and economical to implement
+      - Relatively robust
+      - Suitable for a few layers of goals
+      limitations:
+      - Requires accurate sensing of relevant information
+      - Decisions based on local information may not be optimal
+      - Behavior emerges unpredictably (difficult to predict under all circumstances)
+      - Scaling to many goal layers becomes difficult
+      - No explicit decision-making prior to implementation
+    layered_architecture:
+      name: Layered Architecture
+      description: Combines attributes of other architectures by implementing processes in layers that execute simultaneously.
+      mechanism: 'Example: reactive components in one layer, proactive components in another layer, executed together for
+        agent response'
+      advantages:
+      - Flexibility to combine different architectural approaches
+      - Can implement specialized functions in different layers
+      - Supports both reactive and proactive behavior
+  llm_as_agent_backbone:
+    definition: LLMs serve as the reasoning engine (brain) of AI agents. The choice of model architecture — decoder-only (generators),
+      encoder-only (analysts), MoE (specialists), or reasoning models (deliberate thinkers) — determines agent capabilities,
+      cost, and latency. Model selection is an architectural decision as important as pattern selection.
+    core_concepts:
+    - concept_name: Prompt as Programming
+      explanation: 'System prompts define agent behavior, role, tool access, and output format. The prompt IS the agent''s
+        instruction set. Different scenarios need different CoT prompts: step-by-step for math, pro/con for decisions, checklist
+        for QA.'
+    - concept_name: In-Context Learning for Agents
+      explanation: Agents leverage few-shot examples in prompts to learn task patterns without fine-tuning. Critical for tool
+        use demonstrations and output format compliance.
+    - concept_name: Model Architecture Taxonomy for Agents
+      explanation: Decoder-only (GPT, Qwen, Llama) = generators and planners. Encoder-only (BERT, ModernBERT, NeoBERT) = retrievers
+        and analysts (no generation, bidirectional). MoE (Mixtral, DBRX) = specialists with conditional computation (top-k
+        routing, gating networks). Reasoning models (DeepSeek-R1, Qwen3, o1) = deliberate thinkers with internal search. Encoder-decoder
+        (T5, BART) = structured transformation tasks.
+    - concept_name: Model Selection for Agents
+      explanation: 'Match model type to agent role: fast decoder for drafting/searching, reasoning model for planning/analysis,
+        encoder for retrieval/scoring. Multi-model teams outperform single-model agents — assign model by role, not one-size-fits-all.
+        Consider: task complexity, latency budget, cost per token, thinking budget allocation.'
+    - concept_name: KV Caching and Inference Optimization
+      explanation: 'KV cache stores previously computed key-value pairs to avoid recomputation during autoregressive generation.
+        Grows linearly with sequence length. Management via: Paged Attention (vLLM), prefix caching, chunked prefill, continuous
+        batching, hash-based verification. GQA reduces cache size by sharing key-value heads across query groups. Context
+        engineering directly affects cache integrity — any token modification invalidates cached positions.'
+    - concept_name: Thinking Modes and Budgets
+      explanation: Reasoning models support enable_thinking toggle and thinking_budget (token cap for internal trace). Enable
+        thinking for planning, decomposition, tool selection, verification. Disable for short, low-risk turns or validated
+        plan steps. Budget >= 1024 tokens for non-trivial reasoning. Each reasoning token costs money — allocate thinking
+        where it pays off.
+    - concept_name: Small Language Models (SLMs)
+      explanation: 'Compact models (typically <10B parameters) like Phi, Gemma, Mistral that offer faster inference, lower
+        cost, and easier deployment while maintaining strong performance on focused tasks. Key advantage for agentic use:
+        can be fine-tuned for specific tool-calling or domain tasks, deployed on-device or edge, and used as specialized workers
+        in multi-agent systems.'
+    - concept_name: Fine-Tuning Taxonomy (B04)
+      explanation: 'B04 catalogs 4 parameter-efficient fine-tuning (PEFT) methods: (1) LoRA (Low-Rank Adaptation) — injects
+        trainable low-rank matrices into attention layers, most popular PEFT method. (2) Adapter Tuning — inserts small trainable
+        adapter modules between transformer layers. (3) Prefix Tuning — prepends trainable continuous vectors to the input
+        of each transformer layer. (4) Prompt Tuning — learns soft prompt tokens prepended to input, lightest-weight approach.
+        Trade-off: LoRA offers best performance-to-parameter ratio; Prompt Tuning is cheapest but least expressive.'
+    - concept_name: Model Distillation Pipeline (B04)
+      explanation: 'B04 defines a 4-step knowledge distillation pipeline: (1) Train the teacher model (large, high-capability).
+        (2) Generate soft labels — teacher produces probability distributions over outputs (not just hard labels). (3) Train
+        the student model to match teacher''s soft label distributions. (4) Deploy the student — smaller, faster model with
+        teacher-like capabilities. Key insight: soft labels transfer "dark knowledge" — the teacher''s understanding of relationships
+        between classes.'
+    - concept_name: Reasoning Language Models (RLMs)
+      explanation: 'Models trained to "think before answering" using test-time compute. Key examples: OpenAI o1 (internal
+        chain-of-thought before response), o3 (improved reasoning), DeepSeek R1 multi-stage training pipeline: Stage 1 — cold
+        start with curated CoT data, Stage 2 — RL with GRPO (Group Relative Policy Optimization) on reasoning tasks, Stage
+        3 — rejection sampling + SFT for refinement, Stage 4 — final RL for helpfulness/safety alignment. RLMs represent test-time
+        compute paradigm: spending more inference time for better reasoning quality.'
+    how_it_works: []
+    design_decisions:
+      when_to_use: []
+      when_to_avoid: []
+      trade_offs: []
+    implementation:
+      reference_architecture: 'Multi-model team: fast_llm (Qwen3-32B, thinking disabled) for search/drafting, thinker_llm
+        (Qwen3-235B-A22B, thinking enabled, budget 1536) for analysis/planning, supervisor_llm (GPT-4.1) for routing. Encoder
+        (ModernBERT) for relevance scoring.'
+      pseudocode: 'fast_llm = ChatOpenAI(model=''Qwen3-32B'', extra_body={''enable_thinking'': False})
+
+        thinker_llm = ChatOpenAI(model=''Qwen3-235B-A22B'', extra_body={''enable_thinking'': True, ''budget'': 1536})
+
+        supervisor_llm = ChatOpenAI(model=''gpt-4.1'', temperature=0)'
+      code_scaffold: "# Multi-model team setup (from B02 Ch4)\nfrom langchain_openai import ChatOpenAI\n\nfast_llm = ChatOpenAI(\n\
+        \    model='Qwen/Qwen3-32B-fast', temperature=0,\n    extra_body={'top_k': 20, 'chat_template_kwargs': {'enable_thinking':\
+        \ False}}\n)\nthinker_llm = ChatOpenAI(\n    model='Qwen/Qwen3-235B-A22B-Thinking-2507', temperature=0,\n    extra_body={'chat_template_kwargs':\
+        \ {'enable_thinking': True},\n               'thinking': {'type': 'token', 'budget': 1536}}\n)\nsupervisor_llm = ChatOpenAI(model='gpt-4.1',\
+        \ temperature=0)\n\n# RoPE scaling for extended context\nfrom vllm import LLM, SamplingParams\nllm = LLM(model='answerdotai/ModernBERT-base',\
+        \ trust_remote_code=True,\n          rope_scaling={'type': 'linear', 'factor': 4.0})"
+      libraries_and_tools:
+      - langchain-openai (ChatOpenAI wrapper)
+      - vLLM (inference serving with paged attention, prefix caching)
+      - transformers (HuggingFace, chat templates, thinking modes)
+      - bitsandbytes (quantization)
+      - unsloth (LoRA training optimization)
+      - LoRAX (multi-adapter serving on shared GPU)
+      configuration: 'vLLM features: paged_attention, prefix_caching, chunked_prefill, continuous_batching, hash_based_verification,
+        dynamic_cache_reclamation, disaggregated_kv_transfer'
+    real_world_applications: []
+    relationships:
+      depends_on: []
+      enables:
+      - architecture_and_patterns
+      - tools_and_integration
+      compare_with: []
+    sources:
+    - 'B02 Ch4: ''Models Behind the Agents'' — full model taxonomy, KV caching, GQA, Flash Attention, vLLM cache management,
+      encoder-only models, MoE, reasoning models, thinking modes/budgets, RoPE, open vs closed models, LoRA/adapters, quantization,
+      multi-model team design'
+    - 'B04 Ch1: SLMs — Phi, Gemma, Mistral, edge deployment advantages for agents'
+    - 'B04 Ch1: Fine-tuning taxonomy — LoRA, Adapter, Prefix, Prompt tuning (PEFT methods)'
+    - 'B04 Ch1: Model distillation 4-step pipeline — teacher, soft labels, student training, deployment'
+    - 'B04 Ch1: RLMs — o1, o3, DeepSeek R1 multi-stage training (cold start→GRPO RL→SFT→alignment RL)'
+  architectural_patterns:
+    core_concepts:
+    - concept_name: Reactive agents
+      definition: 'description: Simplest agent class using reflexive response mechanisms without internal state or deliberation.
+        Direct stimulus-response coupling, minimal reasoning. | key_characteristics: Stateless; Reflexive; Condition-based
+        rules; No memory/learning | use_cases: Thermostat-like automation; Bump sensors; Fire alarms; IoT simple automation
+        | implementation_notes: Cost-effective and fast but cannot adapt to novel situations'
+      source_book: B01
+    - concept_name: Deliberative agents
+      definition: 'description: Agents using Sense-Model-Plan-Act (SMPA) paradigm with internal state, planning, and structured
+        reasoning. Maintains world model and reasons about future. | key_characteristics: Internal state model; Forward/backward
+        reasoning; Planning; Goal decomposition | use_cases: Travel planning; Autonomous vehicle navigation; Healthcare diagnostics;
+        Business process automation | implementation_notes: More computationally intensive but enables complex multi-step
+        tasks'
+      source_book: B01
+    - concept_name: Hybrid agents
+      definition: 'description: Layered architecture integrating rapid reactive behavior with deliberative reasoning. Routes
+        urgent inputs to reactive layer, complex reasoning to deliberative layer. | key_characteristics: Dual-layer processing;
+        Priority-based routing; Dynamic synchronization; Fallback mechanisms | use_cases: Warehouse robots; Autonomous vehicles;
+        Intelligent assistants; Cybersecurity agents | implementation_notes: Balances speed with strategic planning; requires
+        careful coordination between layers'
+      source_book: B01
+    sources:
+    - 'B01: 30 Agents Every AI Engineer Must Build (Packt, 2025)'
+    definition: Foundational design patterns for structuring AI agent internals including the perception-reasoning-action
+      loop, sense-plan-act cycle, and layered architectures that separate reactive behaviors from deliberative planning.
+  agent_interaction_paradigms:
+    core_concepts:
+    - concept_name: Direct LLM Interaction
+      definition: 'operational_autonomy: Stateless / None | contextual_awareness: None | decision_making_authority: Human-led
+        | description: Stateless conversational interaction where each prompt is treated in isolation with no memory. User
+        inputs query, LLM responds with one-time output. | key_components: User input; LLM model; Single response output |
+        typical_use_cases: Chat-based QA; Creative writing tools; Educational flashcard assistants'
+      source_book: B01
+      original_sources:
+      - 'B01: Chapter 1 - Evolution of agent interaction paradigms'
+    - concept_name: Proxy Agent
+      definition: 'operational_autonomy: Low | contextual_awareness: Light contextualization | decision_making_authority:
+        Instruction-based | description: Acts as intelligent intermediary translating natural language into structured formats.
+        Transforms ambiguous user input through prompt templates and structured data pipelines. | key_components: User intent
+        interpretation; Prompt templating; Structured output transformation; System interface | architectural_decisions: Input
+        sanitization; Response reformatting; Latency monitoring; Schema validation'
+      source_book: B01
+      original_sources:
+      - 'B01: Chapter 1 - Proxy agent pattern'
+    - concept_name: Assistant System
+      definition: 'operational_autonomy: Medium | contextual_awareness: Session-based | decision_making_authority: User-guided
+        | description: Maintains session state and tool invocation across turns. Acts as task orchestrator coordinating with
+        external services while preserving user context. | key_components: Session state management; Tool invocation interface;
+        Multi-turn dialogue; Task coordination | architectural_decisions: Context persistence; State schema design; Tool abstraction;
+        Error handling across tool calls'
+      source_book: B01
+      original_sources:
+      - 'B01: Chapter 1 - Assistant system pattern'
+    - concept_name: Autonomous Agent
+      definition: 'operational_autonomy: High | contextual_awareness: Persistent memory | decision_making_authority: Partial
+        autonomy | description: Independent problem solver executing complex workflows without step-by-step guidance. Maintains
+        persistent memory, adapts behavior based on feedback and environmental changes. | key_components: Internal state tracking;
+        Tool selection; Memory systems; Adaptation mechanisms; Long-horizon planning | architectural_decisions: Memory architecture;
+        Tool integration strategy; Planning depth; Feedback mechanisms; Failure recovery'
+      source_book: B01
+      original_sources:
+      - 'B01: Chapter 1 - Autonomous agent pattern'
+    - concept_name: Multi-Agent Systems
+      definition: 'operational_autonomy: Very High | contextual_awareness: Shared + distributed | decision_making_authority:
+        Distributed autonomy | description: Distributed framework where multiple autonomous or semi-autonomous agents coordinate
+        to achieve complex goals. Features domain-specialized roles and asynchronous collaboration. | key_components: Agent
+        roles; Shared state repository; Message-based communication; Coordination protocols; Task dispatch system | architectural_patterns:
+        Publish-subscribe messaging; Shared memory models; Task dispatch protocols; Redundant agents'
+      source_book: B01
+      original_sources:
+      - 'B01: Chapter 1 - Multi-agent systems pattern'
+    sources:
+    - 'B01: 30 Agents Every AI Engineer Must Build (Packt, 2025)'
+    definition: Models for how agents interact with their environment, users, and other agents — including reactive (stimulus-response),
+      proactive (goal-driven), and social (cooperative/competitive) interaction styles.
+  case_studies:
+    core_concepts:
+    - concept_name: 'Quandri: Automated Insurance Processing'
+      definition: 'domain: Insurance | problem_statement: Insurance policy processing previously required armies of humans
+        trudging through paperwork. Manual processing consumed hours of skilled labor. | agent_solution: Deployed autonomous
+        agent network processing thousands of policies daily | architectural_approach: Multi-agent system with specialized
+        agents for different policy types and workflows | key_outcomes: Processing time reduced from hours to under 15 minutes;
+        99.9% accuracy rate; 30,000+ monthly revenue increase through improved processing economics; Completely reimagined
+        insurance operation economics | business_impact: Fundamental transformation of how insurance processes operate at
+        scale'
+      source_book: B01
+      original_sources:
+      - 'B01: Chapter 1 - Real-world business impact'
+    - concept_name: 'MyAskAI: 30-Second Support Miracle'
+      definition: 'domain: Financial Services | problem_statement: Financial services support typically means frustrating
+        wait times, inconsistent answers, and escalation hell. Complex customer inquiries remained unresolved. | agent_solution:
+        Agent architecture orchestrating specialized components: document analytics, compliance verification, real-time data
+        retrieval, automated issue resolution | architectural_approach: Hybrid multi-agent system with document specialists,
+        compliance verifiers, and knowledge retrievers working in parallel | key_outcomes: Resolves complex inquiries in under
+        30 seconds; 25,000 monthly recurring revenue driven by superior support experience; Customer satisfaction scores above
+        99%; Seamless support experience surpassing traditional service models | key_insight: Strategic intelligence knows
+        when to handle issues autonomously and when to escalate to human specialists'
+      source_book: B01
+      original_sources:
+      - 'B01: Chapter 1 - Real-world business impact'
+    - concept_name: 'Enterprise Bot: Sales Team that Never Sleeps'
+      definition: 'domain: Enterprise Sales | problem_statement: Sales operations face repetitive, methodical work across
+        entire sales cycle. Opportunities for automation scattered throughout lead lifecycle. | agent_solution: Multi-agent
+        collaboration reengineering entire sales cycle from lead enrichment through meeting coordination | architectural_approach:
+        Specialized agent teams: lead qualification agents, personalized outreach agents, meeting coordination agents. Each
+        agent focused on domain-specific tasks. | key_outcomes: Qualified lead generation tripled; Acquisition costs plummeted
+        by 50%; Annual recurring revenue increased by 2 million; Human sales professionals freed to focus exclusively on high-value
+        relationship-building | strategic_value: Demonstrates how agent technology multiplies human capability rather than
+        just incrementally improving efficiency'
+      source_book: B01
+      original_sources:
+      - 'B01: Chapter 1 - Real-world business impact'
+    sources:
+    - 'B01: 30 Agents Every AI Engineer Must Build (Packt, 2025)'
+    definition: Real-world examples and documented deployments of AI agent systems across industries, illustrating practical
+      challenges, design decisions, and lessons learned from production implementations.
+  sources:
+  - 'B01: 30 Agents Every AI Engineer Must Build (Packt Publishing, 2025)'
+  - 'B01: 30 Agents Every AI Engineer Must Build (Packt, 2025)'
+  autoregression:
+    description: How LLMs generate text one token at a time, where each new token depends on all previous tokens. Enables
+      step-by-step reasoning and extended thinking.
+    core_concepts:
+    - concept_name: Token-by-token generation
+      definition: LLMs generate output sequentially, with each new token predicted based on all previously generated tokens
+      example: Like writing a sentence word by word, where each word depends on what you have already written
+    - concept_name: Extended thinking via autoregression
+      definition: More tokens generated = more thinking and reasoning capability; enables step-by-step reasoning traces
+      example: Chain-of-thought works because autoregression allows reasoning steps to inform subsequent steps
+    - concept_name: Self-correction through autoregression
+      definition: Later tokens can correct or verify earlier predictions within the same generation sequence
+      example: 'Agent planning: "I need to understand the failing test" -> reads file -> "The test expects X but gets Y" ->
+        searches source'
+    - concept_name: Autoregression Enables Agent Reasoning
+      definition: 'Autoregression matters for agents because: (1) Extended thinking is possible — more tokens = more thinking,
+        (2) Chain-of-thought works — each step informs the next, (3) Agents can think aloud — reasoning traces help plan actions,
+        (4) Self-correction happens — later tokens can course-correct earlier ones'
+      source_book: Deep-Dive Materials
+      deep_dive_source: Illustrated Guide Ch1 Concept 3
+    sources:
+    - 'B05: AI Agents Learning Guide - Chapter 1'
+    - 'Deep-Dive: An Illustrated Guide to AI Agents - Chapter 1 Concept 3'
+    - 'Deep-Dive: AI Agents Learning Guide - Part 3 Concept 3'
+    real_world_analogies:
+    - analogy: Writing a sentence word by word
+      explanation: Like writing a sentence where each word depends on what you have already written — you cannot go back and
+        change earlier words
+      source: AI Agents Learning Guide
+    common_misconceptions:
+    - misconception: LLMs understand and then respond
+      reality: There is no separate understanding phase. The LLM is always just predicting the next token. Understanding emerges
+        from the prediction process itself.
+      source: Illustrated Guide Ch1 Deep Dive
+    - misconception: Generating more tokens is wasteful
+      reality: For complex tasks, more tokens = more computation = better answers. This is the core insight behind test-time
+        compute and reasoning models.
+      source: Illustrated Guide Ch1 Deep Dive
+    - misconception: The LLM plans everything before writing
+      reality: The LLM commits to each token before seeing what comes next. It cannot go back and change earlier tokens. This
+        is why prompting techniques like CoT help — they structure the generation process.
+      source: Illustrated Guide Ch1 Deep Dive
+    definition: The autoregressive generation mechanism underlying modern LLMs where each token is predicted conditioned on
+      all previous tokens, creating the sequential reasoning capability that powers agent thought processes.
+  train_time_vs_test_time_compute:
+    description: Distinction between computational investment during model training (building capability) vs during inference
+      (using capability). Critical for agent performance.
+    core_concepts:
+    - concept_name: Train-time compute
+      definition: Extra processing during model training phase to build stronger foundational capabilities
+      analogy: Studying for months before taking an exam
+    - concept_name: Test-time compute
+      definition: Extra processing during inference/answering to solve specific problems better
+      analogy: Taking extra time on each individual exam question
+    - concept_name: Why agents need test-time compute
+      definition: Agents face novel situations training cannot cover; planning requires extended reasoning; verification/checking
+        requires extra compute; iterations accumulate test-time cost
+      importance: CRUCIAL for agent performance - agents cannot rely solely on training; they must think longer when answering
+    - concept_name: Modern reasoning LLMs use test-time compute
+      definition: Models like o1/o3 use extended generation to think through problems before answering, trading latency for
+        quality
+      example: 'o1 model: takes extra time "thinking" before answering complex code/math questions'
+    - concept_name: Test-Time Compute Importance for Agents
+      definition: 'Test-time compute is crucial for agents because: agents face novel situations (training cannot cover everything),
+        agents need to plan (planning requires extended reasoning), agents must verify (checking work takes compute), agents
+        iterate (each loop cycle is more test-time compute)'
+      source_book: Deep-Dive Materials
+      deep_dive_source: Illustrated Guide Ch1 Concept 4
+    - concept_name: Test-Time Training (TTRL)
+      definition: Cutting-edge technique that actually updates the model weights during use, not just using more compute for
+        inference. Enables agents to learn from real interaction feedback, becoming measurably better over time.
+      source_book: Deep-Dive Materials
+      deep_dive_source: AI Agents Learning Guide Ch6
+    sources:
+    - 'B05: AI Agents Learning Guide - Chapter 1 (Deep Dive)'
+    - 'Deep-Dive: An Illustrated Guide to AI Agents - Chapter 1 Concept 4'
+    - 'Deep-Dive: AI Agents Learning Guide - Part 3 Concept 4'
+    real_world_analogies:
+    - analogy: Studying vs exam time
+      explanation: Train-time = studying for years before an exam (builds knowledge). Test-time = taking extra time on each
+        exam question (better answers per query). Both help you get a better score.
+      source: AI Agents Learning Guide
+    definition: The distinction between compute invested during model training (parameter learning) versus compute spent at
+      inference time (chain-of-thought, search, tool use), and how test-time compute scaling enables more capable agents without
+      retraining.
+  reasoning_llms:
+    description: New paradigm of LLMs trained to "think" before answering. Produce explicit reasoning traces (often hidden)
+      before final answer. Enable extended thinking and self-verification.
+    core_concepts:
+    - concept_name: Reasoning LLM definition
+      definition: Models trained to generate extended thinking steps before answering. Create explicit reasoning traces (often
+        hidden from user).
+      key_characteristics:
+      - 'Extended generation: many more tokens for thinking'
+      - Trained on reasoning tasks (step-by-step problem solving)
+      - 'Self-verification: check own work'
+      - 'Adjustable compute: can control thinking time'
+    - concept_name: o1 (OpenAI reasoning model)
+      definition: Reasoning LLM that thinks extensively before answering. Produces hidden reasoning traces before final answer.
+      use_case: 'Complex domains: code, math, logic, scientific reasoning'
+      tradeoff: Much slower than traditional LLMs due to extended thinking
+    - concept_name: DeepSeek-R1 (open-source reasoning model)
+      definition: Open-source reasoning LLM trained similarly to o1 with explicit reasoning chains
+      advantage: Open-source alternative to proprietary reasoning models
+    - concept_name: Reasoning trace structure
+      definition: 'Reasoning LLMs break down problems: Planning -> Analysis -> Verification -> Answer'
+      example: 'What is 17x24? -> [hidden: break down, 17x20=340, 17x4=68, sum 408, verify 408/17=24] -> 408'
+    - concept_name: Why agents benefit from reasoning LLMs
+      definition: Planning is reasoning (break tasks into steps); tool selection is reasoning (choosing right action); error
+        recovery is reasoning (understanding failures); complex domains require thought
+      agent_use: Agents that plan, verify, and iterate benefit significantly from reasoning model capability
+    - concept_name: Why Agents Need Reasoning LLMs
+      definition: Planning is reasoning (breaking tasks into steps), tool selection is reasoning (choosing the right action),
+        error recovery is reasoning (understanding failures), complex domains require thought (code, math, logic). Without
+        reasoning, agents make random fixes; with reasoning, they make targeted corrections.
+      source_book: Deep-Dive Materials
+      deep_dive_source: Illustrated Guide Ch1 Concept 5
+    sources:
+    - 'B05: AI Agents Learning Guide - Chapter 1 (Deep Dive)'
+    - 'Deep-Dive: An Illustrated Guide to AI Agents - Chapter 1 Concept 5'
+    - 'Deep-Dive: Ch1 Infographic - Reasoning LLMs section'
+    common_misconceptions:
+    - misconception: Reasoning LLMs are just slower versions of regular LLMs
+      reality: They are fundamentally different — trained specifically for step-by-step reasoning with self-verification.
+        The extra time produces qualitatively better results on complex tasks.
+      source: Illustrated Guide Ch1 Deep Dive
+    definition: Large language models specifically designed or fine-tuned for multi-step reasoning tasks, including chain-of-thought
+      models (o1, o3, DeepSeek-R1) that allocate additional test-time compute to produce structured reasoning traces.
+  common_agent_misconceptions:
+    description: Four critical misconceptions about what makes something an agent. Clarifications to distinguish true agents
+      from false positives.
+    core_concepts:
+    - misconception: Any AI that uses tools is an agent
+      reality: Using a tool once does not make something an agent. Agents use tools as part of autonomous, goal-directed LOOPS.
+      example: ChatGPT plugin calling tool once != Agent. Claude Code reading files and acting autonomously = Agent.
+    - misconception: Agents are just chatbots with extra features
+      reality: The fundamental difference is AUTONOMY. Chatbots respond to prompts; agents pursue goals. Chatbots are reactive;
+        agents are proactive.
+      distinction: 'Chatbot: "User asks question -> I respond". Agent: "I have a goal -> I decide next steps -> I act -> I
+        observe -> I improve".'
+    - misconception: Agents need to be super intelligent
+      reality: An agent is technically an autonomous entity. A thermostat perceives (temperature), reasons (compare to target),
+        acts (heat on/off). It is technically an agent.
+      nuance: Even simple systems with perception-reasoning-action loops are agents. Intelligence level is separate from agency.
+    - misconception: If called an agent it must be one
+      reality: Marketing has muddied terminology. Many products called "AI agents" are just LLMs with wrappers. True agents
+        have perception-reasoning-action LOOPS with autonomy.
+      test: Does it perceive, reason, and act in loops? Does it pursue goals without human input per step? Then it is an agent.
+    sources:
+    - 'B05: AI Agents Learning Guide - Chapter 1 (Deep Dive)'
+    definition: Frequently encountered misunderstandings about what constitutes an AI agent, including conflating tool use
+      with agency, equating chatbots with agents, and assuming agents require superintelligence.
+  agent_ecosystem_evolution:
+    core_concepts:
+    - concept_name: Service Mesh
+      definition: Infrastructure pattern enabling APIs to discover, communicate, and collaborate reliably - predecessor concept
+        to agentic mesh.
+      source_book: B08
+    - concept_name: Data Mesh
+      definition: Decentralized data architecture providing standardized, trustworthy units of data for teams - parallel ecosystem
+        model for agents.
+      source_book: B08
+    - concept_name: API Ecosystem
+      definition: Historical foundation for agent ecosystems showing evolution from static APIs to collaborative autonomous
+        systems.
+      source_book: B08
+    - concept_name: Lessons Learned
+      definition: Patterns and practices from API and microservices evolution applicable to agent ecosystem design and governance.
+      source_book: B08
+    sources:
+    - Agentic Mesh (O'Reilly Early Release)
+    definition: The trajectory of the agentic AI ecosystem from single-agent prototypes to multi-agent platforms, framework
+      proliferation, and the emergence of standards like MCP and A2A for agent interoperability.
+  systems_engineering_methodology:
+    definition: Applying systems engineering principles — requirements analysis, architecture decomposition, interface specification,
+      verification and validation — to the design and deployment of AI agent systems.
+    core_concepts:
+    - concept_name: Model-Based Systems Engineering (MBSE)
+      definition: A methodology that uses system models to describe system structure, behavior, and requirements comprehensively,
+        enabling design of complex systems including human-AI teams with AOSM as an extension for agent-oriented modeling.
+      source_book: B15
+      chapter: '1.4'
+      key_aspects:
+      - SysML
+      - AOSM meta-model
+      - system modeling
+      - holistic design
+    - concept_name: Agent-Oriented Systems Modeling (AOSM)
+      definition: A systems engineering language and methodology that extends SysML to support the design and modeling of
+        systems with multiple cognitive entities (humans and AI agents), enabling requirements specification and interaction
+        design for human-AI teams.
+      source_book: B15
+      chapter: 1.4, 1.5
+      key_aspects:
+      - meta-model
+      - human-AI teams
+      - cognitive entities
+      - partition of work
+    - concept_name: Controlled Autonomy
+      definition: An agent design principle where the agent acts autonomously only to the extent that it is beneficial to
+        the human responsible for controlling it, balancing autonomy with human accountability.
+      source_book: B15
+      chapter: 1.3.3
+      key_aspects:
+      - autonomy limits
+      - human responsibility
+      - agent behavior
+      - accountability
+    - concept_name: System Interdependence
+      definition: The property where system components depend upon one another to achieve the system's primary purpose or
+        goal, requiring that parts interact effectively for the holistic system to function.
+      source_book: B15
+      chapter: 1.3.1
+      key_aspects:
+      - coupled systems
+      - part integration
+      - goal achievement
+      - system structure
+    - concept_name: System Emergence
+      definition: A phenomenon where interactions among system components generate new phenomena not present in individual
+        components, such as thought emerging from neuronal interactions.
+      source_book: B15
+      chapter: 1.3.1
+      key_aspects:
+      - emergent properties
+      - component interaction
+      - holistic behavior
+    - concept_name: Logical View of System
+      definition: The conceptual representation of a system that describes component relationships independently of physical
+        implementation, providing design flexibility by separating 'what' from 'how'.
+      source_book: B15
+      chapter: 1.3.1
+      key_aspects:
+      - design abstraction
+      - component relationships
+      - implementation independence
+      - flexibility
+    how_it_works: ''
+    design_decisions: ''
+    implementation: ''
+    real_world_applications: ''
+    relationships: ''
+    sources:
+    - 'B15: Integrating Artificial and Human Intelligence through Agent Oriented Systems Design (Miller & Rusnock, 2025)'
+_source_metadata:
+  split_from: agentic_ai_kb.yaml
+  version: 1.0-scaffold
+  last_updated: '2026-04-06'
+  owner: Padmasani Srimadhan

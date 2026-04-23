@@ -1,0 +1,961 @@
+memory_and_context:
+  working_memory:
+    definition: The agent's immediate, active memory — the context window (conversation history) that the LLM can process
+      at any given moment. Working memory is limited by the model's context length, so agents must carefully manage what goes
+      in. Every message, tool call result, and observation consumes working memory tokens.
+    core_concepts:
+    - concept_name: Context Window as Working Memory
+      explanation: An agent's 'working memory' IS its context window — the conversation history it can actively process. This
+        is limited (e.g., 128K tokens), so agents must carefully manage what goes in. Like a desk that can only hold so many
+        papers before you need to file some away.
+    - concept_name: Scratchpad Patterns
+      explanation: Using designated sections of the context window as a scratchpad for intermediate reasoning, tool call results,
+        and working notes. Keeps the agent's thinking organized within limited space.
+    - concept_name: Conversation Buffer
+      explanation: The full conversation history maintained as working memory. Each tool call adds assistant (tool_calls field)
+        and tool (content with output) role messages to the buffer. This IS the agent's experience of the current task.
+    - concept_name: Messages Structure for Tool Use
+      explanation: 'Working memory includes structured tool interaction: assistant messages with tool_calls field (the agent''s
+        intent to call a tool) and tool role messages with content field (the tool''s output). The LLM processes these to
+        generate the final answer. This message history is how the agent ''remembers'' what tools it has called and what results
+        it got.'
+    - concept_name: CoALA Framework (B04)
+      explanation: 'Cognitive Architectures for Language Agents (CoALA) — a framework that structures agent memory into: (1)
+        Short-Term Memory (STM) — current conversation context, tool results, active plan state. Maps to the agent''s working
+        memory / context window. (2) Long-Term Memory (LTM) — persistent storage split into episodic (past experiences), semantic
+        (facts/knowledge), and procedural (learned skills/strategies). CoALA provides a cognitive science-grounded vocabulary
+        for designing agent memory.'
+    - concept_name: Semantic Caches (B04)
+      explanation: 'Caching layer that stores and retrieves previous LLM responses based on semantic similarity of queries
+        (not exact match). When a new query is semantically similar to a cached one, the cached response is returned without
+        an LLM call. Reduces latency and cost. Implementation: embed queries, store in vector DB, similarity search on new
+        queries with a threshold.'
+    - concept_name: Temporal Decay in Memory (B04)
+      explanation: Memory relevance decreases over time — recent memories are weighted more heavily than older ones. Implemented
+        via decay functions (exponential or linear) applied to memory retrieval scores. Prevents stale information from dominating
+        agent decisions. Similar to Ebbinghaus forgetting curve concept from MemoryBank (B09) but applied at the retrieval-scoring
+        level.
+    - concept_name: Context Window Management Strategies
+      definition: 'FIFO pruning: earliest information deprioritized in long conversations; Intelligent pruning: removes superfluous
+        information while preserving critical details; Retrieval-Augmented Generation (RAG): limits corpus of documents, forces
+        LLM to return sourced info; FlashAttention: addresses quadratic scaling of transformer self-attention with context
+        size; Multi-store search: cascade through semantic cache, then vector DB, then scoring/ranking; Context assembly:
+        merge short-term and long-term memory respecting token limits'
+      source_book: B16
+    - concept_name: Semantic Caching for Repeated Queries
+      definition: 'Relative context retention: semantic caching maintains context of frequently accessed information; Cost
+        reduction: 20% cost reduction observed in semantic cache implementations; Single-shot vs multiturn tradeoff: semantic
+        caching works best for single-shot questions, breaks in multiturn conversations; Query analysis phase: extract entities
+        and generate embeddings for cache lookup; Multi-store search: check cache first before vector similarity search'
+      source_book: B16
+    - concept_name: Named Entity Recognition (NER) for Memory Accuracy
+      definition: 'Entity extraction phase: identifies people, places, organizations, dates with confidence scores; Memory
+        storage enhancement: stores entities as structured metadata alongside embeddings; Entity-centric retrieval: query
+        by specific entities, filter results by entity type; Knowledge graph construction: NER-enhanced pipelines build relationship
+        graphs between entities over time; Pronoun resolution: reduces ambiguity (Apple company vs apple fruit) through entity
+        linking; Metadata indexing: creates entity-centric memory indexes for precise filtered retrieval'
+      source_book: B16
+    - concept_name: Query Analysis and Embedding Generation
+      definition: 'Input processing: analyze query to extract intent and entities; Named entity recognition: identify and
+        tag important nouns (people, topics, concepts); Query vector embedding: generate semantic representation for similarity
+        search; Importance scoring: calculate relevance based on recency, frequency, entity match; Token limit awareness:
+        maintain strict context window constraints while maximizing information density'
+      source_book: B16
+    - concept_name: Context Window Budget Breakdown
+      definition: 'Typical 200K token budget: system prompt ~2K (1%), tool definitions ~3K (1.5%), conversation history ~50K
+        (25%), retrieved documents ~40K (20%), scratch space ~5K (2.5%), response generation ~100K (50%). Approximately 100K
+        tokens available for actual work content.'
+      source_book: Deep-Dive Materials
+      deep_dive_source: Illustrated Guide Ch4 Concept 2
+    how_it_works:
+    - step: 1
+      description: User query enters working memory as first message
+    - step: 2
+      description: LLM processes full context window (all messages) to decide next action
+    - step: 3
+      description: Tool calls and results are appended as assistant/tool role messages
+    - step: 4
+      description: As context grows, older or less relevant information may need compression or eviction
+    - step: 5
+      description: Context engineering techniques (summarization, selection, compression) manage the limited space
+    design_decisions:
+      when_to_use:
+      - Every agent interaction (working memory is always active)
+      - Short tasks within context window limits
+      when_to_avoid:
+      - Long-running tasks that exceed context limits (need long-term memory)
+      - Multi-session tasks requiring persistence
+      trade_offs:
+      - 'Context size vs cost: larger context = more tokens = higher cost per LLM call'
+      - 'Completeness vs relevance: keeping everything vs selecting what matters'
+      - 'Raw history vs summarized: full fidelity vs space efficiency'
+    implementation:
+      reference_architecture: ''
+      pseudocode: ''
+      code_scaffold: ''
+      libraries_and_tools: []
+      configuration: ''
+    real_world_applications: []
+    relationships:
+      depends_on:
+      - foundations.llm_as_agent_backbone
+      enables:
+      - architecture_and_patterns.react_pattern
+      compare_with:
+      - memory_and_context.long_term_memory
+    sources:
+    - 'B09 Ch4: Context window as working memory, limited capacity, careful management needed'
+    - 'B09 Ch5: Messages structure — assistant (tool_calls) and tool (content) roles as working memory'
+    - 'B04 Ch4: CoALA framework — STM/LTM cognitive architecture for language agents'
+    - 'B04 Ch4: Semantic caches — vector-similarity-based response caching'
+    - 'B04 Ch4: Temporal decay — recency-weighted memory retrieval'
+    - 'B16: Managing Memory for AI Agents (Valentina Alto, 2025)'
+    - 'Deep-Dive: An Illustrated Guide to AI Agents - Chapter 4 Deep Dive'
+    - 'Deep-Dive: Ch4 Memory Infographic'
+    real_world_analogies:
+    - analogy: Desk space
+      explanation: 'The context window is like your desk — it can only hold so many papers before you need to file some away.
+        Everything competes for space: system prompts, conversation history, retrieved docs.'
+      source: AI Agents Learning Guide Ch4
+    common_misconceptions:
+    - misconception: The context window IS the agent memory
+      reality: The context window is only WORKING memory — temporary and limited. True memory systems include long-term storage
+        that persists across sessions.
+      source: Illustrated Guide Ch4 Deep Dive
+    - misconception: Bigger context window equals unlimited memory
+      reality: Even 1 million tokens fills up quickly with agent loops. Each tool call, observation, and reasoning step adds
+        tokens. A 100-step task can easily exceed any context limit.
+      source: Illustrated Guide Ch4 Deep Dive
+    - misconception: The model remembers everything in context equally
+      reality: Research shows LLMs struggle with information in the middle of long contexts (lost-in-the-middle phenomenon).
+        Position matters.
+      source: Illustrated Guide Ch4 Deep Dive
+    - misconception: More context equals better memory
+      reality: Bigger context windows help but are not free. They cost more, can be slower, and the model may struggle to
+        find relevant info in a sea of text. Smart memory management matters more than raw size.
+      source: Illustrated Guide Ch4 Deep Dive
+  long_term_memory:
+    definition: Persistent memory that survives beyond a single conversation or session. Implemented via external storage
+      (vector databases, knowledge graphs, databases) with retrieval mechanisms. Enables agents to remember user preferences,
+      past interactions, learned facts, and accumulated experience across sessions.
+    core_concepts:
+    - concept_name: Vector Store Memory
+      explanation: Store memories as embeddings in a vector database (Pinecone, Chroma, Weaviate). Retrieve relevant memories
+        via semantic similarity search. Good for fuzzy, meaning-based recall. Foundation of RAG-based memory systems.
+    - concept_name: Knowledge Graph Memory
+      explanation: Store memories as entities and relationships in a graph structure. Enables precise, structured queries
+        and relationship traversal. Better for factual recall and reasoning about connections between concepts.
+    - concept_name: Database-Backed Memory
+      explanation: Traditional database storage for structured agent memory (conversation logs, user profiles, task history).
+        SQL or NoSQL backends for transactional, queryable storage.
+    - concept_name: Memory Indexing and Retrieval
+      explanation: 'The mechanism by which stored memories are found and brought into working memory. Methods: embedding similarity
+        (vector search), keyword matching, recency weighting, importance scoring, or hybrid approaches.'
+    - concept_name: MemoryBank (Ebbinghaus Forgetting Curve)
+      explanation: Memory management inspired by human psychology. Uses the Ebbinghaus Forgetting Curve and spaced repetition
+        to determine which memories to retain, strengthen, or let fade. Frequently accessed memories are strengthened; unused
+        memories gradually decay.
+    - concept_name: A-MEM (Zettelkasten-Inspired Memory)
+      explanation: 'Agentic memory system inspired by the Zettelkasten note-taking method. Three principles: atomicity (each
+        memory is a single, self-contained unit), hypertextual (memories are interconnected via links/references), personalization
+        (memory structure adapts to the agent''s specific use patterns and domain).'
+    - concept_name: Memory Consolidation and Archival Tiers
+      definition: 'Hierarchical storage: short-term, long-term, and archival storage tiers; Selective promotion: agents decide
+        what to promote to long-term storage based on importance; Automatic cleanup: time-to-live (TTL) features prevent accumulation
+        of irrelevant data; Checkpointing: periodic snapshots of agent state and learned patterns for persistence; Version
+        control: rollback capability and historical analysis of agent memory evolution; REM sleep analogy: compress short-term
+        memory to long-term during consolidation phases'
+      source_book: B16
+    - concept_name: LangGraph Long-Term Memory System
+      definition: 'Namespace organization: memory stored as JSON documents with unique identifiers; Semantic facts layer:
+        supports factual knowledge, user preferences, episodic examples, procedural prompts; LangMem SDK: tools for extracting
+        information from conversations; Prompt optimization: maintains persistent memory across sessions; Document-centric
+        approach: simplicity with namespace-based organization; Graph-based extension: Mem0g adds relationship mapping between
+        entities'
+      source_book: B16
+    - concept_name: Mem0 (Memory-Zero) Framework
+      definition: 'Key fact extraction: maintains concise entries instead of full chat histories; Graph-based relationships:
+        Mem0g extension maps entity relationships for additional context; Selective updates: only relevant facts stored and
+        updated from interactions; Memory reduction: reduces token usage and improves retrieval speed; Fast retrieval: optimized
+        for rapid fact lookup and recall; Scalable abstraction: handles increasing memory size efficiently'
+      source_book: B16
+    - concept_name: Redis Semantic Caching and LangCache
+      definition: 'Configurable search criteria: REST API with user-specific security features; Semantic caching layer: uses
+        Redis for fast repeated query handling; In-memory performance: leverages Redis ubiquity for caching mechanisms; Private
+        preview: LangCache available with broader public release planned; Repetitive query optimization: caches semantically
+        similar queries; Integration with LangGraph: seamless cache integration in agent workflows'
+      source_book: B16
+    - concept_name: ADK MemoryService (Google Agent Development Kit)
+      definition: 'BaseMemoryService interface: two primary functions for adding sessions and searching; InMemoryService option:
+        RAM-based keyword search for rapid prototyping; VertexAIMemoryBankService: persistent semantic search in Google Cloud;
+        Enterprise-grade reliability: clear interfaces with Vertex AI integration; Multicloud limitation: coupled to Google
+        ecosystem; Flexible backends: choose between performance (RAM) or persistence (Vertex)'
+      source_book: B16
+    - concept_name: Vector Database Alternatives for Memory Storage
+      definition: 'Pinecone: managed service excellent for scale, no infrastructure overhead; Weaviate: open-source with hybrid
+        search capabilities; Qdrant: high-performance with advanced filtering; ChromaDB: lightweight and developer-friendly;
+        Pgvector (PostgreSQL): leverages familiar PostgreSQL tooling; Redis: uses RedisSearch for indexing and search capabilities;
+        Choice implications: impacts memory architecture and system design'
+      source_book: B16
+    how_it_works: []
+    design_decisions:
+      when_to_use: []
+      when_to_avoid: []
+      trade_offs: []
+    implementation:
+      reference_architecture: ''
+      pseudocode: ''
+      code_scaffold: ''
+      libraries_and_tools: []
+      configuration: ''
+    real_world_applications: []
+    relationships:
+      depends_on: []
+      enables:
+      - architecture_and_patterns.reflexion
+      compare_with:
+      - memory_and_context.working_memory
+    sources:
+    - 'B09 Ch4: Long-term memory via external storage, vector databases, persistence across sessions'
+    - 'B09 Ch4: MemoryBank — Ebbinghaus Forgetting Curve, spaced repetition for memory management'
+    - 'B09 Ch4: A-MEM — Zettelkasten-inspired (atomicity, hypertextual, personalization)'
+    - 'B16: Managing Memory for AI Agents (Valentina Alto, 2025)'
+  episodic_memory:
+    definition: 'Memory of past experiences and specific interactions — the ''what happened'' memory. Stores concrete episodes:
+      tasks attempted, tools used, results obtained, errors encountered. Like remembering your last vacation — specific, contextual,
+      time-stamped. Essential for Reflexion (storing reflective experiences from past attempts).'
+    core_concepts:
+    - concept_name: Experience Replay
+      explanation: Storing and replaying past interaction episodes to inform current decisions. Agent can recall similar past
+        tasks and their outcomes.
+    - concept_name: Trajectory Storage
+      explanation: Storing complete thought-action-observation sequences from ReAct loops. Used in Reflexion for long-term
+        reflective memory.
+    - concept_name: Success/Failure Logs
+      explanation: Categorized storage of past attempts with outcomes. Enables the agent to learn from both successes and
+        failures across sessions.
+    - concept_name: Episodic Memory in Distributed SQL
+      explanation: 'B06 frames episodic memory (storing past events and outcomes) as a first-class data type in distributed
+        SQL. Event sequences are persisted as immutable, timestamped rows with metadata (action, result, context). Agents
+        query historical episodes for pattern recognition: "what happened last time I tried this?" Time-sensitive retrieval
+        surfaces recent episodes while allowing aggregation across longer horizons. Enables agents to learn from experience
+        systematically rather than losing context between interactions.'
+    - concept_name: Episodic Memory Storage and Retrieval
+      definition: 'Specific past experiences: stores particular events, conversations, and interactions; Retrieval-Augmented
+        Generation: extracts relevant chunks instead of keeping full histories; Few-shot example prompting: learns from past
+        sequences of events and actions; Structured logging: key events, actions, and outcomes recorded in formats; Context
+        richness: maintains what happened, when, and why decisions were made; Event extraction: structured recording of events,
+        actions, and outcomes'
+      source_book: B16
+    - concept_name: RAG Systems for Conversation History Management
+      definition: 'Selective chunk extraction: keeps relevant pieces instead of full conversation history; Reduces memory
+        footprint: compression through selective storage; Improves retrieval speed: smaller corpus enables faster searches;
+        Query-specific relevance: retrieves only information pertinent to current question; Industry standard: common approach
+        across multiple agentic frameworks; Token efficiency: careful balance between detail retention and context constraints'
+      source_book: B16
+    - concept_name: Temporal Knowledge Graphs (Zep)
+      definition: 'Temporal dimension: tracks how information changes over time; Interaction tracking: records team interactions
+        and business data evolution; Preference persistence: maintains user preferences across sessions; Knowledge dissemination:
+        enables best practices sharing from top performers to novices; Organizational memory: preserves institutional knowledge
+        beyond individual tenure; Dynamic update: comprehensive notes with contextual descriptions and keywords'
+      source_book: B16
+    - concept_name: Event Logging and Structured Formats
+      definition: 'Structured event storage: keys events, actions, and outcomes in defined formats; Metadata enrichment: timestamps,
+        actors, context, and results captured; Query support: enables rich filtering by date, actor, event type, outcome;
+        Relationship tracking: links related events across conversations and sessions; Provenance tracking: maintains chain
+        of how information was derived; Audit capability: historical record supports analysis and learning'
+      source_book: B16
+    how_it_works: []
+    design_decisions:
+      when_to_use: []
+      when_to_avoid: []
+      trade_offs: []
+    implementation:
+      reference_architecture: ''
+      pseudocode: ''
+      code_scaffold: ''
+      libraries_and_tools: []
+      configuration: ''
+    real_world_applications: []
+    relationships:
+      depends_on:
+      - memory_and_context.long_term_memory
+      enables:
+      - architecture_and_patterns.reflexion
+      compare_with:
+      - memory_and_context.semantic_memory
+    sources:
+    - 'B09 Ch4: Episodic memory — past experiences, like remembering your last vacation'
+    - 'B09 Ch6: Reflexion uses episodic memory (long-term reflective experiences from past attempts)'
+    - 'B06 Ch2: Episodic memory as structured, timestamped event sequences in distributed infrastructure'
+    - 'B16: Managing Memory for AI Agents (Valentina Alto, 2025)'
+    - 'Deep-Dive: An Illustrated Guide to AI Agents - Chapter 4 Concept 1'
+    common_misconceptions:
+    - misconception: Agents remember everything automatically
+      reality: Most agents today are stateless by default. Memory requires explicit engineering — deciding what to store,
+        how to index it, when to retrieve it, and when to forget.
+      source: Illustrated Guide Ch4 Deep Dive
+    - misconception: Memory and knowledge are the same thing
+      reality: Knowledge (semantic memory) is facts. Memory also includes experiences (episodic), skills (procedural), and
+        active thought (working). An agent needs all four.
+      source: Illustrated Guide Ch4 Deep Dive
+  semantic_memory:
+    definition: Memory of facts, knowledge, and general information — the 'what I know' memory. Stores learned facts, domain
+      knowledge, user preferences, and world knowledge. Like knowing that Paris is the capital of France — factual, context-independent.
+      Typically implemented via RAG with vector databases or knowledge graphs.
+    core_concepts:
+    - concept_name: Knowledge Bases
+      explanation: ''
+    - concept_name: Fact Storage and Retrieval
+      explanation: ''
+    - concept_name: Ontologies for Agents
+      explanation: ''
+    - concept_name: Semantic Memory Architectures
+      definition: 'Structured factual knowledge: facts, definitions, rules maintained separately from experiences; Knowledge
+        base approaches: symbolic AI or vector embeddings for semantic storage; User/entity profiles: extraction and insertion
+        into system prompts for future reference; Entity-based organization: facts organized around key entities (people,
+        organizations, concepts); Influence on responses: system prompts updated with retrieved semantic facts; Domain abstraction:
+        enables reasoning about relationships and properties'
+      source_book: B16
+    - concept_name: Knowledge Graph and Entity-Based Retrieval
+      definition: 'Entity extraction: NER identifies all named entities (people, places, organizations); Relationship mapping:
+        knowledge graphs connect entities with typed relationships; Entity-centric queries: retrieve all facts related to
+        specific entities; Type filtering: queries filtered by entity type (PERSON, ORGANIZATION, LOCATION, etc.); Disambiguation
+        support: knowledge graphs resolve homonyms (Apple company vs fruit); Contextual relationships: tracks how entities
+        interact and relate over time'
+      source_book: B16
+    - concept_name: Vector Embeddings vs Symbolic Storage
+      definition: 'Vector representation: semantic meaning captured in continuous space; Similarity metrics: cosine similarity,
+        Euclidean distance for relevance ranking; Trade-offs: fuzzy matching vs exact match semantics; Hybrid approaches:
+        combine symbolic metadata with vector embeddings; Dense retrieval: vector search provides approximate rather than
+        guaranteed matches; Context sensitivity: embeddings capture nuanced meaning variations'
+      source_book: B16
+    - concept_name: Procedural Memory Integration
+      definition: 'Learned behaviors: skills and rules extracted from successful patterns; System prompt updates: agents update
+        their own prompts through reflection; Metaprompting: agents generate instructions for future similar tasks; Hybrid
+        storage: combines LLM weights, agent code, and system prompts; Consolidation mechanism: reflects on experiences to
+        update procedures; REM cycle analogy: compresses procedural knowledge during consolidation phases'
+      source_book: B16
+    how_it_works: []
+    design_decisions:
+      when_to_use: []
+      when_to_avoid: []
+      trade_offs: []
+    implementation:
+      reference_architecture: ''
+      pseudocode: ''
+      code_scaffold: ''
+      libraries_and_tools: []
+      configuration: ''
+    real_world_applications: []
+    relationships:
+      depends_on: []
+      enables:
+      - tools_and_integration.rag_for_agents
+      compare_with:
+      - memory_and_context.episodic_memory
+    sources:
+    - 'B09 Ch4: Semantic memory — facts/knowledge, like knowing Paris is in France'
+    - 'B16: Managing Memory for AI Agents (Valentina Alto, 2025)'
+  context_engineering:
+    definition: 'The discipline of optimizing what goes into an agent''s context window to maximize performance within limited
+      token budgets. Involves four key operations: tracking (what information exists), selection (what''s relevant now), compression
+      (summarizing to save space), and ordering (arranging for optimal attention). Critical for long-running agents where
+      context accumulates rapidly.'
+    core_concepts:
+    - concept_name: Context Optimization Pipeline
+      explanation: 'Four operations: (1) Tracking — monitor all available information. (2) Selection — choose what is relevant
+        for the current task. (3) Compression — summarize/condense to save tokens. (4) Ordering — arrange information for
+        optimal LLM attention (important info first/last, not buried in the middle due to lost-in-the-middle effect).'
+    - concept_name: MMR (Maximal Marginal Relevance)
+      explanation: Retrieval technique that balances relevance to the query with diversity of results. Prevents redundant
+        context by penalizing retrieved items that are too similar to each other.
+    - concept_name: Context Rot
+      explanation: Degradation of agent performance as context grows with irrelevant or outdated information. Long conversations
+        accumulate noise that reduces the signal-to-noise ratio in the context window.
+    - concept_name: Lost-in-the-Middle Effect
+      explanation: LLMs pay more attention to information at the beginning and end of the context, with reduced attention
+        to the middle. Context engineering must account for this by placing critical information at the boundaries.
+    - concept_name: NIAH/RULER Benchmarks
+      explanation: Needle-in-a-Haystack (NIAH) and RULER benchmarks test how well models retrieve specific information from
+        within large context windows. Used to evaluate context engineering effectiveness.
+    - concept_name: Five Levels of Context Complexity
+      definition: 'Progressive framework for engineering context from zero context (basic prompt) through semantic blueprints
+        (fully architected context). Level 1: basic prompt (zero context) produces generic outputs. Level 2: linear context
+        adds factual accuracy. Level 3: goal-oriented context aligns responses with explicit goals. Level 4: role-based context
+        assigns explicit roles and conflict. Level 5: semantic blueprint provides precise, unambiguous plans using semantic
+        roles for engineering-grade control.'
+      key_insight: Each level transforms output from random guesses into structured, goal-driven responses. Semantic blueprints
+        convert creativity into reliable, repeatable engineering processes.
+      source_book: B12
+    - concept_name: Semantic Blueprint Architecture
+      definition: Precise, structured format for context that specifies scene goals, participants with roles, descriptions,
+        actions to complete, agents, and patients. Uses semantic role labeling (SRL) to encode who does what to whom, when,
+        and why in JSON or structured format.
+      key_insight: Semantic blueprints eliminate ambiguity by converting creative tasks into closed environments where the
+        LLM executes a defined plan. This is engineering, not guessing.
+      implementation: JSON structure with scene_goal, participants (name, role, description), action_to_complete (predicate,
+        agent, patient)
+      source_book: B12
+    - concept_name: Semantic Role Labeling (SRL) for Context Design
+      definition: Linguistic technique that reveals who (agent) did what (predicate/action) to whom (patient), when, and why.
+        Used to transform linear text sequences into multidimensional semantic structures suitable for LLM context.
+      key_insight: SRL bridges the gap between natural language and machine-readable semantic structures, enabling precise
+        context encoding.
+      application: Meeting transcripts, narrative construction, multi-step workflows, semantic parsing
+      source_book: B12
+    - concept_name: Context Chaining
+      definition: Multi-step workflow technique where context flows between sequential operations, each building on previous
+        outputs. Each step receives structured context about what was accomplished, why, and what to do next.
+      key_insight: Enables complex reasoning workflows where each stage refines and builds upon prior context without losing
+        information or intent.
+      use_case: Meeting analysis (scope -> investigation -> action), decision workflows, multi-phase analysis
+      source_book: B12
+    - concept_name: Context Engineering as Agent Skill
+      definition: As agent loops get longer, managing context becomes critical. Context engineering involves summarizing,
+        compressing, and prioritizing information to maximize limited context space. Like taking meeting notes — you capture
+        key decisions, not everything said.
+      source_book: Deep-Dive Materials
+      deep_dive_source: AI Agents Learning Guide Ch4
+    how_it_works: []
+    design_decisions:
+      when_to_use: []
+      when_to_avoid: []
+      trade_offs: []
+    implementation:
+      reference_architecture: ''
+      pseudocode: ''
+      code_scaffold: ''
+      libraries_and_tools: []
+      configuration: ''
+    real_world_applications: []
+    relationships:
+      depends_on:
+      - foundations.llm_as_agent_backbone
+      enables:
+      - multi_agent_systems
+      - architecture_and_patterns
+      compare_with: []
+    sources:
+    - 'B09 Ch4: Context engineering — summarizing, compressing, prioritizing to maximize limited context space'
+    - 'B09 Ch4: Optimization pipeline (tracking/selection/compression/ordering), MMR, context rot'
+    - 'B09 Ch4: Lost-in-the-middle effect, NIAH/RULER benchmarks for context evaluation'
+    - 'B12: Context Engineering for Multi-Agent Systems (Denis Rothman, 2025)'
+    - 'Deep-Dive: AI Agents Learning Guide - Chapter 4 Context Engineering'
+  context_passing:
+    definition: Techniques for propagating relevant context between agent steps, across tool calls, and between agents — including
+      state objects, message history, and structured context windows.
+    core_concepts:
+    - concept_name: Shared State
+      explanation: ''
+    - concept_name: Context Serialization
+      explanation: ''
+    - concept_name: Handoff Protocols
+      explanation: ''
+    - concept_name: Context Summarization for Handoff
+      explanation: ''
+    - concept_name: Context Librarian Agent Pattern
+      definition: Specialized agent responsible for retrieving and assembling contextual blueprints from a context library.
+        Serves procedural/instructional context to other agents. Part of dual RAG architecture separating factual retrieval
+        from procedural instruction.
+      role_in_mas: Dynamically retrieves semantic blueprints and style-based context to guide subsequent agents
+      integration: Communicates via MCP with Researcher and Writer agents, passing structured context blueprints
+      source_book: B12
+    - concept_name: Dual RAG Architecture for Multi-Agent Context
+      definition: 'Separates two types of context: procedural RAG (context library for how to do things) and factual RAG (knowledge
+        base for what is true). Enables agents to reason and write using both knowledge and style-based context.'
+      architectural_benefit: Procedural context drives reasoning discipline and output structure; factual context ensures
+        accuracy. They can be updated independently.
+      agent_workflow: Context Librarian handles procedural; Researcher handles factual; Writer synthesizes both
+      source_book: B12
+    - concept_name: Structured Context Validation in Multi-Agent Workflows
+      definition: Validating MCP messages and context structures before passing between agents. Ensures data type consistency,
+        required field presence, and semantic correctness.
+      purpose: Prevents context corruption, ensures error recovery and factual accuracy in multi-agent systems
+      implementation: Agent specialization controls, validation loops, message format contracts
+      source_book: B12
+    - concept_name: Context Continuity in Multi-Agent Pipelines
+      definition: Maintaining semantic coherence and state information as context moves between specialized agents. Each agent
+        receives sufficient context history to understand prior decisions and constraints.
+      challenge: Token overhead increases as context expands; must balance completeness with efficiency
+      solution: Proactive context reduction (Summarizer agent) and temporal decay mechanisms
+      source_book: B12
+    how_it_works: []
+    design_decisions:
+      when_to_use: []
+      when_to_avoid: []
+      trade_offs: []
+    implementation:
+      reference_architecture: ''
+      pseudocode: ''
+      code_scaffold: ''
+      libraries_and_tools: []
+      configuration: ''
+    real_world_applications: []
+    relationships:
+      depends_on:
+      - memory_and_context.working_memory
+      enables:
+      - multi_agent_systems.sequential
+      - multi_agent_systems.orchestrator_worker
+      compare_with: []
+    sources:
+    - 'B12: Context Engineering for Multi-Agent Systems (Denis Rothman, 2025)'
+  memory_management_strategies:
+    definition: Techniques and systems for managing how agents store, retrieve, update, and forget information across their
+      memory systems. Includes both cognitive-inspired approaches (forgetting curves, spaced repetition) and engineering approaches
+      (vector indexing, knowledge graphs, hybrid retrieval).
+    core_concepts:
+    - concept_name: Memory Consolidation
+      explanation: ''
+    - concept_name: Forgetting Strategies
+      explanation: ''
+    - concept_name: Memory Pruning
+      explanation: ''
+    - concept_name: Importance Scoring
+      explanation: ''
+    - concept_name: Memory Tiering
+      explanation: ''
+    - concept_name: Four Memory Types Taxonomy (B09)
+      explanation: 'B09 identifies four memory types for agents: (1) Working Memory — current context (context window), what
+        you are thinking now. (2) Episodic Memory — past experiences (your last vacation). (3) Semantic Memory — facts/knowledge
+        (Paris is in France). (4) Procedural Memory — how to do things (riding a bike). Each serves a different purpose in
+        agent architecture.'
+    - concept_name: Parametric Memory
+      explanation: Knowledge encoded in the model's weights during training. The model 'knows' things without explicit retrieval.
+        Complemented by non-parametric memory (RAG, vector stores) for up-to-date or domain-specific knowledge.
+    - concept_name: Search-o1 (Search in Reasoning Traces)
+      explanation: Uses special tokens to trigger search within the reasoning trace of thinking LLMs. The model can pause
+        its reasoning, issue a search query, receive results, and continue reasoning — all within the thinking process. Related
+        to Tool-Integrated Reasoning (TIR).
+    - concept_name: Full Memory Taxonomy (B03)
+      explanation: 'B03 provides the complete cognitive memory taxonomy mapped to agent systems: Sensory Memory (Iconic/visual,
+        Echoic/auditory, Haptic/touch) → Short-term/Working Memory (current context window) → Long-term Explicit Memory: Episodic
+        (past experiences) + Semantic (facts/knowledge) → Long-term Implicit/Procedural Memory (how-to skills, learned behaviors).
+        This extends the B09 4-type model with the sensory and explicit/implicit distinction.'
+    - concept_name: Memory Augmentation Workflow (B03)
+      explanation: 'Process for enriching agent context with stored memories: User input → Memory function (LLM extracts key
+        facts as JSON statements) → Embed facts → Store in vector DB → At query time: Embed query → Vector DB search → Augmented
+        prompt → LLM response. Semantic memory augmentation adds an extra step: LLM converts input into memory-type-specific
+        questions for more relevant retrieval (e.g., "what facts do I know about X?").'
+    - concept_name: Memory/Knowledge Compression (B03)
+      explanation: 'Three-step process to prevent memory bloat: (1) Cluster memories via k-means on dimensionality-reduced
+        embeddings. (2) Compress each cluster via LLM summarization (condense many memories into few). (3) Re-embed compressed
+        items and store in vector DB. Maintains semantic richness while dramatically reducing storage and retrieval noise.'
+    - concept_name: Conversational Memory Function (B03)
+      explanation: A prompt-based approach where the LLM summarizes conversation turns into structured JSON statements that
+        capture key facts, decisions, and context. These statements are embedded and stored, enabling semantic retrieval of
+        past conversation content without retaining full transcripts.
+    - concept_name: LangMem (B04)
+      explanation: LangChain's memory management library that provides tools for agents to manage their own long-term memory.
+        The agent can explicitly create, update, search, and delete memory entries. Integrates with LangGraph for stateful
+        memory across conversation sessions. Supports both semantic search and structured memory operations.
+    - concept_name: Mem0 (B04)
+      explanation: 'Standalone memory layer for AI applications that provides persistent, user-scoped memory across sessions.
+        Key features: automatic memory extraction from conversations, user-level memory isolation, hybrid storage (vector
+        + graph), and a simple API (add, search, get_all). Designed as a drop-in memory solution that works across different
+        LLM providers and frameworks.'
+    - concept_name: LeTTA/MemGPT (B04)
+      explanation: An operating-system-inspired memory management system for LLM agents. Treats the LLM's context window as
+        "main memory" (RAM) and external storage as "disk." The agent explicitly manages what information is loaded into context
+        vs stored externally, using memory management functions analogous to OS page-in/page-out. Enables effectively unlimited
+        memory by intelligently swapping relevant information in and out of the context window. Originally called MemGPT,
+        rebranded as LeTTA.
+    - concept_name: Proactive Context Reduction via Summarizer Agent
+      definition: Specialized agent that dynamically compresses and optimizes information passed between agents. Reduces token
+        overhead while preserving semantic meaning and intent.
+      purpose: Cost management (fewer tokens = lower API costs) and reasoning stability by maintaining context continuity
+      mechanism: Extracts key information, removes redundancy, preserves decision-critical details
+      implementation: Integrated into multi-agent workflow; runs between major execution phases
+      source_book: B12
+    - concept_name: Micro-Context Engineering
+      definition: Fine-grained context design for minimal, focused prompts. Constructs the smallest sufficient context that
+        maintains semantic correctness and task alignment.
+      benefit: Reduces token costs while improving reasoning focus; prevents context bloat
+      technique: Extract only essential semantic roles, decision drivers, and action requirements
+      use_case: Cost optimization in at-scale multi-agent systems without sacrificing output quality
+      source_book: B12
+    - concept_name: Glass-Box Architecture for Transparent Context Management
+      definition: Fully observable, auditable context engine where every transformation, compression, and routing decision
+        is logged and traceable. Opposite of black-box approaches.
+      transparency_benefit: Enables debugging, validation, and verification of AI reasoning; supports compliance and governance
+      components: Execution traces, decision logs, context provenance tracking, separation of responsibilities
+      source_book: B12
+    - concept_name: Production-Level Context Management
+      definition: Enterprise-ready context handling including dependency injection, modularization, structured logging, and
+        proactive resource management.
+      principles: Modularity, testability, observability, scalability; designed for real-world deployment constraints
+      hardening_techniques: Centralized setup functions, parametric configuration, error recovery paths
+      source_book: B12
+    - concept_name: Importance Scoring for Memory Prioritization
+      definition: 'Recency weighting: recent information weighted more heavily (0.3 weight); Frequency of reference: how often
+        information accessed (0.2 weight); Entity relevance: importance of mentioned entities in context (0.4 weight); User
+        engagement metrics: user reactions and interest levels (0.1 weight); Combined scoring: weighted combination of multiple
+        factors; Dynamic adjustment: scores updated as new interactions occur'
+      source_book: B16
+    - concept_name: Forgetting and Memory Decay Strategies
+      definition: 'Temporal decay: information becomes less relevant over time (Ebbinghaus forgetting curve); Selective forgetting:
+        intentional removal of low-importance information; Summarization-based forgetting: compress old information into abstractions;
+        TTL (time-to-live): automatic expiration of memory after specified duration; Accuracy loss: summarization incurs information
+        loss (acknowledged trade-off); Intelligent pruning: remove detail while preserving semantic essence'
+      source_book: B16
+    - concept_name: Cascading Memory Systems
+      definition: 'Agent autonomy in promotion: agents decide what moves to long-term storage; Hierarchical tiers: working
+        memory, long-term storage, archival systems; Automatic consolidation: periodic promotion of frequently accessed short-term
+        items; Cost optimization: reduces token usage by selective promotion; Efficiency gains: fast retrieval from cache,
+        slower from archives; Flexibility: agents adapt memory structure to task requirements'
+      source_book: B16
+    - concept_name: Multi-Agent Memory Consistency and Synchronization
+      definition: 'Cross-agent knowledge sharing: discoveries by one agent benefit entire system; Version control: rollback
+        and historical analysis of agent memories; Synchronization protocols: ensure consistency across distributed agent
+        memories; Conflict resolution: handle divergent memories from multiple agents; Shared knowledge base: central repository
+        for organizational memory; Integration challenges: scaling consistency across many agents'
+      source_book: B16
+    - concept_name: Retrieval Precision vs Ambiguity Management
+      definition: 'Cosine similarity search: fuzzy semantic matching in vector space; Euclidean distance: alternative similarity
+        metric with different properties; TF-IDF: classic term frequency-inverse document frequency weighting; Multiple metrics
+        trade-off: speed vs accuracy in retrieval algorithms; Disambiguation: entity-based retrieval with type filtering;
+        Confidence scoring: ranks results by relevance confidence'
+      source_book: B16
+    - concept_name: Memory Economics and Token Cost Optimization
+      definition: 'Per-token pricing: every stored and retrieved token incurs cost; Context window constraint: limited space
+        for context in LLM; Marginal benefit vs marginal cost: economically optimal memory size; Scaling dynamics: costs grow
+        with usage volume; Semantic caching ROI: 20% cost reduction possible with smart caching; Architecture impact: choice
+        of framework affects cost structure fundamentally'
+      source_book: B16
+    - concept_name: Transactive Memory Systems (TMS) for Teams
+      definition: 'Group-level knowledge sharing: knowing what other team members know; Collective intelligence hub: synthesis
+        of strategic thinking and creative innovation; Knowledge dissemination: best practices shared from experts to novices;
+        Contextual preservation: why decisions were made, alternatives considered; Productivity gains: novice workers improved
+        34% with AI-captured expert knowledge; Organizational resilience: preserves knowledge beyond individual tenure'
+      source_book: B16
+    - concept_name: Dynamic Knowledge Graphs and Zettelkasten
+      definition: 'A-MEM framework: Agentic Memory implementing Zettelkasten principles; Interconnected notes: contextual
+        descriptions, keywords, and tags; Web of related information: new entries generate comprehensive notes; Relationship
+        preservation: maintains connections between memory items; Progressive organization: emerges from individual memory
+        entries; Scalability: supports increasing memory without degradation'
+      source_book: B16
+    - concept_name: Checkpointing for Persistence and Recovery
+      definition: 'State snapshots: periodic save of agent internal state and learned patterns; Session restoration: context
+        recoverable across sessions or long conversations; Memory portability: agent memories transferable between different
+        systems; Automatic cleanup: prevents accumulation of irrelevant old data; Retrieval optimization: makes state both
+        persistent and practical; Business continuity: protects against data loss and enables recovery'
+      source_book: B16
+    - concept_name: Hybrid Memory Architectures
+      definition: 'Multi-tier storage: combines different storage technologies optimally; Semantic caching layer: fast retrieval
+        for repeated queries; Vector database backend: semantic similarity search at scale; Entity metadata store: structured
+        facts alongside embeddings; Retrieval pipeline: query analysis, multi-store search, scoring, assembly; Adaptive promotion:
+        items promoted between tiers based on access patterns'
+      source_book: B16
+    - concept_name: Vector Database Indexing and Search Optimization
+      definition: 'Embedding generation: convert text to vector representations; Index construction: build data structures
+        for fast similarity search; Similarity metrics: cosine, Euclidean, and other distance measures; Filtering support:
+        pre-filter by metadata before vector search; Hybrid search: combine vector and keyword matching; Performance tuning:
+        trade-offs between index size and query speed'
+      source_book: B16
+    - concept_name: System 1 vs System 2 Thinking in Memory Management
+      definition: 'System 1: fast, automatic judgment using cached/familiar patterns; System 2: deliberate, effortful reasoning
+        requiring conscious effort; Chain-of-thought prompting: forces model into System 2 mode; Cost implications: System
+        2 thinking more computationally expensive; Early exit inference: exit after System 1 if confidence sufficient; Speculative
+        decoding: approximate System 2 quality with lower cost'
+      source_book: B16
+    how_it_works: []
+    design_decisions:
+      when_to_use: []
+      when_to_avoid: []
+      trade_offs: []
+    implementation:
+      reference_architecture: ''
+      pseudocode: ''
+      code_scaffold: ''
+      libraries_and_tools: []
+      configuration: ''
+    real_world_applications: []
+    relationships:
+      depends_on:
+      - memory_and_context.long_term_memory
+      - memory_and_context.episodic_memory
+      enables:
+      - infrastructure.scaling_and_deployment
+      compare_with: []
+    sources:
+    - 'B09 Ch4: Four memory types — working, episodic, semantic, procedural + parametric'
+    - 'B09 Ch4: MemoryBank (forgetting curve), A-MEM (Zettelkasten), Search-o1 (search in reasoning traces)'
+    - 'B03 Ch8: Full memory taxonomy — sensory, short-term/working, long-term explicit (episodic+semantic), implicit/procedural'
+    - 'B03 Ch8: Memory augmentation workflow — extract facts, embed, store, retrieve, augment prompt'
+    - 'B03 Ch8: Memory/Knowledge Compression — k-means clustering, LLM summarization, re-embedding'
+    - 'B03 Ch8: Conversational memory function — LLM summarizes conversation into JSON statements'
+    - 'B04 Ch4: LangMem — LangChain memory management, agent-managed long-term memory'
+    - 'B04 Ch4: Mem0 — standalone persistent memory layer, hybrid vector+graph storage'
+    - 'B04 Ch4: LeTTA/MemGPT — OS-inspired memory management, context-as-RAM, external-as-disk'
+    - 'B12: Context Engineering for Multi-Agent Systems (Denis Rothman, 2025)'
+    - 'B16: Managing Memory for AI Agents (Valentina Alto, 2025)'
+    - 'Deep-Dive: Ch4 Memory Infographic - Memory Management Strategies'
+    real_world_analogies:
+    - analogy: Meeting notes
+      explanation: Context engineering is like taking meeting notes — you capture key decisions, not everything said. Summarizing,
+        compressing, and prioritizing information to maximize limited context space.
+      source: AI Agents Learning Guide Ch4
+  agentic_rag:
+    description: Agent-controlled RAG where the agent decides WHEN to retrieve, WHAT to retrieve, and HOW MANY TIMES to retrieve.
+      Goes beyond traditional one-shot retrieval.
+    core_concepts:
+    - concept_name: Agentic RAG vs Traditional RAG
+      definition: 'Traditional RAG: retrieve once statically. Agentic RAG: agent controls retrieval decisions dynamically.'
+      agent_control: Agent decides search queries, evaluates results, determines if more retrieval needed
+    - concept_name: Key capabilities
+      definition: Agent autonomously decides when retrieval is necessary, what queries to use, and how many iterations needed
+      example: 'Instead of one fixed retrieval: "Agent mentions X, needs more details -> decides to search -> gets results
+        -> evaluates -> decides if another search needed"'
+    - concept_name: Iterative retrieval
+      definition: Agent can perform multiple retrieve-and-reason cycles, refining queries based on previous results
+      workflow: Think -> Retrieve (when needed) -> Reason about results -> Decide if more info needed -> Retrieve again if
+        needed
+    - concept_name: Real-world example
+      definition: Perplexity.ai iteratively searches the web during response generation, deciding when more information is
+        needed
+      comparison: Like a librarian who researches iteratively rather than grabbing one book upfront
+    sources:
+    - 'B05: AI Agents Learning Guide - Chapter 4'
+    - 'Deep-Dive: AI Agents Learning Guide - Chapter 4 Agentic RAG'
+    real_world_analogies:
+    - analogy: Librarian doing iterative research
+      explanation: 'Traditional RAG is like a librarian bringing one book. Agentic RAG is like the librarian researching iteratively:
+        "This mentions X, let me also check Y..." The agent controls its own search process.'
+      source: AI Agents Learning Guide Ch4
+    definition: Retrieval-Augmented Generation specifically designed for agent workflows — where agents autonomously decide
+      when to retrieve, what to query, how to filter results, and when to re-retrieve based on initial findings.
+  vector_database:
+    description: Storage system for embeddings (numerical representations of meaning). Enables semantic similarity search
+      for RAG and memory retrieval.
+    core_concepts:
+    - concept_name: Vector database definition
+      definition: Database designed to store and search numerical vectors (embeddings) by semantic similarity
+      purpose: Enable fast retrieval of semantically related content
+    - concept_name: How it works
+      definition: Content is converted to embeddings; stored in database; queries converted to embeddings; similarity computed;
+        most similar results returned
+      process: Document -> Embedding -> Store in vector DB. Query -> Embedding -> Find similar vectors -> Return documents
+    - concept_name: Common vector databases
+      examples: Pinecone, Chroma, Weaviate, Milvus, FAISS
+      use_in_agents: Store agent memory, documentation, knowledge bases for RAG
+    - concept_name: Difference from traditional DB
+      definition: Traditional DBs search by exact match or keywords. Vector DBs search by semantic meaning.
+      example: Query "How do I save a file?" would match documents about persistence, storage, file I/O despite different
+        exact words
+    - concept_name: Vector Embeddings Fundamentals
+      definition: Numerical representations of text/images in high-dimensional space where semantic similarity maps to geometric
+        proximity. Generated by models like text-embedding-3, e5, or sentence-transformers. Enable semantic search beyond
+        keyword matching.
+      source_book: B07
+    - concept_name: Similarity Search Mechanisms
+      definition: 'Algorithms for finding semantically similar vectors: cosine similarity, L2 distance, inner product. Enables
+        retrieval of relevant documents from large collections (millions+) efficiently using approximate nearest neighbor
+        (ANN) indices (HNSW, IVF, LSH).'
+      source_book: B07
+    - concept_name: Retrieval-Augmented Generation (RAG) Enhancement
+      definition: 'Architecture combining retrievers (vector DB queries) with generators (LLMs). Agent workflow: receive query
+        → retrieve relevant documents → augment LLM context → generate response grounded in retrieved facts. Reduces hallucination
+        by grounding generation.'
+      source_book: B07
+    - concept_name: Chunking Strategies for Vector Stores
+      definition: 'Methods for breaking documents into indexable units: fixed-size chunks, semantic-aware chunking, recursive
+        splitting. Impacts retrieval quality — wrong chunking loses context or creates orphaned fragments. Critical preprocessing
+        step.'
+      source_book: B07
+    - concept_name: Anomaly Detection with Vector Databases
+      definition: Using vector stores to identify outliers and anomalies. Embeddings cluster normal patterns; vectors far
+        from clusters indicate anomalies (fraud, system failures, policy violations). Enables real-time monitoring and alerting.
+      source_book: B07
+    - concept_name: Embedding Model Selection
+      definition: 'Choosing embeddings based on task: general-purpose (text-embedding-3, e5), domain-specific (medical, legal),
+        multimodal (text+image). Quality impacts retrieval effectiveness. Trade-offs: accuracy vs latency vs cost.'
+      source_book: B07
+    - concept_name: Vector Database Architecture Types
+      definition: 'Two approaches: (1) Specialized vector DBs (Pinecone, Weaviate, Milvus) optimized for vector operations.
+        (2) Integrated solutions (PostgreSQL+pgvector, Elasticsearch) embedding vectors in relational/document DBs. Specialized
+        = better for scale; integrated = better for hybrid queries.'
+      source_book: B07
+    - concept_name: Scalability and Indexing for Vector Search
+      definition: 'Techniques for searching billions of vectors efficiently: approximate nearest neighbor (ANN) indices (HNSW,
+        IVF, LSH), quantization (reduce vector dimensionality), sharding (distribute across nodes). Enables sub-millisecond
+        latency at enterprise scale.'
+      source_book: B07
+    - concept_name: Knowledge Base Integration
+      definition: Indexing organizational knowledge (documents, FAQs, product catalogs, policies) into vector stores. Enables
+        agents to autonomously retrieve and reason over proprietary knowledge. Requires metadata tagging, access control,
+        freshness management.
+      source_book: B07
+    - concept_name: Training Data Management via Vectors
+      definition: 'Using vector similarity to curate and manage training datasets: identify duplicates, find underrepresented
+        groups, detect data drift. Enables continuous dataset quality improvement.'
+      source_book: B07
+    - concept_name: Vector Database Selection Checklist
+      definition: 'Evaluation criteria: (1) Scale (vector count, dimensions) (2) Latency requirements (3) Availability/redundancy
+        needs (4) Integration with existing stack (5) Cost (6) Data privacy/compliance (7) Community/support. Comprehensive
+        assessment guides selection.'
+      source_book: B07
+    - concept_name: Hybrid Search (Dense + Sparse)
+      definition: Combining semantic search (vector similarity) with keyword search (BM25, TF-IDF). Captures both semantic
+        and lexical relevance. Particularly effective for technical queries where exact terminology matters.
+      source_book: B07
+    - concept_name: Metadata Filtering in Vector Search
+      definition: 'Tagging vectors with metadata (source, timestamp, category, access level) enabling filtered searches. Example:
+        "Find documents about revenue from Q4 2024 in finance domain." Combines semantic search with structured filtering.'
+      source_book: B07
+    - concept_name: Real-Time Vector Index Updates
+      definition: 'Challenges and solutions for keeping vector indices fresh: batch updates (daily/hourly) vs streaming updates.
+        Trade-offs between consistency and performance. Critical for time-sensitive applications (news, financial data).'
+      source_book: B07
+    - concept_name: Cost Optimization for Vector Stores
+      definition: 'Strategies to reduce costs: dimensionality reduction (quantization), tiered storage (hot/warm/cold), batch
+        operations, efficient indexing. Large-scale vector stores can be expensive; optimization is essential.'
+      source_book: B07
+    sources:
+    - 'B05: AI Agents Learning Guide - Chapter 4'
+    - 'B07 Ch6: Vector embeddings, similarity search, RAG enhancement'
+    - 'B07 Ch6: Chunking strategies, anomaly detection, embedding model selection'
+    - 'B07 Ch6: Vector database architecture (specialized vs integrated)'
+    - 'B07 Ch6: Scalability, indexing (ANN, quantization), knowledge base integration'
+    - 'B07 Ch6: Training data management, selection checklist, hybrid search'
+    - 'B07 Ch6: Metadata filtering, real-time updates, cost optimization'
+    definition: Vector databases enable semantic search and retrieval-augmented generation (RAG) for agentic systems. Store
+      embeddings of unstructured data (documents, images, code), enabling agents to retrieve contextually relevant information.
+      Support similarity search, anomaly detection, and knowledge augmentation. Critical infrastructure for enterprise AI
+      requiring access to large knowledge bases.
+  embedding:
+    description: Numerical representation of the meaning of text. Converts words/documents into vectors that capture semantic
+      meaning.
+    core_concepts:
+    - concept_name: Embedding definition
+      definition: Numerical vector that represents the semantic meaning of text. Similar meanings = nearby vectors.
+      mechanism: ML models trained to encode text into vector space where distance reflects semantic similarity
+    - concept_name: How embeddings work
+      definition: Text is encoded to high-dimensional vectors; vectors preserve semantic relationships; similar texts have
+        similar embeddings
+      example: Embedding("king") - Embedding("man") + Embedding("woman") ≈ Embedding("queen")
+    - concept_name: Use in RAG and memory
+      definition: Documents and queries converted to embeddings; similarity computed via vector distance; enables semantic
+        search
+      process: Document corpus -> embed all docs -> store in vector DB. Query -> embed query -> find similar embeddings ->
+        retrieve matching docs
+    - concept_name: Common embedding models
+      examples: OpenAI text-embedding-ada-002, Sentence-BERT, Cohere embeddings
+      quality_matters: Better embedding models -> better semantic retrieval -> better RAG performance
+    sources:
+    - 'B05: AI Agents Learning Guide - Chapter 4'
+    definition: Vector embedding techniques for representing text, code, and structured data in dense vector spaces — enabling
+      semantic search, similarity matching, and efficient knowledge retrieval for agent memory systems.
+  context_window_optimization:
+    core_concepts:
+    - concept_name: Latency Budgeting in Context Design
+      definition: Allocating available latency (response time budget) across context assembly, planning, execution, and output.
+        Balances context richness against response speed.
+      principle: 'Operational realities: latency and stochasticity are constraints; context design must account for real-world
+        timing'
+      technique: Profile each phase; allocate latency budget; use context reduction to stay within budget
+      source_book: B12
+    - concept_name: Context Bloat Prevention
+      definition: Techniques to prevent context from growing unchecked, which increases latency and costs. Summarizer agent,
+        micro-context engineering, and pruning of redundant information.
+      risk: Each agent pass adds context; without management, context window fills quickly and response time degrades
+      solution: Proactive reduction between phases; preserve only decision-critical information
+      source_book: B12
+    - concept_name: Information Routing in Multi-Agent Context
+      definition: Strategic decision about what information each agent needs. Not all context goes to all agents; each receives
+        minimally sufficient context for its role.
+      benefit: Reduces per-agent context size; improves focus; lowers costs
+      mechanism: Router/Librarian decides what context to pass to each specialist based on task requirements
+      source_book: B12
+    sources:
+    - 'B12: Context Engineering for Multi-Agent Systems (Denis Rothman, 2025)'
+    definition: Strategies for maximizing the utility of limited LLM context windows including summarization, compression,
+      priority-based truncation, and dynamic context assembly.
+  memory_systems:
+    core_concepts:
+    - concept_name: Context Window as Memory
+      definition: Use of the model's input context window as a temporal memory store for recent conversation history and state
+      source_book: B11
+      chapter: Ch 6
+      examples:
+      - Token-based history
+      - Sliding window
+      - Conversation tracking
+      related_concepts: []
+    - concept_name: Semantic Search for Memory Retrieval
+      definition: Technique using vector embeddings and similarity search to retrieve relevant past information based on semantic
+        meaning
+      source_book: B11
+      chapter: Ch 6
+      examples:
+      - Vector databases
+      - Embedding-based retrieval
+      - Semantic relevance
+      related_concepts: []
+    - concept_name: Retrieval-Augmented Generation (RAG)
+      definition: Architecture combining document retrieval with generation, using relevant retrieved documents to augment
+        prompt context
+      source_book: B11
+      chapter: Ch 6
+      examples:
+      - Document augmentation
+      - Knowledge injection
+      - Context enrichment
+      related_concepts: []
+    - concept_name: GraphRAG
+      definition: Enhanced RAG approach using knowledge graphs to structure relationships between entities and concepts for
+        richer retrieval
+      source_book: B11
+      chapter: Ch 6
+      examples:
+      - Knowledge graphs
+      - Entity relationships
+      - Structured retrieval
+      related_concepts: []
+    - concept_name: Working Memory
+      definition: Short-term memory representation for active tasks, using whiteboards, note-taking, or explicit state tracking
+      source_book: B11
+      chapter: Ch 6
+      examples:
+      - Scratchpads
+      - Intermediate state
+      - Active problem solving
+      related_concepts: []
+    - concept_name: Keyword-Based Memory Indexing
+      definition: Simple memory retrieval using keyword matching and sparse indexing for quick access to relevant information
+      source_book: B11
+      chapter: Ch 6
+      examples:
+      - BM25 retrieval
+      - Keyword matching
+      - Sparse indexes
+      related_concepts: []
+    - concept_name: Long-Term Agent Memory
+      definition: Persistent storage of agent experiences, learned patterns, and historical decisions for cross-session learning
+      source_book: B11
+      chapter: Ch 6-7
+      examples:
+      - Experience logs
+      - Decision history
+      - Cross-session learning
+      related_concepts: []
+    - concept_name: Memory System Selection Framework
+      definition: Decision framework for choosing appropriate memory approaches based on task requirements, latency, and context
+        size
+      source_book: B11
+      chapter: Ch 6
+      examples:
+      - Trade-off analysis
+      - Context vs latency
+      - Cost vs recall
+      related_concepts: []
+    sources:
+    - 'B16: Managing Memory for AI Agents'
+    - 'B12: Context Engineering for Multi-Agent Systems'
+    definition: Comprehensive architectures for agent memory combining working memory (current task state), episodic memory
+      (past experiences), semantic memory (learned knowledge), and procedural memory (learned skills).
+_source_metadata:
+  split_from: agentic_ai_kb.yaml
+  version: 1.0-scaffold
+  last_updated: '2026-04-06'
+  owner: Padmasani Srimadhan

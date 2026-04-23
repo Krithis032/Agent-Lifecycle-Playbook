@@ -1,0 +1,750 @@
+tools_and_integration:
+  tool_calling:
+    definition: 'The mechanism by which agents invoke external functions, APIs, and services. The LLM generates a STRING representing
+      its intention to call a tool (not actual execution) — an external system (orchestrator) parses and executes it. Follows
+      a 5-step pipeline: Tool Creation → Tool Definition → Tool Selection → Tool Calling → Output Processing.'
+    core_concepts:
+    - concept_name: Five-Step Tool Calling Pipeline
+      explanation: '(1) Tool Creation: developer builds the function/API. (2) Tool Definition: describe the tool via JSON
+        Schema (name, description, parameters). (3) Tool Selection: LLM reasons about which tool to use. (4) Tool Calling:
+        LLM generates structured output to invoke the tool (a string, not execution). (5) Output Processing: results fed back
+        to LLM for final response.'
+    - concept_name: JSON Schema Tool Definitions
+      explanation: 'Tools are described to LLMs using JSON schemas with type/function/name/description/parameters objects.
+        Passed via the `tools` API parameter or embedded in the system prompt within XML tags. Two methods to share: Learning
+        (fine-tuned into the model) or Prompting (structured prompts at inference). Quality of definitions directly impacts
+        agent performance.'
+    - concept_name: Tool Selection Logic
+      explanation: Reasoning LLMs "think" about which tool to use within their thinking traces. For agents with many tools,
+        use RAG with a vector database to discover relevant tool schemas rather than passing all schemas in the prompt. Reduces
+        cognitive load on the LLM.
+    - concept_name: Tool Result Processing
+      explanation: 'After tool execution, results return via the messages structure: assistant message (with tool_calls field
+        containing function name and arguments) followed by tool message (with content containing the output). The LLM processes
+        these to generate the final answer or decide the next action.'
+    - concept_name: Parallel Tool Calls
+      explanation: Agent can call multiple independent tools simultaneously (e.g., get weather + get calendar + get news).
+        Sequential tool calls are used when each result informs the next (search web → extract info → write summary → send
+        email).
+    - concept_name: Tool Types Taxonomy
+      explanation: 'Five categories: (1) Information Retrieval — web search, database queries, knowledge bases. (2) Code Execution
+        — Python interpreter, sandboxed environments. (3) API Integration — REST/GraphQL calls to external services. (4) Data
+        Processing — file manipulation, format conversion. (5) Communication — email, messaging, notifications.'
+    - concept_name: Tool Anatomy — Three Components (B04)
+      explanation: 'B04 defines every agent tool as having 3 components: (1) Name — unique identifier the LLM uses to select
+        the tool. (2) Description — natural language explanation of what the tool does, crucial for LLM tool selection (acts
+        as the tool''s "documentation" for the LLM). (3) Core Logic — the actual implementation code that executes when the
+        tool is called. The quality of the description directly impacts the LLM''s ability to select and use the tool correctly.'
+    - concept_name: Hardcoded vs Semantic Functions (B04)
+      explanation: 'Two categories of agent functions: (1) Hardcoded functions — deterministic code with fixed logic (API
+        calls, database queries, calculations). Always produce the same output for the same input. (2) Semantic functions
+        — LLM-powered functions defined by prompt templates. Output varies based on LLM reasoning. Semantic Kernel (Microsoft)
+        pioneered this distinction. Best practice: use hardcoded for reliability-critical operations, semantic for creative/reasoning
+        tasks.'
+    - concept_name: API Type Taxonomy (B04)
+      explanation: 'B04 classifies 4 types of APIs agents commonly interact with: (1) RESTful APIs — resource-oriented, HTTP
+        methods (GET/POST/PUT/DELETE), most common. (2) GraphQL APIs — query language allowing clients to request exactly
+        the data they need, reduces over-fetching. (3) WebSocket APIs — bidirectional real-time communication, used for streaming
+        and live updates. (4) Backend Function APIs — direct function calls within the same codebase, lowest latency, used
+        for internal tool implementations.'
+    - concept_name: Sync vs Async Tool Calls (B04)
+      explanation: 'Two execution modes for agent tool invocations: (1) Synchronous — agent waits for tool result before proceeding,
+        simpler but blocks execution. (2) Asynchronous — agent fires tool call and continues other work, results arrive later.
+        Async is critical for: parallel tool execution, long-running operations (web scraping, complex queries), and multi-agent
+        coordination where agents shouldn''t block on each other''s tool calls.'
+    - concept_name: Local Tool
+      definition: Self-contained tools that execute computations or logic internally without external dependencies, such as
+        mathematical calculations or rule-based decisions
+      source_book: B11
+      chapter: Ch 4
+      examples:
+      - Rule-based decision making
+      - Mathematical calculations
+      - Local data retrieval
+      related_concepts: []
+    - concept_name: API-Based Tool
+      definition: Tools enabling agents to interact with external services and data sources through standard API protocols
+      source_book: B11
+      chapter: Ch 4
+      examples:
+      - Weather data fetching
+      - Stock price lookups
+      - Third-party service integration
+      related_concepts: []
+    - concept_name: Model Context Protocol (MCP) Tool
+      definition: Standardized protocol for passing structured external context directly into the model's reasoning process
+        without separate tool invocations
+      source_book: B11
+      chapter: Ch 4-5
+      examples:
+      - User profile injection
+      - Conversation history
+      - Real-time state awareness
+      related_concepts: []
+    - concept_name: Tool Modularity
+      definition: Design principle ensuring each tool is self-contained and can be independently updated or replaced without
+        system-wide changes
+      source_book: B11
+      chapter: Ch 4
+      examples:
+      - Plugin architecture
+      - Incremental enhancement
+      - Tool substitution
+      related_concepts: []
+    - concept_name: Generative Tool Selection
+      definition: Method where the agent uses language model generation to determine which tools to use based on task context
+      source_book: B11
+      chapter: Ch 5
+      examples:
+      - LLM-based decision making
+      - Context-aware tool selection
+      - Emergent tool discovery
+      related_concepts: []
+    - concept_name: Semantic Tool Selection
+      definition: Selection method using semantic similarity between task description and tool specifications to match appropriate
+        tools
+      source_book: B11
+      chapter: Ch 5
+      examples:
+      - Embedding-based matching
+      - Description similarity
+      - Semantic retrieval
+      related_concepts: []
+    - concept_name: Hierarchical Tool Selection
+      definition: Multi-level tool organization where agents navigate a hierarchy to find appropriate tools for specific subtasks
+      source_book: B11
+      chapter: Ch 5
+      examples:
+      - Tool taxonomy
+      - Category-based selection
+      - Two-stage retrieval
+      related_concepts: []
+    - concept_name: Machine-Learned Tool Selection
+      definition: Learned models that predict appropriate tool selection based on historical usage patterns and task features
+      source_book: B11
+      chapter: Ch 5
+      examples:
+      - Policy networks
+      - Reward-based learning
+      - Behavior cloning
+      related_concepts: []
+    - concept_name: Tool Chain Topology
+      definition: Sequential arrangement of tools where output from one tool feeds into the next in a linear chain
+      source_book: B11
+      chapter: Ch 5
+      examples:
+      - Pipeline execution
+      - Sequential processing
+      - Step-by-step workflows
+      related_concepts: []
+    - concept_name: Tool Tree Topology
+      definition: Hierarchical tree structure where tools branch based on decision points and conditional logic
+      source_book: B11
+      chapter: Ch 5
+      examples:
+      - Decision trees
+      - Branching logic
+      - Conditional execution
+      related_concepts: []
+    - concept_name: Tool Graph Topology
+      definition: Complex interconnected graph structure where tools can have multiple dependencies and feedback loops
+      source_book: B11
+      chapter: Ch 5
+      examples:
+      - DAG execution
+      - Complex workflows
+      - Feedback loops
+      related_concepts: []
+    - concept_name: Incremental Execution Planning
+      definition: Strategy for planning tool use by incrementally determining next steps based on current state
+      source_book: B11
+      chapter: Ch 5
+      examples:
+      - Reactive planning
+      - Step-by-step refinement
+      - Adaptive execution
+      related_concepts: []
+    - concept_name: Zero-Shot Tool Planning
+      definition: Planning strategy where the agent determines tool use without prior examples or demonstrations
+      source_book: B11
+      chapter: Ch 5
+      examples:
+      - Prompt-based planning
+      - Direct execution
+      - First-attempt success
+      related_concepts: []
+    - concept_name: Few-Shot Tool Planning
+      definition: Planning approach using a small number of examples to guide tool selection and orchestration
+      source_book: B11
+      chapter: Ch 5
+      examples:
+      - Example-based guidance
+      - In-context learning
+      - Demonstration learning
+      related_concepts: []
+    - concept_name: ReAct (Reasoning and Acting) Planning
+      definition: Framework combining reasoning (thought chains) with tool actions in an interleaved manner
+      source_book: B11
+      chapter: Ch 5
+      examples:
+      - Thought-action loops
+      - Explicit reasoning
+      - Interleaved execution
+      related_concepts: []
+    - concept_name: Tool Integration and Modularity
+      principle: Each tool designed as self-contained module; can be easily integrated, updated, replaced
+      benefit: Enables iterative enhancement without overhauling core system (e.g., start with basic FAQs, add dispute resolution
+        later)
+      agent_types: Local tools (internal logic/computation), API-based tools (external services), MCP tools (structured context
+        injection)
+    - concept_name: Tool Use Best Practices
+      definition: 'Five best practices: (1) Write clear descriptions — LLM relies on them to choose correctly, (2) Use JSON
+        Schema for strict parameter validation, (3) Implement error handling — tools can fail, agents must recover, (4) Limit
+        tool count to reduce cognitive load for the LLM, (5) Validate outputs before using tool results'
+      source_book: Deep-Dive Materials
+      deep_dive_source: Ch5 Tool Use Infographic
+    how_it_works:
+    - step: 1
+      description: User sends message to LLM with tool schemas available
+    - step: 2
+      description: LLM analyzes query and decides tool is needed
+    - step: 3
+      description: LLM generates structured tool call (JSON with function name + arguments)
+    - step: 4
+      description: External application/orchestrator parses and executes the function call
+    - step: 5
+      description: Result returned to LLM as tool role message
+    - step: 6
+      description: LLM continues reasoning — generates final answer or calls another tool
+    design_decisions:
+      when_to_use:
+      - Agent needs to interact with external systems (APIs, databases, web)
+      - Tasks requiring real-time data not in training data
+      - Tasks requiring computation (math, code execution)
+      - Multi-step workflows involving multiple external services
+      when_to_avoid:
+      - Simple factual Q&A within model knowledge
+      - Tasks where tool overhead exceeds direct LLM response value
+      - When tool reliability/availability cannot be guaranteed
+      trade_offs:
+      - More tools = more capable but harder for LLM to select correctly
+      - Quality of tool definitions directly impacts success rate
+      - Each tool call = additional latency + potential failure point
+      - 'Tool scope: narrow tools are easier to use correctly, broad tools are more flexible'
+    implementation:
+      reference_architecture: JSON Schema definition → tools API parameter → LLM generates tool_calls → regex/parser extracts
+        function call from XML tags (<tool_call>) → orchestrator executes → result as tool role message → LLM processes
+      pseudocode: "tools = [{'type': 'function', 'function': {'name': 'search', 'description': '...', 'parameters': {'type':\
+        \ 'object', 'properties': {...}}}}]\nresponse = llm.chat(messages=messages, tools=tools)\nif response.tool_calls:\n\
+        \    for call in response.tool_calls:\n        result = execute(call.function.name, call.function.arguments)\n   \
+        \     messages.append({'role': 'tool', 'content': result})\n    final = llm.chat(messages=messages, tools=tools)"
+      code_scaffold: ''
+      libraries_and_tools:
+      - OpenAI API (function calling)
+      - Anthropic API (tool use)
+      - LangChain (tool abstraction)
+      - LangGraph (tool nodes in graph)
+      configuration: 'Best practices: document extensively with descriptions/examples, minimize number of tools, minimize
+        scope of each tool, implement error handling, validate outputs before using'
+    real_world_applications: []
+    relationships:
+      depends_on:
+      - architecture_and_patterns.structured_output_and_parsing
+      enables:
+      - architecture_and_patterns.react_pattern
+      compare_with: []
+    sources:
+    - 'B09 Ch5: Five-step tool calling pipeline (Creation→Definition→Selection→Calling→Output Processing)'
+    - 'B09 Ch5: JSON Schema for tool definitions, tools API parameter, XML tag extraction for tool calls'
+    - 'B09 Ch5: Tool selection — reasoning LLMs think about tools, RAG for many-tool discovery'
+    - 'B09 Ch5: Messages structure — assistant (tool_calls) and tool (content) role messages'
+    - 'B09 Ch5: In-context learning for tools — few-shot with fake message history of prior tool calls'
+    - 'B18: Tool types taxonomy (5 categories), best practices, multi-step vs parallel tool execution'
+    - 'B04 Ch5: Tool anatomy — name, description, core logic (3 components)'
+    - 'B04 Ch5: Hardcoded vs semantic functions — deterministic code vs LLM-powered prompt templates'
+    - 'B04 Ch5: API type taxonomy — RESTful, GraphQL, WebSocket, Backend Function APIs'
+    - 'B04 Ch5: Sync vs async tool calls — blocking vs non-blocking execution patterns'
+    - B11
+    - 'Deep-Dive: Chapter 5 Deep Dive - Tool Usage, Learning, and Protocols'
+    - 'Deep-Dive: Ch5 Tool Use Infographic'
+    - 'Deep-Dive: Chapter 5 Concept Map'
+    real_world_analogies:
+    - analogy: Using a hammer
+      explanation: 'Tool calling pipeline: someone made it (creation), you know it drives nails (definition), you pick it
+        up (selection), you swing it (calling), you check the nail (output processing)'
+      source: AI Agents Learning Guide Ch5
+    - analogy: Restaurant menu
+      explanation: JSON Schema tool definitions are like a restaurant menu — each dish has a name, description, and ingredients
+        list. Good descriptions help the LLM know when to use which tool.
+      source: AI Agents Learning Guide Ch5
+  mcp_protocol:
+    definition: 'Model Context Protocol — an open standard developed by Anthropic that standardizes how LLMs connect to external
+      tools and data sources. Solves the N×M integration problem: instead of N LLMs × M tools requiring N×M custom integrations,
+      each LLM implements MCP once and each tool implements MCP once, requiring only N+M connections. Called the ''USB-C port
+      of AI.'' Uses JSON-RPC 2.0 specification for communication.'
+    core_concepts:
+    - concept_name: MCP Architecture (4 Components)
+      explanation: '(1) MCP Server: lightweight program that exposes APIs and tools via the MCP standard (e.g., a GitHub MCP
+        server connects to GitHub''s API). (2) MCP Host: the LLM application that uses tools (ChatGPT, Claude, Cursor) — the
+        "brain" that initiates communication. (3) MCP Client: lives inside the Host, maintains one-to-one connections with
+        MCP servers, handles connection management and tool discovery. (4) Resources: the actual tools, data, or services
+        provided locally or remotely.'
+    - concept_name: MCP 12-Step Flow
+      explanation: (1) User sends prompt to Host. (2) Host asks Client to list available tools. (3) Client queries MCP Server.
+        (4) Server returns available tools (e.g., /list_commits, /create_pr). (5) Host sends prompt + tools to LLM. (6) LLM
+        selects tool (e.g., /list_commits). (7) Client forwards request to Server. (8) Server executes the API call. (9) Results
+        return through Server to Client to Host. (10) Host sends results to LLM. (11) LLM generates final summary. (12) Response
+        displayed to user.
+    - concept_name: MCP vs A2A (Agent-to-Agent)
+      explanation: MCP standardizes how LLMs connect to tools (agent ↔ tool). Google's Agent-to-Agent (A2A) protocol standardizes
+        how agents communicate with each other (agent ↔ agent). MCP is about agents using tools; A2A is about agents collaborating.
+        Both are important emerging standards in the AI ecosystem.
+    - concept_name: N×M to N+M Problem
+      explanation: 'Before MCP: N different LLMs and M different tools required N×M custom integrations. With MCP: each LLM
+        implements MCP once, each tool implements MCP once = N+M connections total. This is why MCP is transformative — it
+        turns tool integration from a quadratic to a linear problem.'
+    - concept_name: JSON-RPC 2.0
+      explanation: MCP uses JSON-RPC 2.0 specification for client-server communication. Standardized message format for requests,
+        responses, and notifications.
+    - concept_name: MCP Server Capability Types (B04)
+      explanation: 'MCP servers expose 3 types of capabilities, each with specific schemas: (1) Tools — executable functions
+        with schema: {name, description, inputSchema (JSON Schema)}. (2) Resources — data/content the agent can read, schema:
+        {uri, name, description, mimeType}. (3) Prompts — reusable prompt templates, schema: {name, description, arguments[]}.
+        This 3-type model gives agents structured access to actions, data, and pre-built reasoning templates.'
+    - concept_name: FastMCP (B04)
+      explanation: A Python utility/SDK for rapidly creating MCP servers. Simplifies the boilerplate of implementing the MCP
+        specification. Developers define tools as decorated Python functions, and FastMCP handles JSON-RPC communication,
+        capability discovery, and schema generation automatically.
+    - concept_name: MCP Authentication (B04)
+      explanation: 'MCP supports multiple authentication mechanisms: (1) OAuth 2.0 — standard web authorization flow for third-party
+        tool access. (2) Token-based authentication — API keys or bearer tokens. (3) RBAC (Role-Based Access Control) — granular
+        permissions determining which tools/resources each client can access. Authentication is critical for production MCP
+        deployments where tools access sensitive data or perform privileged operations.'
+    - concept_name: MCP Error Codes (B04)
+      explanation: 'MCP uses JSON-RPC 2.0 error codes: 32700 (Parse Error — malformed JSON), 32600 (Invalid Request — missing
+        required fields), 32601 (Method Not Found — unknown tool/resource), 32602 (Invalid Params — wrong parameter types/values),
+        32603 (Internal Error — server-side failure). Custom application errors use codes above 32000. Proper error handling
+        enables graceful degradation in agent tool use.'
+    - concept_name: MCP Fault Tolerance (B04)
+      explanation: 'Production MCP deployments implement fault tolerance through: (1) Intelligent Fallback — when a primary
+        MCP server fails, route to backup servers or alternative tools. (2) Error Thresholds — track failure rates per server,
+        trigger fallback after threshold exceeded. (3) Automated Model/Server Switching — dynamically switch to backup LLM
+        providers or MCP servers based on availability and error rates. Ensures agent reliability despite individual component
+        failures.'
+    - concept_name: MCP Actor Model
+      definition: 'Five actors in MCP flow: User (initiates and receives), Host (AI app like Claude Desktop, orchestrates),
+        Client (maintains 1:1 connection with server), MCP Server (exposes tools and resources, executes calls), LLM (selects
+        tools and generates responses)'
+      source_book: Deep-Dive Materials
+      deep_dive_source: MCP 12-Step Flow v2 Infographic
+    - concept_name: MCP Transport Layer
+      definition: 'MCP supports two transport mechanisms: stdio (standard input/output for local servers) and HTTP SSE (Server-Sent
+        Events for remote servers). Both enable the Client-Server communication channel.'
+      source_book: Deep-Dive Materials
+      deep_dive_source: Chapter 5 Concept Map
+    how_it_works:
+    - step: 1
+      description: MCP Server starts up and registers its available tools/resources
+    - step: 2
+      description: MCP Host (LLM app) initializes Client which connects to Server(s)
+    - step: 3
+      description: Client discovers available tools via Server handshake
+    - step: 4
+      description: User sends query to Host, which forwards tools list + query to LLM
+    - step: 5
+      description: LLM selects and invokes tool(s) via structured output
+    - step: 6
+      description: Client routes tool call to appropriate Server for execution
+    - step: 7
+      description: Server executes, returns results through Client to Host to LLM
+    - step: 8
+      description: LLM processes results and generates final response
+    design_decisions:
+      when_to_use:
+      - Building tool integrations that should work across multiple LLM platforms
+      - Organizations with many tools that multiple AI applications need to access
+      - When standardization reduces maintenance burden (N+M vs N×M)
+      - When tools need to be shared across teams and applications
+      when_to_avoid:
+      - Single LLM + single tool integrations where MCP overhead is unnecessary
+      - Extremely latency-sensitive applications where the extra abstraction layer matters
+      - When tools require custom authentication flows not well-supported by MCP
+      trade_offs:
+      - 'Standardization vs flexibility: MCP constrains how tools are exposed'
+      - 'Abstraction overhead vs integration simplicity: extra layer but easier to maintain'
+      - 'Ecosystem dependency: relies on MCP adoption by both tool and LLM providers'
+    implementation:
+      reference_architecture: ''
+      pseudocode: ''
+      code_scaffold: ''
+      libraries_and_tools: []
+      configuration: ''
+    real_world_applications: []
+    relationships:
+      depends_on:
+      - tools_and_integration.tool_calling
+      enables:
+      - tools_and_integration.api_orchestration
+      compare_with: []
+    sources:
+    - 'B09 Ch5: MCP — USB-C port of AI, N×M→N+M, Anthropic open standard, JSON-RPC 2.0'
+    - 'B09 Ch5: MCP architecture — Server/Host/Client/Resources, 12-step flow'
+    - 'B09 Ch5: MCP vs A2A (Google Agent-to-Agent protocol)'
+    - 'B18: MCP component table, 12-step flow diagram, MCP vs A2A comparison'
+    - 'B04 Ch8: MCP server capability types — Tools (inputSchema), Resources (uri/mimeType), Prompts (arguments)'
+    - 'B04 Ch8: FastMCP — Python utility for rapid MCP server creation'
+    - 'B04 Ch8: MCP authentication — OAuth 2.0, token-based, RBAC'
+    - 'B04 Ch8: MCP error codes — 32700/32600/32601/32602/32603, custom codes above 32000'
+    - 'B04 Ch8: MCP fault tolerance — intelligent fallback, error thresholds, automated switching'
+    - 'Deep-Dive: MCP 12-Step Flow v2 Infographic'
+    - 'Deep-Dive: Chapter 5 Deep Dive - MCP section'
+    - 'Deep-Dive: Ch5 Tool Use Infographic - MCP section'
+    - 'Deep-Dive: Chapter 5 Concept Map'
+    real_world_analogies:
+    - analogy: USB-C port of AI
+      explanation: MCP solves the N×M problem — before USB-C, every phone needed its own charger. Now one cable works for
+        everything. Similarly, instead of every LLM needing custom integrations for every tool, tools implement MCP once and
+        work with any MCP-compatible LLM.
+      source: AI Agents Learning Guide Ch5
+  api_orchestration:
+    definition: Patterns for agents to discover, sequence, and invoke multiple APIs to accomplish complex tasks — including
+      API chaining, error recovery, rate limiting, and response aggregation.
+    core_concepts:
+    - concept_name: API Chain Patterns
+      explanation: ''
+    - concept_name: Authentication Management
+      explanation: ''
+    - concept_name: Rate Limiting and Throttling
+      explanation: ''
+    - concept_name: Error Handling in API Chains
+      explanation: ''
+    how_it_works: []
+    design_decisions:
+      when_to_use: []
+      when_to_avoid: []
+      trade_offs: []
+    implementation:
+      reference_architecture: ''
+      pseudocode: ''
+      code_scaffold: ''
+      libraries_and_tools: []
+      configuration: ''
+    real_world_applications: []
+    relationships:
+      depends_on:
+      - tools_and_integration.tool_calling
+      enables:
+      - implementation_blueprints
+      compare_with: []
+    sources:
+    - 'B02: AI Agents in Action'
+    - 'B10: Building Agentic AI Systems'
+  rag_for_agents:
+    definition: Retrieval-Augmented Generation adapted for agentic workflows. Traditional RAG retrieves once before generation;
+      Agentic RAG lets the agent control when, what, and how many times to retrieve, making retrieval part of the agent's
+      reasoning loop rather than a fixed preprocessing step.
+    core_concepts:
+    - concept_name: Embedding and Retrieval Pipeline
+      explanation: ''
+    - concept_name: Chunking Strategies
+      explanation: ''
+    - concept_name: Reranking
+      explanation: ''
+    - concept_name: Hybrid Search
+      explanation: ''
+    - concept_name: Agentic RAG
+      explanation: ''
+    - concept_name: Self-RAG
+      explanation: ''
+    - concept_name: Traditional RAG Pipeline
+      explanation: 'Fixed pipeline: Embed documents → Store in vector database → Retrieve relevant chunks → Augment prompt
+        → Generate response. Single retrieval step before generation. Like a librarian who grabs one book before answering
+        your question.'
+    - concept_name: RAG for Tool Discovery
+      explanation: When an agent has access to many tools, use RAG with a vector database to discover relevant tool schemas
+        based on the current query. Embed tool descriptions, retrieve the most relevant tools for the current task. Avoids
+        overwhelming the LLM with all tool schemas at once.
+    - concept_name: LangChain RAG Pipeline (B03)
+      explanation: 'Six-stage RAG pipeline: Source → Load → Transform (split/chunk) → Embed → Store (vector DB) → Retrieve.
+        Document splitting options: RecursiveCharacterTextSplitter (character-based, simpler) vs CharacterTextSplitter.from_tiktoken_encoder
+        (token-based, better for LLM context management). Vector store: ChromaDB via Chroma.from_documents(documents, OpenAIEmbeddings()).
+        Token-based splitting is preferred as it aligns chunk sizes with actual LLM token consumption.'
+    - concept_name: Unified Semantic-Transactional Retrieval
+      explanation: B06 advances beyond traditional RAG by enabling vector similarity search AND relational filters to coexist
+        in a single query on distributed SQL. Agents can retrieve semantically similar documents while enforcing transactional
+        constraints (e.g., "only from active customers"). Hybrid approach improves precision and ensures retrieval results
+        are operationally valid, not just semantically interesting.
+    - concept_name: Retrieval Latency Guarantees
+      explanation: 'B06 emphasizes that retrieval infrastructure (not application code) must guarantee millisecond-level response
+        bounds. Requires: (1) fast indexes + in-memory access, (2) tail latency mitigation (speculation, isolation), (3) cold
+        path optimization (prefetching), (4) cross-node optimization (locality, coplacement), (5) non-blocking index updates.
+        Enables real-time agentic decision-making without application-level caching or ad hoc optimizations.'
+    - concept_name: Governance in Retrieval Infrastructure
+      explanation: 'Access control and compliance cannot be application middleware — they must be embedded in the retrieval
+        layer itself. B06 advocates: (1) standardized metadata (source, timestamp, principal, provenance) on every request,
+        (2) role-based access control (RBAC) enforced at the database boundary, (3) immutable audit logs. Prevents policy
+        divergence across services and ensures consistent governance at scale.'
+    - concept_name: Accuracy via Continuous Feedback Loops
+      explanation: B06 argues that retrieval relevance must be measured and improved continuously at the system level. Instrumentation
+        captures metrics (precision, recall, MRR, NDCG). Feedback loops convert signals (user corrections, relevance judgments,
+        model disagreements when LLM revises/declines context) into corrective adjustments (reranker tuning, embedding updates,
+        ranking weight refinement). Results in "living indexing" — adaptive retrieval that learns from mistakes.
+    - concept_name: Vector Search Integration with Distributed SQL
+      explanation: 'Modern distributed SQL platforms integrate vector search either natively or via extensions, enabling agents
+        to issue unified queries: filter by vector similarity AND apply relational predicates AND aggregate analytical measures
+        — all in one distributed transaction. Approximate nearest-neighbor indexes combined with time-based eviction keep
+        latency and memory predictable. Vectors version alongside schemas, supporting schema evolution and data branching
+        for agent experimentation.'
+    - concept_name: Citation-Backed Reasoning with Source Metadata
+      definition: High-fidelity RAG that attaches source metadata (document ID, page, timestamp, confidence) to every fact.
+        Enables citation-backed responses and verifiability.
+      trust_benefit: Users can verify claims by checking sources; supports regulatory compliance and academic rigor
+      implementation: Each fact retrieved includes provenance; Writer references sources in output
+      source_book: B12
+    - concept_name: Defense Layer Against Data Poisoning
+      definition: Multi-stage approach to prevent malicious or incorrect data from entering the knowledge base and corrupting
+        reasoning. Includes ingestion validation, source verification, and anomaly detection.
+      stages: Source vetting, ingestion validation, semantic consistency checks, output validation against known-good facts
+      source_book: B12
+    - concept_name: Input Sanitization for Prompt Injection Defense
+      definition: Preprocessing user input to detect and neutralize prompt injection attempts before context assembly. Removes
+        or flags suspicious patterns.
+      technique: Pattern matching, entropy analysis, semantic consistency checks, safe parsing
+      goal: Prevent adversarial input from hijacking agent behavior or leaking context
+      source_book: B12
+    - concept_name: NASA-Inspired Research Assistant Pattern
+      definition: Enterprise-grade RAG system inspired by NASA's rigorous verification standards. High-fidelity retrieval,
+        citation backing, defense against poisoning, and backward compatibility.
+      rigor: 'Treats AI output like mission-critical systems: verify before use, maintain audit trails, have rollback paths'
+      source_book: B12
+    how_it_works: []
+    design_decisions:
+      when_to_use: []
+      when_to_avoid: []
+      trade_offs: []
+    implementation:
+      reference_architecture: ''
+      pseudocode: ''
+      code_scaffold: ''
+      libraries_and_tools: []
+      configuration: ''
+    real_world_applications: []
+    relationships:
+      depends_on:
+      - memory_and_context.semantic_memory
+      enables:
+      - implementation_blueprints
+      compare_with: []
+    sources:
+    - 'B09 Ch4: Traditional RAG (embed→store→retrieve→augment→generate) vs Agentic RAG (agent controls retrieval)'
+    - 'B09 Ch5: RAG for tool discovery — vector database of tool schemas for selection when many tools available'
+    - 'B03 Ch8: LangChain RAG pipeline — 6 stages, character vs token-based splitting, ChromaDB'
+    - 'B04 Ch5: Agentic RAG vs traditional RAG — dynamic retrieval, query reformulation, multi-source, quality eval'
+    - 'B06 Ch2: Unified retrieval foundation — combining vector + transactional search in single system'
+    - 'B06 Ch3: Semantic-Transactional Join, Contextual Fact Augmentation, Probabilistic Joins for hybrid retrieval'
+    - 'B06 Ch4: Latency guarantees in retrieval — best-case, tail, cold path, cross-node, index update latencies'
+    - 'B06 Ch4: Governance in retrieval layer — metadata, access control, audit logs embedded in infrastructure'
+    - 'B06 Ch4: Accuracy via system-level instrumentation and feedback loops — living indexing'
+    - 'B12: Context Engineering for Multi-Agent Systems (Denis Rothman, 2025)'
+    - 'Deep-Dive: An Illustrated Guide to AI Agents - Chapter 4 RAG section'
+    - 'Deep-Dive: Ch4 Memory Infographic - RAG Pipeline'
+    real_world_analogies:
+    - analogy: Librarian answering questions
+      explanation: 'RAG is like a librarian who runs to grab relevant books before answering your question, rather than trying
+        to answer from memory alone. The three stages: indexing (organizing the library), retrieval (finding the right books),
+        generation (synthesizing the answer).'
+      source: AI Agents Learning Guide Ch4
+  code_execution_and_sandboxing:
+    definition: Secure environments for agents to write and execute code as part of their reasoning — including sandboxed
+      interpreters, container-based execution, and output validation strategies.
+    core_concepts:
+    - concept_name: Code Generation
+      explanation: ''
+    - concept_name: Sandbox Environments
+      explanation: ''
+    - concept_name: Code Validation
+      explanation: ''
+    - concept_name: REPL Patterns
+      explanation: ''
+    how_it_works: []
+    design_decisions:
+      when_to_use: []
+      when_to_avoid: []
+      trade_offs: []
+    implementation:
+      reference_architecture: ''
+      pseudocode: ''
+      code_scaffold: ''
+      libraries_and_tools: []
+      configuration: ''
+    real_world_applications: []
+    relationships:
+      depends_on:
+      - tools_and_integration.tool_calling
+      enables:
+      - implementation_blueprints
+      compare_with: []
+    sources:
+    - 'B01: 30 Agents Every AI Engineer Must Build'
+    - 'B09: Building AI Agents with LangGraph'
+  web_browsing_and_scraping:
+    definition: Enabling agents to navigate, read, and extract information from web pages — including browser automation,
+      content extraction, JavaScript rendering, and anti-bot mitigation.
+    core_concepts:
+    - concept_name: Browser Automation
+      explanation: ''
+    - concept_name: Web Content Extraction
+      explanation: ''
+    - concept_name: Navigation Strategies
+      explanation: ''
+    how_it_works: []
+    design_decisions:
+      when_to_use: []
+      when_to_avoid: []
+      trade_offs: []
+    implementation:
+      reference_architecture: ''
+      pseudocode: ''
+      code_scaffold: ''
+      libraries_and_tools: []
+      configuration: ''
+    real_world_applications: []
+    relationships:
+      depends_on:
+      - tools_and_integration.tool_calling
+      enables:
+      - implementation_blueprints
+      compare_with: []
+    sources:
+    - 'B02: AI Agents in Action'
+    - 'B05: AI Agents Learning Guide'
+  tool_learning_and_creation:
+    definition: 'How LLMs learn to use tools effectively through three progressively sophisticated methods: in-context learning
+      (few-shot prompting), supervised fine-tuning (Toolformer), and reinforcement learning (ToolRL, Search-R1). Also includes
+      HuggingGPT as an example of in-context tool orchestration, and Tool-Integrated Reasoning (TIR) where tools are called
+      during the thinking process itself.'
+    core_concepts:
+    - concept_name: In-Context Learning for Tools
+      explanation: 'Simplest approach: provide examples of correct tool usage directly in the prompt (few-shot). The LLM learns
+        the pattern and applies it to new queries. Uses fake message history showing prior tool calls and outputs. Simple
+        but consumes context window space.'
+    - concept_name: HuggingGPT (In-Context Tool Orchestration)
+      explanation: 'LLM orchestrator that uses HuggingFace AI models as tools, using only prompting and in-context learning.
+        Four-step pipeline: (1) Task Planning — specification-based instruction + demonstration-based parsing to decompose
+        query into tasks. (2) Model Selection — Top-K models by downloads from HuggingFace Hub. (3) Task Execution — parallel
+        execution when possible via dependency tracking between tasks. (4) Response Generation — LLM synthesizes all results.
+        Demonstrates how far you can go without any training.'
+    - concept_name: Toolformer (SFT for Tool Use)
+      explanation: 'Embeds tool calls directly into the generated text using special tokens: [ (start tool call), → (execute),
+        ] (end + output). Tool output becomes part of the generated text itself, not separate messages. Trained via SFT on
+        auto-generated dataset: few-shot prompt → sample outputs → filter by correctness/loss. Effective but sensitive to
+        exact wording and prompt format.'
+    - concept_name: ToolRL (RL for Tool-Integrated Reasoning)
+      explanation: 'Uses GRPO with two reward types: (1) Correctness reward (0.7-1.0) — did it call the right tool with right
+        parameters? (2) Format reward (binary 0/1) — did it use proper <think>/<tool_call>/<answer> tokens? Trained on 4,000
+        TIR samples on Qwen2.5 models. Key finding: longer reasoning traces don''t consistently improve tool use. RL produces
+        more generalizable tool-use behavior than SFT.'
+    - concept_name: Search-R1 (RL for Search-Integrated Reasoning)
+      explanation: 'RL framework for integrating search into reasoning traces. Special tokens: <think>/<search>/<information>/<answer>.
+        Uses PPO/GRPO with accuracy-only outcome reward (no format reward needed for Qwen-2.5). Key innovation: Loss Masking
+        for Retrieved Tokens — masks search engine output tokens from loss calculation during training, so the model does
+        not try to control what search returns. Open-source DeepResearch alternative.'
+    - concept_name: Tool-Integrated Reasoning (TIR)
+      explanation: Traditional tool use happens BETWEEN reasoning steps (think → call tool → think again). TIR embeds tool
+        calls DURING the thinking process itself. The model can reach for a calculator mid-thought while solving a math problem
+        — tool calls as natural parts of the reasoning trace. Particularly powerful for reasoning LLMs with extended thinking.
+        Represents the convergence of reasoning and tool use.
+    - concept_name: Three Methods Comparison
+      explanation: 'In-Context Learning: simple, uses context space, like watching a tutorial. Supervised Fine-Tuning (Toolformer):
+        effective but sensitive to wording, like taking a course. Reinforcement Learning (ToolRL/Search-R1): most generalizable
+        but complex to set up, like learning by experimenting and getting feedback.'
+    - concept_name: Benefits of TIR
+      definition: Information gathering becomes part of reasoning chain; enables iterative problem solving; reduces speculation
+      example: Like reaching for a calculator mid-thought rather than computing everything in your head first
+    - concept_name: Integration with reasoning LLMs
+      definition: TIR works especially well with o1/DeepSeek-R1 where tool calls can happen during extended thinking phase
+      synergy: Reasoning models can decide when to call tools as part of problem-solving process
+    how_it_works:
+    - step: 1
+      description: 'Tool Creation: developer builds function with docstring, stored in dictionary for string-based lookup'
+    - step: 2
+      description: 'Tool Definition: describe via JSON Schema (name, description, parameters) — through Learning (fine-tuning)
+        or Prompting'
+    - step: 3
+      description: 'Tool Selection: LLM reasons in thinking traces; for many tools, RAG discovers relevant schemas'
+    - step: 4
+      description: 'Tool Calling: LLM outputs a string (intent to call), regex extracts JSON from XML tags, external system
+        executes'
+    - step: 5
+      description: 'Output Processing: tool result fed back via messages structure, LLM processes to generate final answer'
+    design_decisions:
+      when_to_use: []
+      when_to_avoid: []
+      trade_offs: []
+    implementation:
+      reference_architecture: ''
+      pseudocode: ''
+      code_scaffold: ''
+      libraries_and_tools: []
+      configuration: ''
+    real_world_applications: []
+    relationships:
+      depends_on:
+      - tools_and_integration.tool_calling
+      enables:
+      - foundations.cognitive_architectures
+      compare_with: []
+    sources:
+    - 'B09 Ch5: Three methods of tool learning — in-context, SFT (Toolformer), RL (ToolRL/Search-R1)'
+    - 'B09 Ch5: HuggingGPT — 4-step pipeline (Task Planning, Model Selection, Task Execution, Response Generation)'
+    - 'B09 Ch5: Toolformer — special tokens [/→/], SFT on auto-generated dataset filtered by correctness'
+    - 'B09 Ch5: ToolRL — GRPO with correctness + format rewards, 4000 TIR samples, Qwen2.5'
+    - 'B09 Ch5: Search-R1 — PPO/GRPO, Loss Masking for Retrieved Tokens, open-source DeepResearch'
+    - 'B09 Ch5: Tool-Integrated Reasoning (TIR) — tools during thinking, not between reasoning steps'
+    - 'B18: Three methods comparison table (simplicity vs generalizability trade-offs)'
+    - 'B05: AI Agents Learning Guide - Chapter 5'
+  tool_learning_methods:
+    description: 'Three distinct approaches for LLMs to learn how and when to use tools: in-context learning, supervised fine-tuning,
+      and reinforcement learning.'
+    core_concepts:
+    - concept_name: In-context learning
+      definition: LLM learns to use tools through examples in the prompt. No model training required.
+      mechanism: Provide example tool calls in prompt context; LLM learns pattern and generalizes
+      advantages: Fast, flexible, no retraining needed
+      limitations: Context window bounded; examples take up space
+    - concept_name: Supervised fine-tuning
+      definition: Train model on dataset of (prompt, tool-call-sequence) pairs. Model learns tool-use patterns from data.
+      mechanism: Create training dataset of correct tool calls for various tasks; fine-tune model on this data
+      advantages: Scalable, model internalizes patterns, improves base capabilities
+      limitations: Requires training data; expensive to create; static once trained
+    - concept_name: Reinforcement learning
+      definition: Train model through trial-and-error with reward signals. Model learns which tool sequences achieve goals.
+      mechanism: Agent tries tool calls; receives reward for success; updates model to prefer rewarded actions
+      advantages: Can discover novel tool combinations; learns goal-directed behavior; adapts dynamically
+      limitations: Complex to implement; requires reward function design; slow training
+    - concept_name: 'Analogy: Learning an app'
+      definition: In-context = watching a tutorial. Supervised = taking a course. Reinforcement = experimenting and learning
+        from results.
+      learning_curve: In-context is fastest but limited. Supervised is medium. Reinforcement can achieve deepest understanding.
+    - concept_name: Tool-Integrated Reasoning (TIR)
+      definition: Modern reasoning LLMs can call tools DURING their thinking process, not just at the end. This allows gathering
+        information as part of the reasoning chain. Like reaching for a calculator mid-thought rather than computing everything
+        in your head first.
+      source_book: Deep-Dive Materials
+      deep_dive_source: AI Agents Learning Guide Ch5
+    sources:
+    - 'B05: AI Agents Learning Guide - Chapter 5'
+    - 'Deep-Dive: Chapter 5 Deep Dive - Three Methods of Tool Learning'
+    - 'Deep-Dive: AI Agents Learning Guide Ch5'
+    real_world_analogies:
+    - analogy: Learning an app
+      explanation: 'Three methods: watching a tutorial (in-context learning with examples), taking a course (supervised fine-tuning
+        on datasets), or just experimenting (reinforcement learning with trial and error)'
+      source: AI Agents Learning Guide Ch5
+    definition: Approaches for agents to learn how to use new tools — including tool documentation parsing, few-shot tool
+      examples, tool creation from natural language, and self-supervised tool practice.
+_source_metadata:
+  split_from: agentic_ai_kb.yaml
+  version: 1.0-scaffold
+  last_updated: '2026-04-06'
+  owner: Padmasani Srimadhan

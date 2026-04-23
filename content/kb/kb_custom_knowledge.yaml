@@ -1,0 +1,13 @@
+custom_knowledge:
+  status: reserved — for personal notes, experiments, and learnings
+  planned_structure:
+  - Personal implementation notes
+  - Experiment logs
+  - Custom patterns discovered
+  - Interview preparation notes
+  - Leadership frameworks for AI
+_source_metadata:
+  split_from: agentic_ai_kb.yaml
+  version: 1.0-scaffold
+  last_updated: '2026-04-06'
+  owner: Padmasani Srimadhan

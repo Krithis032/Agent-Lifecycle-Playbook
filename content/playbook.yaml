@@ -1,0 +1,239 @@
+phases:
+  - slug: ideation
+    num: 1
+    name: "Ideation & Scoping"
+    icon: "💡"
+    color: "#2d3a8c"
+    duration: "1-2 weeks"
+    subtitle: "Define the problem space, validate agent-fit, and establish success criteria before committing resources."
+    interview_angle: "As CAIO, I frame every agent initiative through business value. We don't build agents because we can — we build them because the ROI on autonomous task completion exceeds the total cost of orchestration, monitoring, and governance. My first question is always: what's the cost of the current manual process, and what's our target automation rate?"
+    steps:
+      - title: "Problem Statement & Opportunity Mapping"
+        body: "Start with the business problem, not the technology. Map the current workflow end-to-end, identifying bottlenecks, error-prone steps, and high-latency handoffs. Quantify the cost of the status quo: person-hours, error rates, customer wait times, compliance gaps. Use the Agent-Fit Assessment framework to determine if this problem is genuinely suited for agentic AI — not every automation needs an agent. The key discriminator is whether the task requires multi-step reasoning, tool use, and adaptive decision-making rather than simple rule-based automation."
+        deliverables: ["Problem statement document", "Current workflow map", "Cost-of-status-quo analysis", "Agent-fit assessment score"]
+        tools: ["Miro/FigJam for workflow mapping", "Spreadsheet for cost analysis"]
+        pro_tip: "The strongest agent use cases have a clear 'loop' — the agent reasons, acts, observes, and adjusts. If the workflow is purely linear with no branching, consider simpler automation first."
+      - title: "Success Metrics & Constraints Definition"
+        body: "Define measurable success criteria before writing a single line of code. Good metrics are SMART: specific, measurable, achievable, relevant, time-bound. For agent projects, key metrics typically include: task completion rate, accuracy vs human baseline, average resolution time, cost per task, and user satisfaction. Also define hard constraints: latency SLAs, budget caps, compliance requirements, data residency rules, and human-in-the-loop thresholds."
+        deliverables: ["Success metrics document", "Constraint matrix", "Budget envelope"]
+        tools: ["OKR framework", "RACI matrix"]
+        pro_tip: "Set a 'kill criteria' upfront — specific thresholds that, if not met during prototype, trigger a pivot or cancellation. This prevents sunk-cost fallacy."
+      - title: "Stakeholder Alignment & Risk Identification"
+        body: "Identify all stakeholders: business sponsors, end users, security/compliance teams, infrastructure owners, and affected downstream systems. Run a pre-mortem exercise: imagine the project has failed in 6 months — what went wrong? This surfaces risks early. Classify risks using the Agent Deployment Risk Matrix: stakes (high/low) vs error visibility (easy/hard to detect). High-stakes + hard-to-detect errors demand the most rigorous governance."
+        deliverables: ["Stakeholder map", "Pre-mortem risk register", "Risk classification"]
+        tools: ["Stakeholder analysis template", "Risk matrix"]
+      - title: "Scope Boundary & Architecture Hypothesis"
+        body: "Define what's in scope and out of scope explicitly. Propose an initial architecture hypothesis — single agent vs multi-agent, synchronous vs asynchronous, the likely model tier strategy. This is a hypothesis to be validated in Phase 2, not a commitment. Identify 2-3 candidate architecture patterns and the key technical risks that will determine which to choose."
+        deliverables: ["Scope document", "Architecture hypothesis", "Technical risk log"]
+        tools: ["Architecture decision record template"]
+        pro_tip: "Resist the urge to pick a framework in Phase 1. The architecture pattern should drive framework selection, not the other way around."
+    gate:
+      title: "Phase 1 Gate: Ideation Complete"
+      checks:
+        - "Business problem is clearly articulated with quantified cost of status quo"
+        - "Agent-fit assessment confirms this problem benefits from agentic AI (not simpler automation)"
+        - "Success metrics are defined with specific numeric targets"
+        - "Kill criteria are established for prototype phase"
+        - "Stakeholders are identified and aligned on objectives"
+        - "Risk classification is complete (stakes × error visibility)"
+        - "Scope boundaries are documented with explicit exclusions"
+
+  - slug: architecture
+    num: 2
+    name: "Architecture & Design"
+    icon: "🏗️"
+    color: "#6b3fa0"
+    duration: "2-3 weeks"
+    subtitle: "Select the architecture pattern, framework, model strategy, and design the agent's cognitive architecture."
+    interview_angle: "Architecture is where we make our most consequential decisions. I evaluate patterns against three axes: control granularity, failure isolation, and observability depth. A supervisor-worker pattern gives us centralized control but creates a single point of failure. A swarm offers resilience but makes debugging harder. The right choice depends on the stakes and our team's operational maturity."
+    steps:
+      - title: "Architecture Pattern Selection"
+        body: "Evaluate the five core agentic architecture patterns against your requirements: Single Agent (simplest, best for focused tasks), Pipeline (sequential multi-step processing), Supervisor-Workers (centralized orchestration with specialized workers), Swarm (peer-to-peer collaboration), and Hierarchical (multi-level delegation). Use a weighted evaluation matrix scoring each pattern on: control granularity, failure isolation, scalability, debuggability, and implementation complexity."
+        deliverables: ["Architecture evaluation matrix", "Selected pattern with rationale", "ADR-001: Architecture Pattern"]
+        tools: ["Evaluation matrix template", "Architecture decision record"]
+        pro_tip: "Start with the simplest pattern that meets your requirements. You can always evolve from Single Agent → Pipeline → Supervisor as complexity demands."
+        code_example: "# Architecture Pattern Decision Matrix\n# Score each 1-10, multiply by weight\n\nCriteria (Weight)    | Single | Pipeline | Supervisor | Swarm | Hierarchical\nControl (30%)        |   9    |    7     |     8      |   4   |      7\nFailure Isolation(25)|   3    |    5     |     7      |   9   |      8\nScalability (20%)    |   3    |    6     |     7      |   9   |      8\nDebuggability (15%)  |   9    |    7     |     6      |   3   |      5\nComplexity (10%)     |   9    |    7     |     5      |   3   |      4"
+      - title: "Framework Selection & Model Strategy"
+        body: "Choose the implementation framework based on the selected architecture pattern. Key options: LangGraph (best for stateful, graph-based workflows with fine-grained control), CrewAI (best for role-based multi-agent with rapid prototyping), Claude Agent SDK (best for Claude-native tool-use agents), AG2/AutoGen (best for conversational multi-agent), Semantic Kernel (best for .NET/enterprise integration). Define your model tiering strategy: which models handle which tasks. Use Opus for complex governance reviews, Sonnet for advisory and generation, Haiku for classification, routing, and extraction."
+        deliverables: ["Framework evaluation matrix", "Model tier strategy document", "ADR-002: Framework Selection"]
+        tools: ["Framework comparison table", "Model cost calculator"]
+      - title: "Tool & Integration Design"
+        body: "Design the agent's tool ecosystem. Identify all external systems the agent needs to interact with: APIs, databases, file systems, messaging queues, monitoring systems. Design the tool interface contracts: input schemas, output schemas, error handling, timeout policies. Consider MCP (Model Context Protocol) for standardized tool interfaces that work across models and frameworks."
+        deliverables: ["Tool inventory", "Interface contracts (OpenAPI/JSON Schema)", "Integration architecture diagram"]
+        tools: ["OpenAPI spec", "Sequence diagrams", "MCP server registry"]
+      - title: "State Management & Memory Design"
+        body: "Design how the agent maintains state and memory. Define the state schema for your chosen framework. Design memory tiers: working memory (current conversation/task), short-term memory (session-level context), long-term memory (persistent knowledge). Decide on persistence strategy: in-memory for prototyping, database-backed for production. If using LangGraph, design the state graph explicitly with typed state channels."
+        deliverables: ["State schema definition", "Memory architecture document", "Persistence strategy"]
+        tools: ["LangGraph state design", "Database schema design"]
+    gate:
+      title: "Phase 2 Gate: Architecture Complete"
+      checks:
+        - "Architecture pattern is selected with a scored evaluation matrix"
+        - "Framework is chosen with documented rationale in an ADR"
+        - "Model tiering strategy defines which model handles which task type"
+        - "Tool interfaces are designed with input/output schemas"
+        - "State management approach is documented"
+        - "Architecture diagram covers all components and data flows"
+
+  - slug: prototype
+    num: 3
+    name: "Prototype & Evaluate"
+    icon: "🧪"
+    color: "#0e7490"
+    duration: "2-3 weeks"
+    subtitle: "Build a working prototype, create evaluation datasets, and validate the architecture against success metrics."
+    interview_angle: "Prototyping is where assumptions meet reality. I insist on evaluation-driven development — we define our test cases before we write the agent code. This prevents the common trap of building something that 'feels like it works' but fails on edge cases. Our evaluation suite is the contract between the team and stakeholders."
+    steps:
+      - title: "Evaluation Dataset Creation"
+        body: "Before building the prototype, create the evaluation dataset. Define 50-100 test cases that represent the full spectrum of inputs the agent will handle: golden path (expected inputs), edge cases (boundary conditions), adversarial inputs (attempts to break the agent), and real-world samples (from production data if available). Each test case should have an expected output or acceptable output range. This is your ground truth."
+        deliverables: ["Evaluation dataset (50-100 cases)", "Scoring rubric", "Expected output definitions"]
+        tools: ["pytest", "LangSmith", "Custom eval harness"]
+        pro_tip: "Include at least 20% adversarial test cases. Agents that only work on happy-path inputs are useless in production."
+      - title: "Core Agent Implementation"
+        body: "Build the minimum viable agent that can handle the golden-path test cases. Focus on the critical path first: the primary workflow that delivers the most value. Implement tool integrations with proper error handling and timeout management. Use structured outputs (JSON mode or tool_use) to ensure parseable agent responses. Wire up basic observability from day one — you need to see what the agent is thinking."
+        deliverables: ["Working prototype agent", "Tool implementations", "Basic observability dashboard"]
+        tools: ["Chosen framework", "LangSmith/Arize for tracing", "pytest for eval"]
+        code_example: "# Example: Evaluation-driven agent development\nimport pytest\nfrom agent import MyAgent\n\n@pytest.fixture\ndef agent():\n    return MyAgent(model='claude-sonnet-4-6')\n\ndef test_golden_path(agent, eval_dataset):\n    for case in eval_dataset.golden_path:\n        result = agent.run(case.input)\n        assert result.score >= case.min_score\n        assert result.completed_steps == case.expected_steps"
+      - title: "Evaluation & Iteration"
+        body: "Run the full evaluation suite against the prototype. Measure: task completion rate, accuracy vs expected outputs, latency (p50/p95/p99), cost per task, and failure modes. Categorize failures: wrong tool selection, incorrect reasoning, hallucinated information, timeout, or unrecoverable error. Iterate on the top 3 failure modes. If task completion rate is below kill criteria, consider architecture changes before investing more in optimization."
+        deliverables: ["Evaluation report with metrics", "Failure analysis", "Iteration backlog"]
+        tools: ["Evaluation framework", "Metrics dashboard", "Error categorization"]
+    gate:
+      title: "Phase 3 Gate: Prototype Validated"
+      checks:
+        - "Evaluation dataset has 50+ test cases covering golden path, edge cases, and adversarial inputs"
+        - "Prototype achieves target task completion rate on golden-path cases"
+        - "Failure modes are categorized and top 3 have mitigation plans"
+        - "Cost per task is within budget envelope"
+        - "Latency meets SLA requirements (p95)"
+        - "Architecture is validated — no fundamental redesign needed"
+
+  - slug: pilot
+    num: 4
+    name: "Pilot & Validate"
+    icon: "🚀"
+    color: "#1a8c5a"
+    duration: "2-4 weeks"
+    subtitle: "Deploy to a controlled environment with real users, validate with production data, and refine based on feedback."
+    interview_angle: "The pilot phase is where we prove business value with real data and real users. I structure pilots with clear success criteria, a defined user cohort, and daily metrics reviews. The goal isn't perfection — it's learning. Every pilot generates insights that no amount of offline evaluation can provide."
+    steps:
+      - title: "Pilot Environment Setup"
+        body: "Set up a production-like environment that's isolated from production systems. Configure feature flags to control agent access. Implement human-in-the-loop checkpoints for high-stakes decisions. Set up real-time monitoring dashboards showing: task completion rate, error rate, latency, cost, and user satisfaction. Define the pilot cohort: a representative subset of users who will interact with the agent."
+        deliverables: ["Pilot environment", "Feature flag configuration", "Monitoring dashboard", "Pilot cohort definition"]
+        tools: ["Docker/K8s", "Feature flag service", "Grafana/Datadog", "PagerDuty"]
+      - title: "Controlled Rollout"
+        body: "Begin with shadow mode: the agent processes requests alongside the current system, but its outputs are compared rather than served. Once shadow mode validates accuracy, switch to supervised mode: the agent handles requests with human review of outputs. Finally, move to autonomous mode for low-risk tasks while maintaining human oversight for edge cases. Track the human override rate — it should decrease over time."
+        deliverables: ["Shadow mode comparison report", "Supervised mode metrics", "Override rate tracking"]
+        tools: ["A/B testing framework", "Human review queue", "Metrics pipeline"]
+        pro_tip: "Never skip shadow mode. The gap between offline evaluation and production performance is always larger than you expect."
+      - title: "Feedback Loop & Refinement"
+        body: "Collect structured feedback from pilot users: what worked, what didn't, what was surprising. Track the human override rate and analyze override patterns — these reveal systematic agent weaknesses. Build a continuous evaluation pipeline that runs nightly against new production data. Refine prompts, tool configurations, and decision thresholds based on pilot data."
+        deliverables: ["User feedback synthesis", "Override pattern analysis", "Refined agent configuration"]
+        tools: ["Feedback forms", "Analytics pipeline", "Prompt versioning"]
+    gate:
+      title: "Phase 4 Gate: Pilot Complete"
+      checks:
+        - "Pilot ran for minimum 2 weeks with real user interactions"
+        - "Task completion rate meets or exceeds target in production conditions"
+        - "Human override rate is below acceptable threshold"
+        - "No critical failures or data integrity issues during pilot"
+        - "User satisfaction feedback is positive (4+/5 average)"
+        - "Cost per task in production matches budget projections"
+
+  - slug: production
+    num: 5
+    name: "Production Hardening"
+    icon: "🔧"
+    color: "#c27a1a"
+    duration: "2-3 weeks"
+    subtitle: "Harden the agent for production: error handling, retry logic, circuit breakers, security, and compliance."
+    interview_angle: "Production hardening is where engineering discipline meets operational excellence. I require every agent deployment to pass a production readiness review covering: graceful degradation, circuit breaking, observability depth, security boundaries, and rollback procedures. An agent without a kill switch doesn't ship."
+    steps:
+      - title: "Error Handling & Resilience Patterns"
+        body: "Implement comprehensive error handling: retry with exponential backoff for transient failures, circuit breakers for cascading failure prevention, graceful degradation paths when tools are unavailable, and dead letter queues for unprocessable requests. Design the agent's failure modes to be explicit and recoverable. Every error should produce a structured error event that's traceable through the observability stack."
+        deliverables: ["Error handling matrix", "Circuit breaker configuration", "Fallback strategy document"]
+        tools: ["Retry libraries", "Circuit breaker pattern", "Dead letter queue"]
+        pro_tip: "Test your failure modes as rigorously as your success paths. Chaos engineering for agents: randomly fail tool calls and verify graceful degradation."
+      - title: "Security Hardening"
+        body: "Apply defense-in-depth: input validation and sanitization for all agent inputs, output filtering to prevent sensitive data leakage, tool permission boundaries (least privilege), rate limiting and abuse prevention, audit logging for all agent actions, and secrets management for API keys and credentials. Conduct a threat model specific to the agent's capabilities — what could go wrong if the agent is manipulated?"
+        deliverables: ["Threat model", "Security controls checklist", "Penetration test results"]
+        tools: ["OWASP guidelines", "Threat modeling framework", "Security scanning"]
+      - title: "Performance Optimization"
+        body: "Optimize for production scale: batch API calls where possible, implement caching for repeated queries, optimize prompt sizes to reduce token costs, use streaming for long-running generations, and configure connection pooling for database and API connections. Profile the agent under load: identify bottlenecks in tool calls, model inference, and state management."
+        deliverables: ["Performance profile", "Optimization backlog", "Load test results"]
+        tools: ["k6/Locust for load testing", "Profiling tools", "APM"]
+      - title: "Compliance & Governance Alignment"
+        body: "Ensure the agent meets all compliance requirements identified in Phase 1: data privacy (GDPR/DPDP), audit trails, retention policies, access controls, and regulatory reporting. Run the TRiSM governance assessment to validate the seven trust layers. Document the agent's decision-making process for explainability requirements."
+        deliverables: ["Compliance checklist", "TRiSM assessment report", "Explainability documentation"]
+        tools: ["TRiSM framework", "Compliance audit template"]
+    gate:
+      title: "Phase 5 Gate: Production Ready"
+      checks:
+        - "Error handling covers all failure modes with graceful degradation"
+        - "Security threat model is complete with mitigations implemented"
+        - "Load testing confirms performance under expected peak traffic"
+        - "All compliance requirements are met and documented"
+        - "Rollback procedure is tested and documented"
+        - "On-call runbook is written with escalation paths"
+        - "Production readiness review is passed"
+
+  - slug: operations
+    num: 6
+    name: "Operations & Monitoring"
+    icon: "📊"
+    color: "#0f766e"
+    duration: "Ongoing"
+    subtitle: "Run the agent in production with comprehensive monitoring, alerting, and continuous evaluation."
+    interview_angle: "Operations is not a phase — it's a permanent state. I expect real-time dashboards showing agent health, drift detection for model performance degradation, and automated alerts before users notice problems. The best agent operations teams treat their agents like services with SLOs, not scripts that run and hope."
+    steps:
+      - title: "Observability Stack Setup"
+        body: "Implement three pillars of observability: metrics (task completion rate, latency percentiles, cost per task, error rate), logs (structured agent traces with thought/action/observation chains), and traces (distributed tracing across tool calls and model invocations). Set up dashboards that give both real-time operational view and weekly trend analysis."
+        deliverables: ["Monitoring dashboard", "Alert configuration", "SLO definitions"]
+        tools: ["Prometheus/Grafana", "LangSmith", "Datadog/New Relic"]
+      - title: "Drift Detection & Continuous Evaluation"
+        body: "Model performance degrades over time as data distributions shift. Implement continuous evaluation: run the evaluation suite nightly against fresh production data, track accuracy trends, alert on sudden drops. Compare outputs across model versions to detect behavioral changes from provider updates. Maintain a golden dataset that's refreshed monthly with new edge cases discovered in production."
+        deliverables: ["Drift detection pipeline", "Continuous eval pipeline", "Golden dataset maintenance process"]
+        tools: ["Automated eval pipeline", "Statistical drift detection", "A/B comparison tools"]
+      - title: "Incident Response & Learning"
+        body: "Establish an incident response process for agent failures: detection (automated alerts), triage (severity classification), mitigation (kill switch, fallback to manual), resolution (root cause analysis), and prevention (post-mortem with action items). Every incident should feed back into the evaluation dataset as a new test case. Track mean time to detect (MTTD) and mean time to resolve (MTTR)."
+        deliverables: ["Incident response playbook", "Post-mortem template", "MTTD/MTTR tracking"]
+        tools: ["PagerDuty/OpsGenie", "Incident management platform", "Post-mortem tools"]
+    gate:
+      title: "Phase 6 Gate: Operations Established"
+      checks:
+        - "Monitoring dashboard is live with real-time metrics"
+        - "Alerts are configured for error rate, latency, and drift"
+        - "SLOs are defined and tracked"
+        - "Continuous evaluation pipeline runs nightly"
+        - "Incident response playbook is documented and tested"
+        - "On-call rotation is established"
+
+  - slug: evolution
+    num: 7
+    name: "Evolution & Scaling"
+    icon: "🔄"
+    color: "#e85d4a"
+    duration: "Continuous"
+    subtitle: "Scale the agent system, evolve capabilities, and build the organizational muscle for agentic AI."
+    interview_angle: "Evolution is about building compounding advantages. Each agent we deploy makes the next one faster through shared tooling, reusable patterns, and institutional knowledge. I'm building an agent platform, not a collection of one-off scripts. The measure of maturity is how quickly we can go from idea to production-grade agent."
+    steps:
+      - title: "Capability Expansion"
+        body: "Systematically expand the agent's capabilities based on production data. Analyze the most common human override patterns — these are opportunities for capability expansion. Add new tools, expand decision boundaries, and increase autonomy levels incrementally. Each expansion should go through a mini prototype-pilot cycle before production deployment."
+        deliverables: ["Capability expansion roadmap", "New tool specifications", "Autonomy level definitions"]
+        tools: ["Feature flag system", "A/B testing", "Evaluation framework"]
+      - title: "Multi-Agent Evolution"
+        body: "As individual agents mature, identify opportunities for multi-agent collaboration. Design agent-to-agent communication protocols, shared state management, and conflict resolution strategies. Consider evolving from simple architectures to more sophisticated patterns: Pipeline → Supervisor, or Supervisor → Hierarchical, based on complexity demands."
+        deliverables: ["Multi-agent architecture proposal", "Communication protocol design", "Migration plan"]
+        tools: ["Agent orchestration framework", "Message queue", "State management"]
+      - title: "Platform & Knowledge Management"
+        body: "Build reusable platform components: shared tool libraries, prompt templates, evaluation harnesses, and deployment pipelines. Create an internal knowledge base documenting agent patterns, anti-patterns, and lessons learned. Establish an agent registry that tracks all deployed agents, their capabilities, dependencies, and operational status."
+        deliverables: ["Platform component library", "Agent registry", "Knowledge base"]
+        tools: ["Internal developer platform", "Documentation system", "CI/CD pipeline"]
+    gate:
+      title: "Phase 7 Gate: Evolution Milestone"
+      checks:
+        - "Agent capabilities have expanded based on production override analysis"
+        - "Reusable platform components are documented and shared"
+        - "Agent registry tracks all deployed agents"
+        - "Time-to-production for new agents has decreased measurably"
+        - "Knowledge base captures lessons learned and patterns"

@@ -1,0 +1,622 @@
+{
+  "config": {
+    "configFile": "/Users/padmasanisrimadhan/Library/Mobile Documents/com~apple~CloudDocs/Agent Lifecycle Playbook/agent-deployment-playbook/playwright.config.ts",
+    "rootDir": "/Users/padmasanisrimadhan/Library/Mobile Documents/com~apple~CloudDocs/Agent Lifecycle Playbook/agent-deployment-playbook/tests",
+    "forbidOnly": false,
+    "fullyParallel": true,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "/Users/padmasanisrimadhan/Library/Mobile Documents/com~apple~CloudDocs/Agent Lifecycle Playbook/agent-deployment-playbook/test-results",
+        "repeatEach": 1,
+        "retries": 1,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "setup",
+        "name": "setup",
+        "testDir": "/Users/padmasanisrimadhan/Library/Mobile Documents/com~apple~CloudDocs/Agent Lifecycle Playbook/agent-deployment-playbook/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "/auth\\.setup\\.ts/"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "/Users/padmasanisrimadhan/Library/Mobile Documents/com~apple~CloudDocs/Agent Lifecycle Playbook/agent-deployment-playbook/test-results",
+        "repeatEach": 1,
+        "retries": 1,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "functionality",
+        "name": "functionality",
+        "testDir": "/Users/padmasanisrimadhan/Library/Mobile Documents/com~apple~CloudDocs/Agent Lifecycle Playbook/agent-deployment-playbook/tests/functionality",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "/Users/padmasanisrimadhan/Library/Mobile Documents/com~apple~CloudDocs/Agent Lifecycle Playbook/agent-deployment-playbook/test-results",
+        "repeatEach": 1,
+        "retries": 1,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "integration",
+        "name": "integration",
+        "testDir": "/Users/padmasanisrimadhan/Library/Mobile Documents/com~apple~CloudDocs/Agent Lifecycle Playbook/agent-deployment-playbook/tests/integration",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "/Users/padmasanisrimadhan/Library/Mobile Documents/com~apple~CloudDocs/Agent Lifecycle Playbook/agent-deployment-playbook/test-results",
+        "repeatEach": 1,
+        "retries": 1,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "security",
+        "name": "security",
+        "testDir": "/Users/padmasanisrimadhan/Library/Mobile Documents/com~apple~CloudDocs/Agent Lifecycle Playbook/agent-deployment-playbook/tests/security",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "/Users/padmasanisrimadhan/Library/Mobile Documents/com~apple~CloudDocs/Agent Lifecycle Playbook/agent-deployment-playbook/test-results",
+        "repeatEach": 1,
+        "retries": 1,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "scalability",
+        "name": "scalability",
+        "testDir": "/Users/padmasanisrimadhan/Library/Mobile Documents/com~apple~CloudDocs/Agent Lifecycle Playbook/agent-deployment-playbook/tests/scalability",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "/Users/padmasanisrimadhan/Library/Mobile Documents/com~apple~CloudDocs/Agent Lifecycle Playbook/agent-deployment-playbook/test-results",
+        "repeatEach": 1,
+        "retries": 1,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "maintainability",
+        "name": "maintainability",
+        "testDir": "/Users/padmasanisrimadhan/Library/Mobile Documents/com~apple~CloudDocs/Agent Lifecycle Playbook/agent-deployment-playbook/tests/maintainability",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "/Users/padmasanisrimadhan/Library/Mobile Documents/com~apple~CloudDocs/Agent Lifecycle Playbook/agent-deployment-playbook/test-results",
+        "repeatEach": 1,
+        "retries": 1,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "firefox",
+        "name": "firefox",
+        "testDir": "/Users/padmasanisrimadhan/Library/Mobile Documents/com~apple~CloudDocs/Agent Lifecycle Playbook/agent-deployment-playbook/tests/functionality",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "/Users/padmasanisrimadhan/Library/Mobile Documents/com~apple~CloudDocs/Agent Lifecycle Playbook/agent-deployment-playbook/test-results",
+        "repeatEach": 1,
+        "retries": 1,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "mobile-safari",
+        "name": "mobile-safari",
+        "testDir": "/Users/padmasanisrimadhan/Library/Mobile Documents/com~apple~CloudDocs/Agent Lifecycle Playbook/agent-deployment-playbook/tests/functionality",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "html",
+        {
+          "outputFolder": "playwright-report",
+          "open": "never"
+        }
+      ],
+      [
+        "json",
+        {
+          "outputFile": "playwright-report/results.json"
+        }
+      ],
+      [
+        "list",
+        null
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.59.1",
+    "workers": 4,
+    "webServer": {
+      "command": "npm run dev",
+      "url": "http://localhost:3000",
+      "reuseExistingServer": true,
+      "timeout": 120000
+    }
+  },
+  "suites": [
+    {
+      "title": "auth.setup.ts",
+      "file": "auth.setup.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "authenticate",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "setup",
+              "projectName": "setup",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 5347,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-04-23T13:13:16.237Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "17e3fe6f4d9d8bd79c6b-60f085b113a677673906",
+          "file": "auth.setup.ts",
+          "line": 15,
+          "column": 6
+        }
+      ]
+    },
+    {
+      "title": "integration/cross-module.spec.ts",
+      "file": "integration/cross-module.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Cross-Module Linking",
+          "file": "integration/cross-module.spec.ts",
+          "line": 7,
+          "column": 6,
+          "specs": [
+            {
+              "title": "project links to playbook phase (currentPhaseId FK)",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "integration",
+                  "projectName": "integration",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 403,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-04-23T13:13:22.097Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "278958de67f12bc6cdda-c6daf161eb00595e5521",
+              "file": "integration/cross-module.spec.ts",
+              "line": 16,
+              "column": 7
+            },
+            {
+              "title": "project initializes all 7 phase progress records",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "integration",
+                  "projectName": "integration",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 19,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-04-23T13:13:22.554Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "278958de67f12bc6cdda-d4808657b2fe25ac7919",
+              "file": "integration/cross-module.spec.ts",
+              "line": 23,
+              "column": 7
+            },
+            {
+              "title": "evaluation can link to project",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "integration",
+                  "projectName": "integration",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 20,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-04-23T13:13:22.579Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "278958de67f12bc6cdda-483dabeca11ae8d0c051",
+              "file": "integration/cross-module.spec.ts",
+              "line": 32,
+              "column": 7
+            },
+            {
+              "title": "governance assessment links to project",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "integration",
+                  "projectName": "integration",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 237,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-04-23T13:13:22.604Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "278958de67f12bc6cdda-bb56c0978a6e484e9236",
+              "file": "integration/cross-module.spec.ts",
+              "line": 41,
+              "column": 7
+            },
+            {
+              "title": "CAIO assessment links to project",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [
+                    {
+                      "type": "skip",
+                      "description": "CAIO API returned 500 (external dependency): {\"error\":\"Failed to create CAIO assessment\"}",
+                      "location": {
+                        "file": "/Users/padmasanisrimadhan/Library/Mobile Documents/com~apple~CloudDocs/Agent Lifecycle Playbook/agent-deployment-playbook/tests/integration/cross-module.spec.ts",
+                        "line": 56,
+                        "column": 12
+                      }
+                    }
+                  ],
+                  "expectedStatus": "skipped",
+                  "projectId": "integration",
+                  "projectName": "integration",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "skipped",
+                      "duration": 52690,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-04-23T13:13:22.847Z",
+                      "annotations": [
+                        {
+                          "type": "skip",
+                          "description": "CAIO API returned 500 (external dependency): {\"error\":\"Failed to create CAIO assessment\"}",
+                          "location": {
+                            "file": "/Users/padmasanisrimadhan/Library/Mobile Documents/com~apple~CloudDocs/Agent Lifecycle Playbook/agent-deployment-playbook/tests/integration/cross-module.spec.ts",
+                            "line": 56,
+                            "column": 12
+                          }
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "skipped"
+                }
+              ],
+              "id": "278958de67f12bc6cdda-dd4d719169facebb7f0a",
+              "file": "integration/cross-module.spec.ts",
+              "line": 49,
+              "column": 7
+            },
+            {
+              "title": "project export includes all linked data",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "integration",
+                  "projectName": "integration",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1044,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-04-23T13:14:15.547Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "278958de67f12bc6cdda-f4444355fb51d7f25a2f",
+              "file": "integration/cross-module.spec.ts",
+              "line": 64,
+              "column": 7
+            }
+          ]
+        },
+        {
+          "title": "Database Integrity",
+          "file": "integration/cross-module.spec.ts",
+          "line": 80,
+          "column": 6,
+          "specs": [
+            {
+              "title": "project creation initializes gate checks via phases",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "integration",
+                  "projectName": "integration",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 31,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-04-23T13:14:16.597Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "278958de67f12bc6cdda-10f58c3a1b3268584051",
+              "file": "integration/cross-module.spec.ts",
+              "line": 81,
+              "column": 7
+            },
+            {
+              "title": "duplicate project names are allowed",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "integration",
+                  "projectName": "integration",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 26,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-04-23T13:14:16.634Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "278958de67f12bc6cdda-cb4e3c32b4a8e31b42eb",
+              "file": "integration/cross-module.spec.ts",
+              "line": 89,
+              "column": 7
+            },
+            {
+              "title": "JSON columns store and retrieve correctly",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "integration",
+                  "projectName": "integration",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 13,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-04-23T13:14:16.665Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "278958de67f12bc6cdda-25b40606c61fe4025aea",
+              "file": "integration/cross-module.spec.ts",
+              "line": 97,
+              "column": 7
+            },
+            {
+              "title": "evaluation stores weighted scores correctly",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "integration",
+                  "projectName": "integration",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 16,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-04-23T13:14:16.682Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "278958de67f12bc6cdda-b6bb90fe33c9f794f45a",
+              "file": "integration/cross-module.spec.ts",
+              "line": 108,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-04-23T13:13:12.702Z",
+    "duration": 64030.155000000006,
+    "expected": 10,
+    "skipped": 1,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

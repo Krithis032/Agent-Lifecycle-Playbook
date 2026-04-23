@@ -1,0 +1,101 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Urbanist:wght@300;400;500;600;700;800;900&display=swap');
+
+:root {
+  /* Executive Minimalist Light Mode Palette */
+  --bg: #ffffff;
+  --surface: #f8f9fa;
+  --surface-hover: #f3f4f5;
+  --surface-active: #ffffff;
+  --border: #e2e8f0;
+  --border-active: #0052cc;
+  --text: #0f172a;
+  --text-2: #334155;
+  --text-3: #64748b;
+  --text-4: #94a3b8;
+  
+  --accent: #0052cc;
+  --accent-soft: rgba(0, 82, 204, 0.08);
+  --accent-glow: rgba(0, 82, 204, 0.04);
+  
+  /* Status Colors (Muted for Professional Look) */
+  --error: #ba1a1a;
+  --error-soft: #ffdad6;
+  --success: #15803d;
+  --success-soft: #dcfce7;
+  --warning: #b45309;
+  --warning-soft: #fef3c7;
+  --info: #0369a1;
+  --info-soft: #e0f2fe;
+
+  --code-bg: #f8fafc;
+  --code-text: #0f172a;
+  
+  --radius: 8px;
+  --radius-sm: 4px;
+  
+  --shadow-subtle: 0 1px 2px rgba(15, 23, 42, 0.04);
+  --shadow-card: 0 4px 12px rgba(15, 23, 42, 0.03);
+  --shadow-float: 0 12px 32px rgba(0, 82, 204, 0.04);
+}
+
+* {
+  box-sizing: border-box;
+  font-family: inherit;
+}
+
+body {
+  font-family: 'Urbanist', system-ui, -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-4);
+}
+
+/* Code blocks */
+pre, code {
+  font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+}
+pre {
+  background: var(--code-bg);
+  color: var(--code-text);
+  border-radius: var(--radius-sm);
+  padding: 18px 20px;
+  overflow-x: auto;
+  font-size: 12px;
+  line-height: 1.7;
+  border: 1px solid rgba(255,255,255,0.05);
+}
+
+/* Hide scrollbar */
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* Utility classes */
+.eyebrow {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--accent);
+}

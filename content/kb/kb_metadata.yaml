@@ -1,0 +1,244 @@
+metadata:
+  version: 1.0-scaffold
+  last_updated: '2026-04-06'
+  total_source_books: 18
+  extraction_status: Phase 5 complete + structural remediation applied
+  owner: Padmasani Srimadhan
+  purpose: Claude.ai Project KB — Agentic AI Architect & Mentor
+  source_books:
+  - id: B01
+    title: 30 Agents Every AI Engineer Must Build
+    isbn: '9781806109012'
+    primary_domains:
+    - architecture_and_patterns
+    - implementation_blueprints
+  - id: B02
+    title: AI Agents - The Definitive Guide
+    isbn: '0642572247775'
+    primary_domains:
+    - foundations
+    - architecture_and_patterns
+    - multi_agent_systems
+  - id: B03
+    title: AI Agents in Action
+    isbn: '9781633436343'
+    primary_domains:
+    - architecture_and_patterns
+    - tools_and_integration
+    - implementation_blueprints
+  - id: B04
+    title: AI Agents in Practice
+    isbn: '9781805801351'
+    primary_domains:
+    - architecture_and_patterns
+    - infrastructure
+    - implementation_blueprints
+  - id: B05
+    title: AI Agents Learning Guide
+    isbn: n/a
+    primary_domains:
+    - foundations
+    - architecture_and_patterns
+  - id: B06
+    title: Agentic AI Data Architectures
+    isbn: '0642572250140'
+    primary_domains:
+    - infrastructure
+    - memory_and_context
+  - id: B07
+    title: Agentic AI in Enterprise
+    isbn: '9798868815423'
+    primary_domains:
+    - enterprise_and_safety
+    - infrastructure
+  - id: B08
+    title: Agentic Mesh
+    isbn: '9798341621633'
+    primary_domains:
+    - multi_agent_systems
+    - infrastructure
+  - id: B09
+    title: An Illustrated Guide to AI Agents
+    isbn: '9798341662681'
+    primary_domains:
+    - foundations
+    - memory_and_context
+    - tools_and_integration
+    - multi_agent_systems
+  - id: B10
+    title: Building Agentic AI Systems
+    isbn: '9781803238753'
+    primary_domains:
+    - architecture_and_patterns
+    - implementation_blueprints
+    - infrastructure
+  - id: B11
+    title: Building Applications with AI Agents
+    isbn: '9781098176495'
+    primary_domains:
+    - architecture_and_patterns
+    - tools_and_integration
+    - implementation_blueprints
+  - id: B12
+    title: Context Engineering for Multi-Agent Systems
+    isbn: '9781806690053'
+    primary_domains:
+    - memory_and_context
+    - multi_agent_systems
+  - id: B13
+    title: Designing with Multi-Agent Systems
+    isbn: '9783110797473'
+    primary_domains:
+    - multi_agent_systems
+    - architecture_and_patterns
+  - id: B14
+    title: Enterprise Guide for Implementing Generative AI and Agentic AI
+    isbn: '9798868816031'
+    primary_domains:
+    - enterprise_and_safety
+    - infrastructure
+  - id: B15
+    title: Integrating Artificial and Human Intelligence through Agent Oriented Systems Design
+    isbn: '9781040111758'
+    primary_domains:
+    - foundations
+    - multi_agent_systems
+    - enterprise_and_safety
+  - id: B16
+    title: Managing Memory for AI Agents
+    isbn: '9798341661257'
+    primary_domains:
+    - memory_and_context
+  - id: B17
+    title: Safer Agentic AI
+    isbn: '9781398625440'
+    primary_domains:
+    - enterprise_and_safety
+  - id: B18
+    title: An Illustrated Guide to Agents - Deep Dive Materials
+    isbn: n/a
+    primary_domains:
+    - foundations
+    - tools_and_integration
+    - multi_agent_systems
+    notes: Chapter summaries, pattern diagrams, revision infographics
+  book_catalog:
+    B05:
+      title: An Illustrated Guide to AI Agents
+      authors: Maarten Grootendorst & Jay Alammar
+      publisher: O'Reilly Media (Early Release)
+      status: Early Release - Chapters 1, 4, 5, 6 available
+      difficulty: Beginner-Friendly with Technical Depth
+      focus: Visual, foundational introduction to agent architecture, memory, tools, and planning
+      learning_level: Beginner
+      chapters_covered:
+      - 'Chapter 1: Introduction to AI Agents'
+      - 'Chapter 4: Memory'
+      - 'Chapter 5: Tool Usage'
+      - 'Chapter 6: Planning and Reflection'
+      sources:
+      - 'B05: AI Agents Learning Guide'
+  total_books: 18
+  books_extracted:
+  - 'B01: 30 Agents Every AI Engineer Must Build'
+  - 'B02: AI Agents in Action'
+  - 'B03: Agentic AI'
+  - 'B04: Agentic AI: A Comprehensive Introduction'
+  - 'B05: AI Agents Learning Guide'
+  - 'B06: Agentic AI Data Architectures'
+  - 'B07: Agentic AI in Enterprise'
+  - 'B08: Agentic Mesh'
+  - 'B09: Building AI Agents with LangGraph'
+  - 'B10: Building Agentic AI Systems'
+  - 'B11: Building Applications with AI Agents'
+  - 'B12: Context Engineering for Multi-Agent Systems'
+  - 'B13: Designing with Multi-Agent Systems'
+  - 'B14: Enterprise Guide to Agentic AI'
+  - 'B15: Integrating Artificial and Human Intelligence'
+  - 'B16: Managing Memory for AI Agents'
+  - 'B17: Safer Agentic AI'
+  - 'B18: Multi-Agent Systems with AutoGen'
+  extraction_notes:
+    B11_remediation:
+      date: '2026-04-05'
+      concepts_added: 0
+      domains_updated: 8
+      coverage:
+      - Agent Types Taxonomy (8 concepts)
+      - Tool Design & Orchestration (15 concepts)
+      - Memory Systems (8 concepts)
+      - Learning Mechanisms (7 concepts)
+      - Evaluation & Validation (8 concepts)
+      - Feedback & Improvement (8 concepts)
+      - Agent Security (9 concepts)
+      - Ethics & Governance (10 concepts)
+  phase_3_summary:
+    duplicates_removed: 8
+    near_duplicates_merged: 3
+    list_nodes_normalized: 6
+    b15_dict_nodes_normalized: 10
+    thin_nodes_consolidated: 12
+    nodes_before: 123
+    nodes_after: 109
+    concepts_after: 899
+  phase_4_summary: 'Integrated deep-dive study materials: real-world analogies, common misconceptions, complexity-graded examples,
+    MCP 12-step flow, pattern selection guides, concept glossary with real-world product examples, Bloom taxonomy practice
+    questions. Enriched 18 nodes across 5 domains. Added course_materials section.'
+  phase_5_summary:
+    concepts_added: 36
+    nodes_enriched:
+    - agent_frameworks
+    - implementation_patterns
+    - design_trade_offs
+    - production_readiness
+    - safety_and_alignment
+    source: 3 Coursera courses (txt files) — PDF cheat sheets housed in separate AI Agents Learning Partner project
+    frameworks_covered:
+    - LangGraph
+    - CrewAI
+    - AG2/AutoGen
+    - BeeAI
+    total_concepts: 951
+    total_nodes: 109
+    total_domains: 8
+  remediation_summary:
+    definitions_added: 63
+    sources_fixed: 19
+    blueprint_concepts_added: 62
+    isaca_concepts_added: 9
+    total_concepts_before: 951
+    total_concepts_after: 1022
+  linkedin_learning_integration:
+    date: '2026-04-23'
+    source_collection: LinkedIn Learning curated materials (8 folders)
+    source_ids: LL01 through LL16
+    concepts_added: 111
+    kb_files_created:
+    - kb_linkedin_agents_agentic.yaml
+    - kb_linkedin_mcp_strategy.yaml
+    - kb_linkedin_productivity_tools.yaml
+    - kb_linkedin_metadata.yaml
+    domains_covered:
+    - AI Agents and Agentic AI
+    - RAG and Chunking Methods
+    - MCP Architecture and Protocols
+    - AI Strategy and Transformation
+    - AI Productivity Frameworks
+    - AI Tools for Product Management
+    - Database Infrastructure
+    total_concepts_before: 1022
+    total_concepts_after: 1133
+  strategy_kb_integration:
+    date: '2026-04-23'
+    purpose: "Strategy-level KBs synthesizing cross-source concepts"
+    concepts_added: 174
+    kb_files_created:
+    - kb_strategy_governance.yaml
+    - kb_strategy_evolution.yaml
+    - kb_strategy_build_deploy.yaml
+    domains_covered:
+    - "AI Strategy and Governance (NIST, TRiSM, CAIO, McKinsey)"
+    - "Agent Evolution Patterns (chatbot-to-agent, scaling, frameworks)"
+    - "Build and Deploy Strategy (SCALE, CI/CD, MLOps, talent)"
+    total_concepts_before: 1133
+    total_concepts_after: 1307

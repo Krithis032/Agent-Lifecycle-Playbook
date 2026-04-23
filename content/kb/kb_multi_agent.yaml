@@ -1,0 +1,1287 @@
+multi_agent_systems:
+  orchestrator_worker:
+    definition: 'A central supervisor agent routes tasks to specialized worker agents and decides when the job is done. In
+      LangGraph: make_supervisor_node creates a node with Router structured output that emits Command(goto=worker_name). Workers
+      are create_react_agent instances that always return to supervisor. Extends to hierarchical architecture: supervisors
+      of supervisors, where each team is a subgraph.'
+    core_concepts:
+    - concept_name: Supervisor with Structured Routing
+      explanation: 'Supervisor uses with_structured_output(Router) where Router is TypedDict with ''next'' field. LLM decides
+        which worker to invoke next. Returns Command(goto=goto, update={''next'': goto}). Members list defines available workers.'
+    - concept_name: Worker Specialization
+      explanation: Each worker is a create_react_agent with its own tools, prompt, and LLM. make_react_worker_node wraps agent
+        with goto='supervisor' so control always returns. Workers are named and tool-scoped for specific capabilities.
+    - concept_name: Hierarchical Extension
+      explanation: Supervisors of supervisors. Each team (e.g., research team, writing team) is a subgraph with its own internal
+        supervisor and workers. Top-level supervisor routes between teams. LangGraph subgraphs provide natural encapsulation.
+    - concept_name: Result Aggregation
+      explanation: 'Worker results flow back through supervisor via HumanMessage(content=result, name=worker_name). Supervisor
+        sees all worker outputs in message history and decides: route to another worker or finish.'
+    - concept_name: Multi-Agent Pattern Selection Guide
+      definition: 'Decision framework: Sequential for pipelines, Parallel for independent tasks, Orchestrator-Worker for complex
+        dynamic tasks requiring coordination, Evaluator-Optimizer when output quality is mission-critical. Always include
+        guardrails and human oversight in production. Start simple — scale to multi-agent only when single agent is insufficient.'
+      source_book: Deep-Dive Materials
+      deep_dive_source: Ch6 Pattern Selection Guide + Ch6 Multi-Agent Patterns Infographic
+    how_it_works: []
+    design_decisions:
+      when_to_use: []
+      when_to_avoid: []
+      trade_offs: []
+    implementation:
+      reference_architecture: START → supervisor → conditional(worker1 | worker2 | ... | END) → supervisor (loop)
+      pseudocode: 'supervisor_result = supervisor_llm.with_structured_output(Router).invoke(state)
+
+        goto = supervisor_result[''next'']
+
+        return Command(goto=goto, update={''next'': goto})'
+      code_scaffold: "from langgraph_supervisor import create_supervisor\nfrom langgraph.prebuilt import create_react_agent\n\
+        \n# Or manual supervisor:\nclass Router(TypedDict):\n    next: Literal['worker1', 'worker2', '__end__']\n\ndef make_supervisor_node(llm,\
+        \ members):\n    options = members + ['__end__']\n    system_prompt = f'Route to one of: {options}. Respond __end__\
+        \ when done.'\n    def supervisor_node(state):\n        messages = [{'role': 'system', 'content': system_prompt}]\
+        \ + state['messages']\n        response = llm.with_structured_output(Router).invoke(messages)\n        goto = response['next']\n\
+        \        return Command(goto=goto, update={'next': goto})\n    return supervisor_node\n\ndef make_react_worker_node(*,\
+        \ llm, name, tools, prompt, goto='supervisor'):\n    agent = create_react_agent(llm, tools=tools, prompt=prompt)\n\
+        \    def node(state) -> Command[Literal['supervisor']]:\n        result = agent.invoke(state)\n        msgs = result.get('messages',\
+        \ [])\n        content = getattr(msgs[-1], 'content', '') if msgs else ''\n        return Command(\n            update={'messages':\
+        \ [HumanMessage(content=content, name=name)]},\n            goto=goto)\n    return node"
+      libraries_and_tools:
+      - langgraph
+      - langgraph-supervisor
+      - langchain-openai
+      configuration: 'Supervisor needs: structured output support, member list. Workers need: tools, prompt, goto=supervisor.'
+    real_world_applications: []
+    relationships:
+      depends_on:
+      - architecture_and_patterns.plan_and_execute
+      - architecture_and_patterns.routing_and_dispatch
+      enables:
+      - implementation_blueprints
+      compare_with:
+      - multi_agent_systems.parallel
+      - multi_agent_systems.sequential
+    sources:
+    - 'B02 Ch2: Supervisor pattern — make_supervisor_node, Router TypedDict, Command routing'
+    - 'B02 Ch2: Hierarchical pattern — supervisors of supervisors, subgraphs as team units'
+    - 'B02 Ch4: Multi-model team — different LLMs for different agent roles'
+    - 'Deep-Dive: Ch6 Multi-Agent Patterns Infographic'
+    - 'Deep-Dive: Ch6_Orchestrator_Worker_Pattern.png'
+    pattern_selection_guidance:
+      best_for: Complex dynamic tasks requiring coordination and adaptive planning
+      example: Project Manager orchestrating Code, Test, and Deploy agents
+      pros:
+      - Dynamic — can spawn new workers or reassign tasks on the fly
+      - Scalable — easy to add worker types
+      - Resilient — orchestrator detects and recovers from worker failures
+      cons:
+      - More complex to implement
+      - Orchestrator can become bottleneck
+  parallel:
+    definition: A multi-agent coordination pattern where multiple agents execute tasks simultaneously and independently, with
+      results aggregated by an orchestrator — optimizing for throughput and latency reduction.
+    core_concepts:
+    - concept_name: Fan-Out / Fan-In
+      explanation: ''
+    - concept_name: Independent Subtask Execution
+      explanation: ''
+    - concept_name: Result Merging Strategies
+      explanation: ''
+    how_it_works: []
+    design_decisions:
+      when_to_use: []
+      when_to_avoid: []
+      trade_offs: []
+    implementation:
+      reference_architecture: ''
+      pseudocode: ''
+      code_scaffold: ''
+      libraries_and_tools: []
+      configuration: ''
+    real_world_applications: []
+    relationships:
+      depends_on:
+      - multi_agent_systems.orchestrator_worker
+      enables:
+      - implementation_blueprints
+      compare_with:
+      - multi_agent_systems.sequential
+    sources:
+    - 'Deep-Dive: Ch6 Multi-Agent Patterns Infographic'
+    - 'Deep-Dive: Ch6_Parallel_Pattern.png'
+    pattern_selection_guidance:
+      best_for: Independent sub-tasks that can be executed simultaneously
+      example: Financial analysis — Stocks agent + Bonds agent + Crypto agent
+      pros:
+      - Faster execution
+      - Better resource utilization
+      cons:
+      - Need to merge/reconcile results from different agents
+  sequential:
+    definition: A multi-agent coordination pattern where agents execute in a defined order, each receiving the output of the
+      previous agent as input — forming a processing pipeline optimized for dependent, ordered tasks.
+    core_concepts:
+    - concept_name: Pipeline Architecture
+      explanation: ''
+    - concept_name: Stage Handoff
+      explanation: ''
+    - concept_name: Context Passing Between Stages
+      explanation: ''
+    how_it_works: []
+    design_decisions:
+      when_to_use: []
+      when_to_avoid: []
+      trade_offs: []
+    implementation:
+      reference_architecture: ''
+      pseudocode: ''
+      code_scaffold: ''
+      libraries_and_tools: []
+      configuration: ''
+    real_world_applications: []
+    relationships:
+      depends_on:
+      - memory_and_context.context_passing
+      enables:
+      - implementation_blueprints
+      compare_with:
+      - multi_agent_systems.parallel
+    sources:
+    - 'Deep-Dive: Ch6 Multi-Agent Patterns Infographic'
+    - 'Deep-Dive: Ch6_Sequential_Pattern.png'
+    pattern_selection_guidance:
+      best_for: Pipeline workflows where each stage transforms data for the next
+      example: Research Agent → Writer Agent → Editor Agent
+      pros:
+      - Simple to implement
+      - Easy to debug
+      - Clear data flow
+      cons:
+      - Slow (no parallelism)
+      - One failure blocks entire chain
+  evaluator_optimizer:
+    definition: One agent generates output while another evaluates quality using rubrics, scoring criteria, or comparative
+      judgment. The evaluation drives iterative improvement — the generator refines based on evaluator feedback. B03 formalizes
+      this through rubric-based evaluation (8-step process), grounding (rubric alignment), and LLM-as-Judge (automated evaluation
+      with a second model). The pattern extends to self-evaluation within a single agent through feedback generation.
+    core_concepts:
+    - concept_name: Critic-Generator Loop
+      explanation: ''
+    - concept_name: Quality Scoring
+      explanation: ''
+    - concept_name: Iterative Improvement
+      explanation: ''
+    - concept_name: Feedback Generation for Future Improvement (B03)
+      explanation: 'After an agent produces an incorrect result, provide the correct answer and ask the model to generate
+        self-feedback: "the correct answer is X, please review what you did wrong and suggest feedback for solving similar
+        future problems." This feedback is then extracted and added to future system instructions or prompts, creating a persistent
+        learning loop.'
+    how_it_works: []
+    design_decisions:
+      when_to_use: []
+      when_to_avoid: []
+      trade_offs: []
+    implementation:
+      reference_architecture: ''
+      pseudocode: ''
+      code_scaffold: ''
+      libraries_and_tools: []
+      configuration: ''
+    real_world_applications: []
+    relationships:
+      depends_on:
+      - architecture_and_patterns.reflexion
+      enables:
+      - enterprise_and_safety.quality_assurance
+      compare_with:
+      - multi_agent_systems.debate_and_consensus
+    sources:
+    - 'B03 Ch9: Rubric-based evaluation, grounding, LLM-as-Judge patterns'
+    - 'B03 Ch11: Feedback generation — self-critique with correct answer to produce reusable guidance'
+    - 'Deep-Dive: Ch6 Multi-Agent Patterns Infographic'
+    - 'Deep-Dive: Ch6_Evaluator_Optimizer_Pattern.png'
+    pattern_selection_guidance:
+      best_for: Tasks where output quality is mission-critical and iterative refinement helps
+      example: Writer generates draft → Critic evaluates → Writer revises → repeat until quality threshold
+      pros:
+      - Higher-quality outputs through iterative refinement
+      cons:
+      - More LLM calls per output
+      - Need to define quality threshold to avoid infinite loops
+  guardrails_and_hitl:
+    definition: Human-in-the-loop patterns that insert human review, approval, or editing at critical points in agent workflows.
+      In LangGraph, implemented via interrupt() which pauses execution and returns control to the human, who can approve,
+      reject, or edit before resuming with Command(resume=value).
+    core_concepts:
+    - concept_name: Approval Gates
+      explanation: 'interrupt() pauses agent before executing a tool call. Human reviews the proposed action and either approves
+        (Command(resume={''action'': ''continue''})) or rejects (Command(resume={''action'': ''revise'', ''instructions'':
+        ''...''})).'
+    - concept_name: Review and Edit Pattern
+      explanation: Agent generates output, interrupt() pauses for human review. Human can edit the content directly and resume,
+        letting the agent continue with the corrected version.
+    - concept_name: Tool Call Review Gate
+      explanation: add_hitl wrapper intercepts tool calls for human approval before execution. The wrapper checks tool name
+        against a review list and interrupts if matched.
+    - concept_name: Parallel Interrupts
+      explanation: 'When agent proposes multiple tool calls simultaneously, all are presented for review. Human provides a
+        resume_map with decisions for each: Command(resume={''tool_call_id_1'': ''approve'', ''tool_call_id_2'': ''reject''}).'
+    - concept_name: Validate Human Input
+      explanation: Even human inputs should be validated — interrupt() can be used to verify that human-provided data meets
+        expected format/constraints before the agent processes it.
+    - concept_name: Guardrails Taxonomy (B09/B18)
+      explanation: 'Four categories of guardrails: (1) Input Validation — reject malformed or suspicious inputs. (2) Output
+        Filtering — remove sensitive data, enforce format compliance. (3) Safety Checks — ensure outputs meet policy requirements.
+        (4) Content Moderation — screen for harmful or inappropriate content.'
+    - concept_name: HITL Mechanisms (B09/B18)
+      explanation: 'Three HITL patterns: (1) Approval Gates — critical decisions require human review before execution. (2)
+        Escalation Paths — route uncertain cases to humans for judgment. (3) Override Mechanisms — humans can intervene and
+        redirect the agent at any time.'
+    - concept_name: Runtime Safety Monitors (B17)
+      explanation: 'Continuous monitoring systems that observe agent behavior during execution: (1) Action Validators — check
+        that selected actions align with policies before execution. (2) Output Filters — screen agent outputs for harmful
+        content, information leakage, policy violations. (3) Anomaly Detectors — flag unusual patterns suggesting agent is
+        in unexpected states or being exploited. (4) Resource Monitors — track compute/memory/API usage, alert if agent exhausts
+        bounds (DOS mitigation). (5) User Interaction Monitors — detect rapid escalation in user requests, unusual interaction
+        patterns. Monitors operate independently of agent logic, enabling detection even if agent itself is compromised.'
+    - concept_name: Safety-Critical Agent Design (B17)
+      explanation: 'Design principles for agents operating in high-stakes domains (medical, financial, critical infrastructure):
+        (1) Conservative Action Selection — prefer inaction or escalation to human over speculative action. (2) Explicit Uncertainty
+        — agent must clearly communicate confidence levels and limitations. (3) Multi-Step Verification — critical actions
+        require independent verification before execution. (4) Rollback Capability — all agent actions must be reversible
+        or have clear undo mechanisms. (5) Human-in-Loop By Default — critical decisions escalate to human review, agent recommends
+        but does not unilaterally decide. (6) Domain Expertise Integration — agent reasoning integrates with expert systems,
+        not autonomous. Safety-critical agents are designed conservatively, with human oversight as default state.'
+    - concept_name: Threat Modeling for Agents (B17)
+      explanation: 'Systematic identification of attack vectors specific to agentic systems: (1) Tool Abuse — agent misusing
+        available tools (deleting data, making unauthorized API calls). (2) Goal Manipulation — attacks on agent''s objective
+        function (prompt injection targeting behavior). (3) Memory Poisoning — corrupting agent memory with adversarial data
+        to alter future decisions. (4) Emergent Behavior Exploitation — leveraging unexpected capabilities from tool combinations.
+        (5) Multi-Turn Deception — adversary gradually building trust, then requesting harmful action. (6) Cascade Failures
+        — single compromised agent triggering failures in multi-agent orchestration. Threat modeling informs architecture
+        decisions (sandboxing, rate limiting, action validation).'
+    - concept_name: Safety Testing Methodologies for Agents (B17)
+      explanation: 'Testing strategies beyond traditional LLM evaluation, specific to agentic behavior: (1) Normal Operation
+        Testing — happy path scenarios, verify correct tool selection and execution. (2) Edge Case Testing — boundary conditions
+        (empty inputs, max iterations, tool unavailability). (3) Adversarial Testing — prompt injection, goal misalignment,
+        resource exhaustion attempts. (4) Tool Abuse Testing — verify agent respects tool constraints (rate limits, permission
+        boundaries). (5) Multi-Turn Deception Testing — adversary persistence, goal manipulation across many turns. (6) Emergent
+        Behavior Testing — novel tool combinations, unexpected capability interactions. (7) Stress Testing — high load, slow
+        responses, network failures, verify graceful degradation. Comprehensive testing requires diverse scenarios, automated
+        regression suites, and continuous monitoring post-deployment.'
+    - concept_name: Four-Layer Guardrails Framework
+      definition: 'Four protection layers: (1) Input Validation — reject malformed or suspicious inputs, (2) Output Filtering
+        — remove sensitive data, enforce format compliance, (3) Safety Checks — ensure outputs meet policy requirements, (4)
+        Content Moderation — screen for harmful or inappropriate content'
+      source_book: Deep-Dive Materials
+      deep_dive_source: Ch6 Multi-Agent Patterns Infographic
+    - concept_name: Three HITL Mechanisms
+      definition: 'Three human-in-the-loop integration points: (1) Approval Gates — critical decisions require human review,
+        (2) Escalation Paths — route uncertain cases to humans, (3) Override Mechanisms — humans can intervene and redirect
+        at any point'
+      source_book: Deep-Dive Materials
+      deep_dive_source: Ch6 Multi-Agent Patterns Infographic
+    how_it_works: []
+    design_decisions:
+      when_to_use: []
+      when_to_avoid: []
+      trade_offs: []
+    implementation:
+      reference_architecture: agent_node → interrupt() → human_review → Command(resume=decision) → continue_or_revise
+      pseudocode: "# In node function:\nresult = interrupt({'question': 'Approve this action?', 'proposed': action})\nif result['action']\
+        \ == 'continue':\n  execute_action()\nelif result['action'] == 'revise':\n  revise_with(result['instructions'])"
+      code_scaffold: "from langgraph.types import interrupt, Command\n\ndef human_review_node(state):\n    # Pause for human\
+        \ review\n    decision = interrupt({\n        'question': 'Do you approve this action?',\n        'proposed_action':\
+        \ state['pending_action'],\n        'schema': {'action': ['continue', 'revise'], 'instructions': 'optional string'}\n\
+        \    })\n    if decision['action'] == 'continue':\n        return state  # proceed as planned\n    else:\n       \
+        \ return {'revision_instructions': decision['instructions']}\n\n# Tool review wrapper\ndef add_hitl(tool, review_tools=['dangerous_tool']):\n\
+        \    def wrapper(*args, **kwargs):\n        if tool.name in review_tools:\n            approval = interrupt({'tool':\
+        \ tool.name, 'args': args})\n            if not approval:\n                return 'Tool call rejected by human'\n\
+        \        return tool(*args, **kwargs)\n    return wrapper"
+      libraries_and_tools:
+      - langgraph (interrupt, Command)
+      configuration: 'Requires: checkpointer (MemorySaver) for state persistence during interrupt, external interface for
+        human to provide resume values'
+    real_world_applications: []
+    relationships:
+      depends_on:
+      - enterprise_and_safety.responsible_ai
+      enables:
+      - enterprise_and_safety.production_readiness
+      compare_with: []
+    sources:
+    - 'B02 Ch2: HITL patterns — approve/reject, review/edit, tool call review, parallel interrupts, validate human input'
+    - 'B02 Ch2: interrupt() and Command(resume=) in LangGraph'
+    - 'B09/B18: Guardrails taxonomy (Input Validation, Output Filtering, Safety Checks, Content Moderation)'
+    - 'B09/B18: HITL mechanisms (Approval Gates, Escalation Paths, Override Mechanisms)'
+    - 'B17 Ch8: Security & guardrails — runtime safety monitors, action validators, output filters, anomaly detectors'
+    - 'B17 Ch8: Safety-critical agent design (conservative action selection, uncertainty communication, multi-step verification)'
+    - 'B17 Ch8: Threat modeling for agents (tool abuse, goal manipulation, memory poisoning, cascade failures)'
+    - 'B17 Ch8: Safety testing methodologies (normal operation, edge cases, adversarial, tool abuse, multi-turn deception,
+      emergent behavior, stress testing)'
+    - 'Deep-Dive: Ch6 Multi-Agent Patterns Infographic - Guardrails & HITL section'
+    - 'Deep-Dive: Ch6_Guardrails_HITL_Pattern.png'
+  debate_and_consensus:
+    definition: A multi-agent pattern where agents with potentially different perspectives argue positions, critique each
+      other, and converge on a consensus — improving output quality through adversarial collaboration.
+    core_concepts:
+    - concept_name: Adversarial Collaboration
+      explanation: ''
+    - concept_name: Voting Mechanisms
+      explanation: ''
+    - concept_name: Debate Protocols
+      explanation: ''
+    - concept_name: Utility-Based Negotiation
+      definition: Agent negotiation mechanism where agents satisfy their own goals while minimizing negative effects on other
+        agents in the system
+      application: Hierarchical coordination in multi-agent design systems where specialist agents propose solutions and coordinator
+        agents evaluate utility trade-offs
+      b13_reference: Pages 120-139
+    - concept_name: Hierarchical Decision Making
+      definition: Coordination structure where coordinator agents establish priority and decision authority over specialist
+        agents
+      application: Ensures coherent global behavior by having higher-level agents arbitrate conflicts between specialist agent
+        proposals
+      b13_reference: Pages 120-139
+    - concept_name: State Prediction for Coordination
+      definition: Agents predict future system states to coordinate actions and avoid conflicts before they occur
+      application: Enables proactive adjustment of agent behaviors based on predicted outcomes rather than reactive conflict
+        resolution
+      b13_reference: Pages 120-139
+    how_it_works: []
+    design_decisions:
+      when_to_use: []
+      when_to_avoid: []
+      trade_offs: []
+    implementation:
+      reference_architecture: ''
+      pseudocode: ''
+      code_scaffold: ''
+      libraries_and_tools: []
+      configuration: ''
+    real_world_applications: []
+    relationships:
+      depends_on:
+      - multi_agent_systems.agent_communication
+      enables:
+      - enterprise_and_safety.quality_assurance
+      compare_with:
+      - multi_agent_systems.evaluator_optimizer
+    sources:
+    - 'B13: Chapter 3 - MAS System Architecture & Optimization Algorithms'
+    - 'B13: Pages 120-139 - Hierarchical coordinator agent establishing utility-based negotiation'
+  agent_communication:
+    definition: Protocols and patterns for inter-agent message passing including direct messaging, broadcast, publish-subscribe,
+      shared blackboard, and structured dialogue acts.
+    core_concepts:
+    - concept_name: Message Passing via State
+      explanation: In LangGraph, agents communicate through shared state. Worker results are wrapped as HumanMessage(content=result,
+        name=agent_name) and appended to state['messages']. All agents in the graph see the full message history.
+    - concept_name: Command-Based Routing
+      explanation: Command(goto=target, update=state_patch) enables directed communication — an agent can specify exactly
+        who receives its output next and what state changes to apply.
+    - concept_name: Handoff as Communication
+      explanation: In swarm architectures, handoff tools ARE the communication protocol. An agent 'talks' to another by handing
+        off control with context.
+    - concept_name: Shared Memory / Blackboard
+      explanation: State TypedDict acts as a shared blackboard — any node can read/write to it. Specialized fields beyond
+        messages (e.g., 'research_notes', 'draft') enable structured information sharing between agents.
+    - concept_name: Agent-to-Agent APIs
+      explanation: For distributed systems, agents can communicate via A2A protocol or REST APIs, enabling cross-framework
+        and cross-language agent communication.
+    - concept_name: AutoGen Conversation Patterns (B03)
+      explanation: 'Microsoft AutoGen implements 3 conversation patterns for multi-agent coordination: (1) Proxy (1-to-1)
+        — UserProxy + ConversableAgent/AssistantAgent direct conversation. (2) Joint Chat (Group) — GroupChat + GroupChatManager
+        enable shared conversation among multiple agents. (3) Hierarchical Chat — nested chats via register_nested_chats for
+        delegation patterns. Core components: UserProxy (human proxy), ConversableAgent (base), AssistantAgent (LLM-powered).
+        TERMINATE stop word signals completion. human_input_mode: "ALWAYS"/"NEVER" controls human involvement.'
+    - concept_name: AutoGen Caching (B03)
+      explanation: Cache.disk(cache_seed=N) provides deterministic replay via SQLite DB. Same seed = same LLM responses. Essential
+        for debugging multi-agent conversations and reducing API costs during development.
+    - concept_name: A2A Protocol (Google Agent2Agent) (B04)
+      explanation: 'Google''s Agent-to-Agent communication protocol for inter-agent dialogue. Key principles: (1) Agent Discoverability
+        — agents publish Agent Cards (JSON at /.well-known/agent.json) with: name, description, url, version, capabilities
+        {streaming, pushNotifications, stateTransitionHistory}, authentication {schemes: bearer/apiKey}, defaultInputModes,
+        defaultOutputModes, skills [{id, name, description, tags, examples}]. (2) Task-Oriented Dialogue — not free-form chat;
+        structured request/response around tasks. (3) Asynchronous Interaction — interim status updates via HTTP long-polling/SSE.
+        (4) Multi-Turn Clarification — agents can ask each other for clarification. (5) Standard Formats — HTTP/JSON/OAuth.
+        Enables lateral communication: agents initiate tasks among themselves without central orchestration. Cross-vendor:
+        Microsoft 365 Copilot announced A2A compatibility.'
+    - concept_name: Protocol Layer Model (B04)
+      explanation: 'B04 defines a layered protocol model for the agent ecosystem: (1) MCP — agent-to-tool/data communication
+        (how agents use tools). (2) A2A — agent-to-agent dialogue (how agents collaborate). (3) ACP — agent-to-agent commerce/transactions
+        (how agents trade services). (4) NLWeb — agent-to-web (how agents interact with websites). Key distinction: "Orchestrators
+        help build and control intelligent workflows; protocols define how those components communicate across systems." Frameworks
+        manage tightly coupled systems; protocols enable loosely coupled, distributed agent ecosystems.'
+    - concept_name: ACP (Agent Commerce Protocol) (B04)
+      explanation: 'Commerce layer for AI agents by Virtuals Protocol. Enables agents to buy/sell services, compensate each
+        other, and enforce obligations via blockchain. Components: (1) Smart Contracts — on-chain, hold funds, store agreement
+        state, templates for escrow/auction. (2) Agent Wallets/Identities — cryptographic identities tied to agents. (3) Off-chain
+        Communication — negotiation via A2A, then ACP formalizes agreements. (4) Evaluator Agents (Oracles) — off-chain services
+        that judge contract fulfillment and feed results to smart contracts. Relationship: "A2A for discussing terms, ACP
+        for signing on the dotted line and handling payment." Trustless interaction via cryptographic signatures.'
+    - concept_name: NLWeb (Natural Language Web) (B04)
+      explanation: 'Microsoft''s protocol for the "agentic web" — where agents are first-class web participants. Websites
+        expose natural language interfaces for agents (not just humans). Components: (1) Semantic Markup/Schema — schema.org
+        vocabulary for structured content. (2) Unified APIs + MCP Compatibility — every NLWeb service is also accessible as
+        an MCP server. (3) Standard Endpoints — /.well-known/nlweb.json for agent discovery. (4) NL-to-Action Pipelines —
+        LLM/semantic parser translates agent requests to DB queries/function calls. Challenges: standardization vs creativity
+        (W3C), resource usage (differentiate human vs agent traffic), misuse/moderation (authentication, rate limiting).'
+    - concept_name: Internet of Agents (B04)
+      explanation: 'B04''s framing for the convergence of all agent protocols: MCP + A2A + ACP + NLWeb creating an interconnected
+        ecosystem where agents discover each other, negotiate services, execute transactions, and interact with the web —
+        all through standardized protocols. Analogous to how HTTP + SMTP + DNS + TCP/IP enabled the internet for humans.'
+    - concept_name: Agent-to-Agent (A2A) Communication
+      description: Point-to-point messaging protocol enabling unambiguous, low-latency agent-to-agent interactions with proper
+        authentication and authorization.
+      key_attributes:
+      - Targeted messages from one agent to another
+      - Authentication and authorization enforcement
+      - Encryption end-to-end
+      - Protocol standards for interoperability
+      - Message metadata for context preservation
+    - concept_name: Mesh Communication Patterns
+      description: Structured communication approaches within the mesh including direct messaging, event publishing, and collaborative
+        state management.
+      key_attributes:
+      - Direct point-to-point messaging
+      - Event-driven pub/sub patterns
+      - Broadcast for coordinated actions
+      - Message envelopes with metadata
+      - Context frames for state alignment
+    - concept_name: Service Mesh Integration for Agents
+      description: Application of service mesh patterns (like Istio) to agent ecosystems for traffic management, security,
+        and observability.
+      key_attributes:
+      - mTLS between agent services
+      - Traffic encryption and authentication
+      - Sidecar proxies for policy enforcement
+      - Circuit breakers for failure handling
+      - Distributed tracing across agents
+    - concept_name: Trust Framework in Mesh Communications
+      description: Multi-layered trust establishment through identity verification, authorization checks, and continuous validation
+        in agent interactions.
+      key_attributes:
+      - Identity authentication via certificates/tokens
+      - Role-based access control (RBAC)
+      - Policy conformance verification
+      - Audit trails for compliance
+      - Continuous trust reassessment
+    - concept_name: Feedback Loops in Agent Collaboration
+      description: Mechanisms for agents to observe reactions, validate responses, and adapt behavior through continuous feedback
+        from peer agents.
+      key_attributes:
+      - Acknowledgment of received messages
+      - Response validation before proceeding
+      - Error communication and recovery signaling
+      - Real-time adjustment of collaboration strategy
+      - Conversation state coherence
+    - concept_name: Diffusion-Based Agent Communication
+      definition: Direct one-to-one agent communication mechanism inspired by biological systems (e.g., tandem calling in
+        ants)
+      application: Enables lightweight peer-to-peer communication between agents without requiring central message broker
+      b13_reference: Pages 120-139
+    - concept_name: Text-File Message Passing
+      definition: Communication protocol using text files as persistent message store for inter-agent coordination
+      application: Provides reliable asynchronous communication between agents in distributed system; agents read/write coordination
+        files
+      b13_reference: Pages 120-139
+    - concept_name: Utility-Based Information Sharing
+      definition: Agents share information weighted by utility value - prioritizing communication about high-impact design
+        alternatives
+      application: Reduces communication overhead by filtering information based on relevance and impact to agent objectives
+      b13_reference: Pages 120-139
+    - concept_name: Emergent Communication Patterns
+      definition: Communication behavior that emerges from local agent interactions without explicit global protocol definition
+      application: Observed in swarm robotics experiments where agents coordinate clustering, chain formation, and synchronized
+        motion through indirect interactions
+      b13_reference: Pages 155-173 - Bristlebot swarm experiments
+    - concept_name: Local vs Distributed Communication
+      local: Direct function calls, shared memory, in-memory message queues; works for research/prototyping
+      distributed: Explicit, asynchronous, fault-tolerant communication; required for production multi-agent systems
+      transition: As systems grow from single-device to distributed deployments, communication must evolve
+    - concept_name: Multi-Agent Communication Architecture
+      requirement: Robust protocols for managing communication, coordination, and task flow across agents
+      scalability: Critical as number of agents, geographic distribution, and deployment complexity increase
+      frameworks: Coordination mechanisms (democratic, manager-based, hierarchical, actor-critic)
+    how_it_works: []
+    design_decisions:
+      when_to_use: []
+      when_to_avoid: []
+      trade_offs: []
+    implementation:
+      reference_architecture: ''
+      pseudocode: ''
+      code_scaffold: ''
+      libraries_and_tools: []
+      configuration: ''
+    real_world_applications: []
+    relationships:
+      depends_on:
+      - memory_and_context
+      enables:
+      - multi_agent_systems.orchestrator_worker
+      - multi_agent_systems.debate_and_consensus
+      compare_with: []
+    sources:
+    - 'B02 Ch2: State-based communication in LangGraph, Command routing, handoff protocols'
+    - 'B03 Ch4: AutoGen — conversation patterns (Proxy, Joint/Group, Hierarchical), nested chats, caching'
+    - 'B04 Ch8: A2A protocol — agent cards, task-oriented dialogue, async interaction, multi-turn clarification'
+    - 'B04 Ch8: Protocol layer model — MCP (tool), A2A (dialogue), ACP (commerce), NLWeb (web)'
+    - 'B04 Ch8: ACP — smart contracts, agent wallets, evaluator oracles, blockchain-based agent commerce'
+    - 'B04 Ch8: NLWeb — agentic web, NL interfaces, /.well-known/nlweb.json, MCP compatibility'
+    - 'B04 Ch8: Internet of Agents — convergence of MCP + A2A + ACP + NLWeb'
+    - 'B08: Agentic Mesh by Broda & Broda (O''Reilly)'
+    - 'B13: Chapter 3 - Agent Communication Protocols'
+    - 'B13: Pages 120-139 - Text-file message passing and diffusion-based communication'
+    - 'B13: Case Studies - Emergent communication patterns in swarm systems'
+    - B11
+  agent_roles_and_specialization:
+    definition: 'Designing specialized agent roles where each agent has a distinct capability, model, tools, and prompt. The
+      ''team of experts'' metaphor: decoder-only = generators/planners, encoder-only = analysts/investigators, MoE = specialists,
+      reasoning models = deliberate thinkers. Role design determines system capability.'
+    core_concepts:
+    - concept_name: Role Definition Patterns
+      explanation: 'Each agent defined by: name, system prompt (role description), tools (capabilities), LLM (model matched
+        to role complexity). Research team example from B02 Ch4: semantic_search (fast), patent_research (fast), analyst (thinker+encoder
+        hybrid), note_taker (fast), writer (fast), supervisor (deliberate GPT-4.1).'
+    - concept_name: Model-Role Matching
+      explanation: 'Fast decoder (Qwen3-32B, thinking off) for routine tasks: search, drafting, note-taking. Reasoning model
+        (Qwen3-235B, thinking on) for analysis requiring deliberation. Encoder model (ModernBERT) for relevance scoring and
+        semantic filtering. Deliberate LLM (GPT-4.1) for routing decisions that need precision.'
+    - concept_name: Dynamic Role Assignment
+      explanation: Supervisor dynamically assigns work to the best-fit agent based on task requirements. Not static pipelines
+        — the supervisor evaluates what's needed at each step.
+    - concept_name: Self-Auditing Agent Teams
+      explanation: Analyst agent with encoder model cross-checks research results for relevance and hallucination. ModernBERT
+        assigns relevance scores (e.g., 0.956) to each piece of content, creating a built-in quality assurance layer.
+    - concept_name: CrewAI Agent-Task-Crew Pattern (B03)
+      explanation: 'CrewAI structures multi-agent systems as Agents + Tasks + Crew: Agent config: role, goal, backstory (persona),
+        verbose, memory, allow_delegation. Task config: description, expected_output, agent, async_execution, output_file.
+        Crew config: agents, tasks, process (Sequential or Hierarchical), memory, cache, max_rpm, share_crew. Execution: crew.kickoff(inputs={...}).
+        Hierarchical mode uses a manager_llm to coordinate.'
+    - concept_name: CrewAI Coding Crew Pattern (B03)
+      explanation: 'Multi-agent coding pattern with delegation: Senior Engineer (writes code) → QA Engineer (reviews code
+        quality) → Chief QA Engineer (final approval). Each agent has allow_delegation=True, enabling escalation and feedback
+        loops. Demonstrates role specialization with sequential quality gates.'
+    - concept_name: Generative Agent
+      definition: Agent responsible for generating candidate solutions, designs, or behaviors
+      application: Creates initial design proposals or solution candidates in multi-agent design systems
+      b13_reference: Pages 120-139
+    - concept_name: Specialist Agent
+      definition: Agent focused on specific domain expertise (e.g., environmental analysis, structural validation, aesthetic
+        evaluation)
+      application: Analyzes generated solutions from domain-specific perspective and provides feedback to coordinator
+      b13_reference: Pages 120-139
+    - concept_name: Coordinator Agent
+      definition: Higher-level agent that orchestrates communication and negotiation between generative and specialist agents
+      application: Establishes priorities, manages utility-based trade-offs, and synthesizes specialist feedback into coherent
+        design direction
+      b13_reference: Pages 120-139
+    how_it_works: []
+    design_decisions:
+      when_to_use: []
+      when_to_avoid: []
+      trade_offs: []
+    implementation:
+      reference_architecture: supervisor → {search, exa_search, patent_research, analyst, note_taker, doc_writer, __end__}
+      pseudocode: "specs = [\n  dict(name='search', tools=[tavily], prompt=SEARCH_PROMPT, llm=fast_llm),\n  dict(name='analyst',\
+        \ tools=[semantic_filter], prompt=ANALYST_PROMPT, llm=thinker_llm),\n  dict(name='writer', tools=[write_doc, edit_doc],\
+        \ prompt=WRITER_PROMPT, llm=fast_llm)\n]\nnodes = {s['name']: make_react_worker_node(**s) for s in specs}"
+      code_scaffold: "# Agent team spec pattern (from B02 Ch4)\nEXA_PROMPT = 'Role: Research assistant. Search for recent\
+        \ info on Exa Search.'\nANALYST_PROMPT = '''You are the Analyst. Call semantic_filter_tool exactly once.\nInputs:\
+        \ query, documents (raw strings from teammates).\nRules: don't answer user, don't do free form writing, only return\
+        \ tool result.'''\n\nspecs = [\n    dict(name='search', tools=[tavily_search, tavily_extract],\n         prompt=SEARCH_PROMPT,\
+        \ llm=fast_llm),\n    dict(name='analyst', tools=[semantic_filter_tool],\n         prompt=ANALYST_PROMPT, llm=thinker_llm),\n\
+        \    dict(name='doc_writer', tools=[write_document, edit_document, read_document],\n         prompt=WRITER_PROMPT,\
+        \ llm=fast_llm),\n]\nnodes = {\n    s['name']: make_react_worker_node(\n        llm=s['llm'], name=s['name'],\n  \
+        \      tools=s['tools'], prompt=s['prompt'])\n    for s in specs\n}"
+      libraries_and_tools:
+      - langgraph
+      - langchain-openai
+      - ModernBERT for encoding
+      configuration: 'Each spec dict: name, tools, prompt, llm. Supervisor sees all member names.'
+    real_world_applications: []
+    relationships:
+      depends_on:
+      - foundations.agent_types_and_taxonomy
+      enables:
+      - multi_agent_systems.orchestrator_worker
+      compare_with: []
+    sources:
+    - 'B02 Ch4: Multi-model research team — 6 roles with distinct models and tools'
+    - 'B02 Ch4: Model taxonomy as team composition strategy'
+    - 'B03 Ch4: CrewAI — Agent/Task/Crew config, Sequential/Hierarchical processing, delegation, manager_llm'
+    - 'B03 Ch4: CrewAI coding crew pattern — Senior Engineer → QA Engineer → Chief QA Engineer with delegation'
+    - 'B13: Chapter 3 - Agent Types and System Architecture'
+    - 'B13: Pages 120-139 - MAS system with generative, specialist, and coordinator agents'
+  agentic_mesh_architecture:
+    definition: 'Decentralized peer-to-peer agent architecture where control shifts between agents via handoffs. No central
+      supervisor — agents decide which peer to hand off to based on the current task context. In LangGraph: create_handoff_tool(agent_name,
+      description) creates tool-based handoffs, create_swarm(agents, default_active_agent) wires the graph.'
+    core_concepts:
+    - concept_name: Handoff Pattern
+      explanation: Control shifts between agents via handoff tools. Each agent has create_handoff_tool tools that let it transfer
+        work to peers. The handoff IS an edge in the LangGraph — edges represent handoffs, nodes represent agents.
+    - concept_name: Peer-to-Peer Agent Networks
+      explanation: Unlike supervisor pattern (hub-and-spoke), swarm is mesh topology. Any agent can hand off to any other
+        agent it has a handoff tool for. No single point of failure, but harder to observe overall flow.
+    - concept_name: Swarm vs Supervisor Trade-offs
+      explanation: 'Swarm: more flexible, no bottleneck, agents self-organize. Supervisor: more observable, easier to debug,
+        clear routing logic. Use swarm when agents have natural handoff patterns; supervisor when routing logic is complex.'
+    - concept_name: Agent Ecosystem Fabric
+      description: Event-driven, distributed, resilient, reliable, scalable infrastructure that enables agents to register,
+        discover, and collaborate at scale.
+      key_attributes:
+      - Event-driven architecture for reactive coordination
+      - Distributed execution across multiple nodes/regions
+      - Resilience through fault tolerance and graceful degradation
+      - Reliability via consistent behavior and guarantees
+      - Scalability to thousands or millions of concurrent agents
+    - concept_name: Agent Discovery and Registry
+      description: Central metadata repository that catalogs agent information and enables dynamic agent-to-agent discovery
+        through visibility scoping and characteristics filtering.
+      key_attributes:
+      - Metadata repository for agent/tool information
+      - Registry as central database of configuration data
+      - 'Visibility scope: which agents can collaborate'
+      - 'Characteristics scope: fine-grained agent attributes'
+      - 'Relevant discovery: finding the single right agent for a task'
+    - concept_name: Microagent Architecture
+      description: Agents packaged as containerized microservices combining LLM, tools, task management, and execution logic
+        into independently deployable, scalable units.
+      key_attributes:
+      - Containers bundled with LLM, tools, execution framework
+      - Independent deployment and horizontal scaling
+      - Graceful restart capabilities on failure
+      - Isolation and resource management per agent
+      - Integration with Kubernetes and modern cloud platforms
+    - concept_name: Zero-Trust Agent Security Model
+      description: Security posture where no agents or tools are visible to any agent by default unless explicitly authorized,
+        requiring continuous verification for every access attempt.
+      key_attributes:
+      - 'Default: agents start with zero visibility'
+      - Explicit permissions required for visibility
+      - Continuous verification for access
+      - Minimizes risk from unauthorized actions
+      - Prevents damage from compromised agents
+    - concept_name: Agent Visibility and Tool Visibility
+      description: Configuration mechanisms controlling which agents can collaborate and which tools agents can access, using
+        FQNs or regex patterns for flexible scoping.
+      key_attributes:
+      - FQNs (Fully Qualified Names) for precise specification
+      - Regex patterns for flexible namespace matching
+      - Coarse-grained filtering (visibility scope)
+      - Fine-grained filtering (characteristics scope)
+      - Dynamic configuration via registry
+    - concept_name: Mesh Topology for Agent Coordination
+      description: Network topology where agents operate as peer nodes in a mesh, enabling many-to-many coordination without
+        central bottlenecks.
+      key_attributes:
+      - Peer-to-peer agent communication
+      - No single point of failure
+      - Dynamic routing and load balancing
+      - Scalability through distributed coordination
+      - Service mesh patterns for security and observability
+    - concept_name: Dynamic Routing and Load Balancing
+      description: Intelligent routing of agent requests across multiple agent instances based on availability, capability,
+        and policy constraints.
+      key_attributes:
+      - Weighted distribution based on agent characteristics
+      - Fallback routing on failure
+      - Load distribution across agent instances
+      - Policy-aware routing enforcement
+      - Sticky sessions for stateful agent interactions
+    - concept_name: Agents as Quantum of Reuse
+      description: Agents as the fundamental granular reusable enterprise component, enabling development scale through composition
+        and combination of existing agents.
+      key_attributes:
+      - Single agent = one quantum of reuse
+      - Higher-level abstraction than functions/APIs
+      - Smart capabilities via embedded LLM
+      - Reduced redevelopment through agent composition
+      - Acceleration to market via agent combinations
+    - concept_name: Workspace Collaboration in Mesh
+      description: Shared collaboration environments within the mesh where multiple agents coordinate on tasks with transparent
+        context, message flow, and state management.
+      key_attributes:
+      - Shared context across collaborating agents
+      - Message passing with metadata and envelopes
+      - Task flow tracking across agents
+      - State management and memory sharing
+      - Dialogue management and conflict resolution
+    - concept_name: Federated Software Integration Architecture
+      definition: MAS architecture that integrates multiple specialized software tools (Grasshopper, Rhino, Processing, Python)
+        each handling specific design functions
+      application: Enables agents to leverage best-in-class tools for generative design, geometric manipulation, physics simulation,
+        and optimization
+      b13_reference: Pages 120-139
+    - concept_name: XML Property Management
+      definition: Centralized data structure using XML to manage and exchange agent properties, constraints, and design parameters
+      application: Facilitates inter-agent communication by providing standardized format for sharing design state and attributes
+      b13_reference: Pages 120-139
+    - concept_name: NURBS-Based Geometric Adaptation
+      definition: Use of Non-Uniform Rational B-Splines for continuous geometric transformation and parameter adjustment
+      application: Allows agents to smoothly adjust design geometry based on optimization feedback and constraint satisfaction
+      b13_reference: Pages 120-139
+    - concept_name: Physical-Digital Integration Bridge
+      definition: Architecture that connects digital MAS simulations with physical robotic systems through bidirectional feedback
+      application: Enables validation of agent design behaviors through physical instantiation (e.g., bristlebot swarms) and
+        feeds real-world data back to optimization
+      b13_reference: Pages 155-173 - Bristlebot case studies
+    how_it_works: []
+    design_decisions:
+      when_to_use: []
+      when_to_avoid: []
+      trade_offs: []
+    implementation:
+      reference_architecture: Agent A ↔ Agent B ↔ Agent C (peer connections via handoff tools)
+      pseudocode: 'handoff_to_B = create_handoff_tool(''agent_b'', ''Transfer for analysis'')
+
+        agent_a = create_react_agent(llm, tools=[search_tool, handoff_to_B])
+
+        swarm = create_swarm([agent_a, agent_b, agent_c], default_active_agent=''agent_a'')'
+      code_scaffold: "from langgraph_swarm import create_handoff_tool, create_swarm\nfrom langgraph.prebuilt import create_react_agent\n\
+        \n# Define handoff tools for each agent\nhandoff_to_research = create_handoff_tool('research_agent', 'Transfer for\
+        \ research tasks')\nhandoff_to_writer = create_handoff_tool('writer_agent', 'Transfer for writing tasks')\nhandoff_to_reviewer\
+        \ = create_handoff_tool('reviewer_agent', 'Transfer for review')\n\nresearch_agent = create_react_agent(llm, tools=[search,\
+        \ handoff_to_writer], name='research_agent')\nwriter_agent = create_react_agent(llm, tools=[write, handoff_to_reviewer],\
+        \ name='writer_agent')\nreviewer_agent = create_react_agent(llm, tools=[handoff_to_research], name='reviewer_agent')\n\
+        \nswarm = create_swarm(\n    [research_agent, writer_agent, reviewer_agent],\n    default_active_agent='research_agent'\n\
+        )\napp = swarm.compile()"
+      libraries_and_tools:
+      - langgraph-swarm
+      - langgraph
+      configuration: Each agent needs handoff tools to agents it can delegate to. Default active agent handles initial input.
+    real_world_applications: []
+    relationships:
+      depends_on:
+      - multi_agent_systems.agent_communication
+      enables:
+      - infrastructure.scaling_and_deployment
+      compare_with:
+      - multi_agent_systems.orchestrator_worker
+    sources:
+    - 'B02 Ch2: Swarm architecture — create_handoff_tool, create_swarm, peer-to-peer handoffs'
+    - 'B02 Ch2: Handoff concept — edges represent handoffs in LangGraph'
+    - 'B08: Agentic Mesh by Broda & Broda (O''Reilly)'
+    - 'B13: Chapter 3 - Physical-Digital Integration and System Architecture'
+    - 'B13: Pages 120-139 - Federated MAS architecture with multiple software environments'
+    - 'B13: Figure 3.4 - MAS System Architecture diagram'
+    purpose: Enable thousands of agents to coexist, collaborate, and scale across complex enterprise environments with reliable,
+      secure, and accountable coordination.
+    core_principles:
+    - Trustworthiness through explicit governance
+    - Reliability via fault tolerance patterns
+    - Explainability through audit trails
+    - Scalability via distributed coordination
+    - Interoperability across vendor boundaries
+    key_enabling_technologies:
+    - Microservices architecture
+    - Container orchestration (Kubernetes)
+    - Service mesh (Istio)
+    - Distributed tracing
+    - Secrets management
+    - mTLS for service-to-service encryption
+    - Zero-trust security model
+    enterprise_requirements:
+    - 'Security: authentication, authorization, encryption'
+    - 'Observability: metrics, traces, logs, audit trails'
+    - 'Reliability: fault tolerance, circuit breakers'
+    - 'Scalability: horizontal scaling, load balancing'
+    - 'Governance: policy enforcement, compliance checking'
+    - 'Discoverability: registry and discovery mechanisms'
+    - 'Operability: health checks, alerting, runbooks'
+  human_agent_teaming:
+    definition: At least one human and one AI agent employ diversified knowledge, skills, abilities to accomplish work complex/critical
+      enough requiring greater knowledge, skill, ability, capacity, or redundancy than single agent can provide in available
+      timeframe. Agents perform interdependently where actions depend on each other.
+    foundational_philosophy:
+    - AI should augment human intelligence, not replace cognitive processing
+    - Maximal advantage achieved when AI designed to augment human capabilities
+    - Automation changes structure of human work, does not simply replace activity
+    - Designers must design AI into human systems rather than replacing humans
+    - Humans required to vet inputs and outputs (even of generative AI)
+    team_superiority: 'Well-coordinated human-AI teams can surpass best human or AI agent alone (demonstrated in freestyle
+      chess: amateur players with 3 computers beat grand masters with supercomputers)'
+    key_success_factor: Interaction process between humans and AI determines team effectiveness (teams with better processes
+      win even with less capable individual members)
+    sources:
+    - 'B15: Integrating Artificial and Human Intelligence (Wiley, 2025)'
+    core_concepts:
+    - concept_name: Foundational Philosophy
+      definition: AI should augment human intelligence, not replace cognitive processing; Maximal advantage achieved when
+        AI designed to augment human capabilities; Automation changes structure of human work, does not simply replace activity;
+        Designers must design AI into human systems rather than replacing humans; Humans required to vet inputs and outputs
+        (even of generative AI)
+      source_book: B15
+    - concept_name: Team Superiority
+      definition: 'Well-coordinated human-AI teams can surpass best human or AI agent alone (demonstrated in freestyle chess:
+        amateur players with 3 computers beat grand masters with supercomputers)'
+      source_book: B15
+    - concept_name: Key Success Factor
+      definition: Interaction process between humans and AI determines team effectiveness (teams with better processes win
+        even with less capable individual members)
+      source_book: B15
+  shared_mental_models:
+    definition: Team members share elements of mental models constructed through observing common environment and teammates,
+      plus dialogue.
+    scope:
+    - 'Shared mental models: Models shared between dyads'
+    - 'Team mental models: Models shared across entire team (include coordination information)'
+    construction_timing:
+    - During training
+    - Preparation phase (prior to operation)
+    - Action phase
+    - After-action phase (interpersonal processes)
+    impact_on_performance: Meta-analysis shows improving similarity in structure/content of teammates' mental models improves
+      team behavior and performance
+    role_of_leadership: Team leaders can enhance consistency by periodically communicating key mental model elements; this
+      increases implicit coordination use
+    knowledge_taxonomy:
+      system_knowledge:
+      - 'What: characteristics/relationships of system elements'
+      - 'How: functioning and co-functioning'
+      - 'Why: requirements, objectives, physical principles'
+      task_knowledge:
+      - 'What: situations and criteria'
+      - 'How: procedures and strategies'
+      - 'Why: logical and mathematical basis'
+      team_knowledge:
+      - 'What: roles and relationships'
+      - 'How: functioning and co-functioning'
+      - 'Why: behavioral principles and intent projection'
+      environmental_knowledge:
+      - 'What: characteristics and relationships'
+      - 'How: functioning and constraints'
+      - 'Why: principles and constraints'
+      adversarial_knowledge:
+      - 'What: roles and relationships'
+      - 'How: functioning'
+      - 'Why: objectives and behavioral principles'
+    abstraction_levels: Humans employ variety of models during execution; ability to switch among abstraction levels enables
+      analogical reasoning and detailed planning
+    sources:
+    - 'B15: Integrating Artificial and Human Intelligence (Wiley, 2025)'
+    core_concepts:
+    - concept_name: Scope
+      definition: 'Shared mental models: Models shared between dyads; Team mental models: Models shared across entire team
+        (include coordination information)'
+      source_book: B15
+    - concept_name: Construction Timing
+      definition: During training; Preparation phase (prior to operation); Action phase; After-action phase (interpersonal
+        processes)
+      source_book: B15
+    - concept_name: Impact On Performance
+      definition: Meta-analysis shows improving similarity in structure/content of teammates' mental models improves team
+        behavior and performance
+      source_book: B15
+    - concept_name: Role Of Leadership
+      definition: Team leaders can enhance consistency by periodically communicating key mental model elements; this increases
+        implicit coordination use
+      source_book: B15
+    - concept_name: Knowledge Taxonomy
+      definition: '{''system_knowledge'': [''What: characteristics/relationships of system elements'', ''How: functioning
+        and co-functioning'', ''Why: requirements, objectives, physical principles''], ''task_knowledge'': [''What: '
+      source_book: B15
+    - concept_name: Abstraction Levels
+      definition: Humans employ variety of models during execution; ability to switch among abstraction levels enables analogical
+        reasoning and detailed planning
+      source_book: B15
+  transactive_memory_systems:
+    definition: Collective knowledge structures mapping where knowledge resides among team members, credibility of knowledge
+      holders, and who can acquire essential information.
+    purpose: Particularly useful in Action Teams and Project Teams with specialized expertise in unpredictable environments
+    characteristics:
+    - Does not reside with any individual (especially in larger groups)
+    - Constructed as communication occurs within group
+    - Not robust in short-lived groups
+    - Can differ or be shared across team members
+    research_direction: AI agent literature exploring embedding of transactive memory in agents and combined mental models
+      plus transactive memory in AI systems
+    sources:
+    - 'B15: Integrating Artificial and Human Intelligence (Wiley, 2025)'
+    core_concepts:
+    - concept_name: Purpose
+      definition: Particularly useful in Action Teams and Project Teams with specialized expertise in unpredictable environments
+      source_book: B15
+    - concept_name: Characteristics
+      definition: Does not reside with any individual (especially in larger groups); Constructed as communication occurs within
+        group; Not robust in short-lived groups; Can differ or be shared across team members
+      source_book: B15
+    - concept_name: Research Direction
+      definition: AI agent literature exploring embedding of transactive memory in agents and combined mental models plus
+        transactive memory in AI systems
+      source_book: B15
+  team_interdependence:
+    definition: Two or more team members depend on one another to complete goal; neither member completes all tasks alone.
+    interdependence_types:
+      hard_dependence: Single team member unable to complete goal without aid from teammates
+      soft_dependence: 'Team member can accomplish goal alone but team achieves greater effect (speed, accuracy, safety) with
+        teammate contribution. Example: car navigator.'
+    work_organization:
+      sharing: Team members extend each others' capabilities (perform work single individual could not) or relieve teammates
+        from tasks
+      trading: Teammate backs up or replaces individual, enabling attendance to other duties or diversification to reduce
+        monotony/errors
+    coupling_types:
+      pooled: Entities perform separate non-time-dependent functions (minimal communication required)
+      sequential: One individual performs activity before another; time dependence requires communication; can rely on cues
+        like elapsed time
+      reciprocal: Team members perform multiple interleaved tasks; must communicate order, timing, and issues for back-and-forth
+        exchange
+    sources:
+    - 'B15: Integrating Artificial and Human Intelligence (Wiley, 2025)'
+    core_concepts:
+    - concept_name: Interdependence Types
+      definition: 'hard_dependence: Single team member unable to complete goal without aid from teammates | soft_dependence:
+        Team member can accomplish goal alone but team achieves greater effect (speed, accuracy, safety) with teammate contribution.
+        Example: car navigator.'
+      source_book: B15
+    - concept_name: Work Organization
+      definition: 'sharing: Team members extend each others'' capabilities (perform work single individual could not) or relieve
+        teammates from tasks | trading: Teammate backs up or replaces individual, enabling attendance to other duties or diversification
+        to reduce monotony/errors'
+      source_book: B15
+    - concept_name: Coupling Types
+      definition: 'pooled: Entities perform separate non-time-dependent functions (minimal communication required) | sequential:
+        One individual performs activity before another; time dependence requires communication; can rely on cues like elapsed
+        time | reciprocal: Team members perform multiple interleaved tasks; must communicate order, timing, and issues for
+        back-and-forth exchange'
+      source_book: B15
+  team_coordination:
+    definition: Cyclical communication process enabling synchronized actions of teammates working on interdependent tasks.
+    timing_phases:
+    - 'Preparation phase: Planning and practicing coordination'
+    - 'Action phase: Actual coordination during execution'
+    - 'After-action phase: Review and learning'
+    explicit_coordination:
+      definition: Coordination requiring direct communication focused on managing dependencies and synchronizing actions
+      requirements: Explicit communication about synchronization
+    implicit_coordination:
+      definition: Dependency management without dedicated/purposeful communication regarding synchronization
+      mechanisms:
+      - 'Implicit communication: Handoff of artifact implies previous tasks completed'
+      - 'Explicit communication with implicit content: Coach saying "on-deck" implies readiness and upcoming turn'
+      enabled_by: Shared mental models and transactive memory structures
+    temporal_synchronization:
+      concept: 'OODA loop (Observe-Orient-Decide-Act) and John Boyd''s insight: agent executing loop faster than adversary
+        gains decisive advantage'
+      application_to_teams: Each cognitive agent must complete loop in synchronized fashion; timing of AI agent responses
+        significantly influences human behavior
+      design_implication: Interface design must not allow AI to respond faster than human can complete their loop (avoids
+        human becoming reactive responder rather than thoughtful contributor)
+    current_limitation: AI agents typically lack insight into operator's understanding; require explicit communication for
+      coordination
+    sources:
+    - 'B15: Integrating Artificial and Human Intelligence (Wiley, 2025)'
+    core_concepts:
+    - concept_name: Timing Phases
+      definition: 'Preparation phase: Planning and practicing coordination; Action phase: Actual coordination during execution;
+        After-action phase: Review and learning'
+      source_book: B15
+    - concept_name: Explicit Coordination
+      definition: 'definition: Coordination requiring direct communication focused on managing dependencies and synchronizing
+        actions | requirements: Explicit communication about synchronization'
+      source_book: B15
+    - concept_name: Implicit Coordination
+      definition: 'definition: Dependency management without dedicated/purposeful communication regarding synchronization
+        | enabled_by: Shared mental models and transactive memory structures'
+      source_book: B15
+    - concept_name: Temporal Synchronization
+      definition: 'concept: OODA loop (Observe-Orient-Decide-Act) and John Boyd''s insight: agent executing loop faster than
+        adversary gains decisive advantage | application_to_teams: Each cognitive agent must complete loop in synchronized
+        fashion; timing of AI agent responses significantly influences human behavior | design_implication: Interface design
+        must not allow AI to respond faster than human can complete their loop (avoids human becoming reactive responder rather
+        than thoughtful contributor)'
+      source_book: B15
+    - concept_name: Current Limitation
+      definition: AI agents typically lack insight into operator's understanding; require explicit communication for coordination
+      source_book: B15
+  human_ai_team_patterns:
+    description: Architectural patterns for human-AI team dyads and larger teams
+    design_scope:
+    - Dyadic teams (human-AI pairs)
+    - Larger multi-agent teams with humans and multiple AI agents
+    allocation_principles:
+      leftover_principle: Assign to human what AI cannot do
+      compensatory_principle: Team members' capabilities compensate for each others' limitations; avoids "best agent fallacy"
+        (myth that best individual determines best allocation), "single agent fallacy" (myth that each responsibility requires
+        only one agent), and "single performer fallacy" (myth that best individual performer determines team needs)
+      complementarity_principle: Select team members whose capabilities complement each other
+    allocation_modeling: Agent Capability Assessment Table and RASCI Allocation Table document responsibilities and allocated
+      capabilities
+    sources:
+    - 'B15: Integrating Artificial and Human Intelligence (Wiley, 2025)'
+    - 'B15: Integrating Artificial and Human Intelligence through Agent Oriented Systems Design (Miller & Rusnock, 2025)'
+    core_concepts:
+    - concept_name: Best Agent Fallacy
+      definition: An erroneous design principle assuming that assigning a task to the best individual agent (human or AI)
+        will optimize system performance; in reality, team interaction and coordination often produce better outcomes.
+      source_book: B15
+      chapter: 7.3.1
+      key_aspects:
+      - allocation principle
+      - team synergy
+      - interaction effects
+      - design principle
+    - concept_name: Single Agent Fallacy
+      definition: An assumption that a single agent can accomplish complex tasks better than a team; fails to account for
+        distributed knowledge, skill diversity, and synergistic effects of teamwork.
+      source_book: B15
+      chapter: 7.3.2
+      key_aspects:
+      - team composition
+      - skill distribution
+      - collective intelligence
+      - complexity handling
+    - concept_name: Single Performer Fallacy
+      definition: A misunderstanding that assumes a single performer (role) is optimal when actually multiple performers are
+        needed to fulfill all responsibilities associated with a role, or when redundancy is required.
+      source_book: B15
+      chapter: 7.3.3
+      key_aspects:
+      - role allocation
+      - performance redundancy
+      - capability distribution
+    - concept_name: Compensatory Principle
+      definition: An allocation principle stating that when one agent cannot fulfill a responsibility due to limitations,
+        another agent should be allocated to compensate, ensuring robust system operation.
+      source_book: B15
+      chapter: 7.3, 7.4
+      key_aspects:
+      - backup allocation
+      - redundancy
+      - failure mitigation
+      - system robustness
+    - concept_name: Leftover Principle
+      definition: An allocation principle requiring that tasks not specifically allocated to agents are explicitly recognized,
+        assigned, or managed to prevent essential work from being overlooked.
+      source_book: B15
+      chapter: '7.2'
+      key_aspects:
+      - complete allocation
+      - task coverage
+      - responsibility assignment
+    - concept_name: Complementarity Principle
+      definition: An allocation principle stating that human-AI teams are most effective when agents' strengths and weaknesses
+        complement each other, creating synergistic performance.
+      source_book: B15
+      chapter: '7.4'
+      key_aspects:
+      - team synergy
+      - complementary skills
+      - effectiveness optimization
+      - agent diversity
+    - concept_name: Agent Capability Assessment Table
+      definition: A modeling artifact that documents the capabilities (knowledge, skills, abilities) that agents possess,
+        used to evaluate whether agents can fulfill their assigned responsibilities.
+      source_book: B15
+      chapter: '8.4'
+      key_aspects:
+      - capability inventory
+      - agent evaluation
+      - responsibility matching
+      - competency assessment
+    - concept_name: RASCI Allocation Table
+      definition: A responsibility assignment matrix specifying whether each agent is Responsible, Accountable, Supportive,
+        Consulted, or Informed for each task or responsibility.
+      source_book: B15
+      chapter: '8.5'
+      key_aspects:
+      - responsibility matrix
+      - role assignment
+      - accountability
+      - task allocation
+      - RACI variant
+    definition: Collaboration patterns that integrate human team members with AI agents — including human-in-the-loop, human-on-the-loop,
+      and human-out-of-the-loop configurations with appropriate escalation triggers.
+  multiagent_coordination:
+    sources:
+    - B11
+    core_concepts:
+    - concept_name: Democratic Coordination
+      definition: All agents have equal decision-making power; consensus-driven approach
+      strengths:
+      - Robust (no single point of failure)
+      - Flexible (agents adapt to environment changes)
+      challenges:
+      - High communication overhead
+      - Slow consensus process
+      - Complex protocol
+      best_for:
+      - Distributed sensor networks
+      - Collaborative robotics
+      - systems prioritizing fairness
+    - concept_name: Manager Coordination
+      definition: Centralized approach; one or more manager agents oversee and direct subordinate agents
+      strengths:
+      - Streamlined decision making
+      - Clear task assignment
+      - Simplified communication
+      challenges:
+      - Single point of failure
+      - Scalability bottleneck
+      - Reduced adaptability
+      best_for:
+      - Manufacturing systems
+      - customer support centers
+      - hierarchical workflows
+    - concept_name: Hierarchical Coordination
+      definition: Multitired approach combining centralized and decentralized elements; agents organized in levels
+      strengths:
+      - Scalability (responsibilities distributed across levels)
+      - Redundancy (fault tolerance)
+      - Strategic vs tactical separation
+      challenges:
+      - Complex design
+      - Communication delays through levels
+      - Potential latency
+      best_for:
+      - Supply chain management
+      - military operations
+      - large complex systems
+    - concept_name: Actor-Critic Coordination
+      definition: Lightweight evaluation-driven iteration; actor generates outputs, critic evaluates and approves/rejects
+      mechanism: Actor keeps producing until critic quality threshold met (test-time compute)
+      best_when:
+      - Evaluation easier than generation
+      - Cost of additional outputs acceptable
+      - Task fuzzy/generative
+      example: 'Supply chain: actor generates plans, critic evaluates feasibility (cost/risk); repeat until approval'
+    - concept_name: Swarm Coordination
+      definition: Decentralized system; agents operate with minimal intelligence but collectively exhibit intelligent behavior
+      mechanism: Local policies and interactions; emergent group-level behavior from local actions
+      strengths:
+      - Scalability
+      - Robustness (no single point of failure)
+      - Flexibility
+      - Distributed problem-solving
+      best_for:
+      - Edge computing
+      - sensor networks
+      - real-time collaborative systems
+      limitation: Not suitable for every domain; works best where decentralization and flexibility > precision
+    definition: Strategies for coordinating multiple agents toward shared goals — including task decomposition, role assignment,
+      conflict resolution, resource allocation, and synchronization mechanisms.
+  scaling_principles:
+    sources:
+    - B11
+    core_concepts:
+    - concept_name: Task Decomposition
+      principle: Break complex tasks into smaller, manageable subtasks for specialized agents
+      benefit: Enhances individual performance, simplifies system coordination and scaling
+    - concept_name: Specialization
+      principle: Assign agents roles matching their strengths; maximize collective capabilities
+      benefit: Improved precision and efficiency; leverages diverse expertise
+    - concept_name: Parsimony
+      principle: Add only minimum agents necessary for desired functionality
+      rationale: Each agent increases communication overhead, complexity, resource demands
+      practice: Evaluate if responsibilities can be fulfilled by existing agents before adding new ones
+    - concept_name: Coordination
+      requirement: Robust communication protocols, conflict resolution, seamless information sharing
+      goal: System resilience and adaptability to dynamic scenarios
+    - concept_name: Robustness
+      strategy: Redundancy and fault-tolerant design; withstand disruptions (network failures, agent downtime)
+      benefit: Maintains stability and reliability even in adverse conditions
+    - concept_name: Efficiency
+      consideration: Trade-off between adding agents and incurring complexity/resource costs
+      decision: Carefully weigh advantages of expanded functionality vs resource/coordination overhead
+    definition: Principles governing how multi-agent systems scale — including communication overhead growth, coordination
+      complexity, optimal team sizing, and strategies for maintaining coherence at scale.
+  fleet_management_patterns:
+    core_concepts:
+    - concept_name: Fleet
+      definition: Logical grouping of related agents that operate together with shared purpose, governance, and lifecycle
+        management.
+      source_book: B08
+    - concept_name: Hierarchical Fleet Structure
+      definition: Fleet organization with manager agent at top directing messages through hierarchy to employee agents below.
+      source_book: B08
+    - concept_name: Swarm Fleet Structure
+      definition: Peer-to-peer agent fleet with no manager, enabling flexibility and speed through distributed decision-making.
+      source_book: B08
+    - concept_name: Federation Fleet Structure
+      definition: Multi-level fleet organization balancing hierarchy and swarm with sub-managers maintaining both flexibility
+        and control.
+      source_book: B08
+    - concept_name: Fleet Input/Output Channels
+      definition: Well-defined communication channels for user requests to fleets and responses back, abstracting internal
+        agent complexity.
+      source_book: B08
+    - concept_name: Fleet Purpose Definition
+      definition: Clear statement of what a fleet does enabling it to function as an organizational unit independent of internal
+        agent details.
+      source_book: B08
+    - concept_name: Fleet Observability
+      definition: Aggregation of metrics, logs, and monitoring across fleet members enabling operational visibility at the
+        fleet level.
+      source_book: B08
+    sources:
+    - Agentic Mesh (O'Reilly Early Release)
+    definition: Patterns for managing large populations of agents including agent lifecycle management, health monitoring,
+      version management, configuration propagation, and graceful degradation.
+  goal_and_responsibility_modeling:
+    definition: Frameworks for formally specifying agent goals, responsibilities, and accountability boundaries — ensuring
+      each agent has clear objectives and measurable success criteria within a multi-agent system.
+    core_concepts:
+    - concept_name: Goal Hierarchy
+      definition: A structured decomposition of system goals into subgoals that can be assigned to agents or sub-teams, enabling
+        clear traceability from high-level objectives to actionable tasks.
+      source_book: B15
+      chapter: '3.4'
+      key_aspects:
+      - goal decomposition
+      - hierarchical structure
+      - subgoals
+      - goal-responsibility mapping
+    - concept_name: Goal-Responsibility Diagram
+      definition: A modeling artifact that depicts the relationships between goals and the responsibilities agents must fulfill
+        to achieve those goals, showing how agent responsibilities link to system objectives.
+      source_book: B15
+      chapter: 3.6, 4.9
+      key_aspects:
+      - modeling technique
+      - goal mapping
+      - responsibility assignment
+      - agent tasks
+    - concept_name: As-Is vs To-Be System Modeling
+      definition: A comparison methodology where As-Is represents the current system state and To-Be represents the desired
+        future state with automation, enabling designers to identify redesign opportunities and design objectives.
+      source_book: B15
+      chapter: 2.5, 3.1, 5.1
+      key_aspects:
+      - current state
+      - future state
+      - gap analysis
+      - design objectives
+    - concept_name: Concept Map
+      definition: A visual representation showing relationships between different concepts and their dependencies, useful
+        for understanding system architecture and how goals, roles, and responsibilities interconnect.
+      source_book: B15
+      chapter: '3.5'
+      key_aspects:
+      - concept relationships
+      - visual modeling
+      - architecture understanding
+    - concept_name: Responsibility
+      definition: A functionally-oriented abstract item that an agent playing a role must accomplish, without implying temporal
+        sequence or specific implementation details.
+      source_book: B15
+      chapter: 2.1, 3.6
+      key_aspects:
+      - functional requirement
+      - role basis
+      - agent obligation
+      - abstract specification
+    how_it_works: ''
+    design_decisions: ''
+    implementation: ''
+    real_world_applications: ''
+    relationships: ''
+    sources:
+    - 'B15: Integrating Artificial and Human Intelligence through Agent Oriented Systems Design (Miller & Rusnock, 2025)'
+_source_metadata:
+  split_from: agentic_ai_kb.yaml
+  version: 1.0-scaffold
+  last_updated: '2026-04-06'
+  owner: Padmasani Srimadhan

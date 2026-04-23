@@ -1,0 +1,206 @@
+architecture_and_patterns:
+  react_pattern:
+    definition: "The ReAct (Reasoning + Acting) pattern interleaves chain-of-thought reasoning with tool-calling actions, allowing an agent to think about what to do, execute an action, observe the result, and iterate."
+    core_concepts:
+      - concept_name: "Thought-Action-Observation Loop"
+        explanation: "The agent generates a thought (reasoning about what to do next), takes an action (calls a tool or API), observes the result, and uses that observation to inform the next thought. This loop continues until the task is complete or a termination condition is met."
+      - concept_name: "Grounded Reasoning"
+        explanation: "By interleaving reasoning with real-world observations, ReAct prevents hallucination drift that occurs in pure chain-of-thought approaches. Each reasoning step is anchored to actual tool outputs."
+    how_it_works: "The agent receives a task, generates an internal thought about what information it needs or what action to take, executes that action via a tool call, receives the observation (tool output), and loops until it can provide a final answer."
+    design_decisions: "ReAct is the default pattern for single-agent tool-use scenarios. It balances reasoning depth with grounded execution. The key design choice is the tool set — too few tools limit capability, too many increase confusion."
+    implementation:
+      code_scaffold: "from anthropic import Anthropic\n\nclient = Anthropic()\n\ndef react_agent(task, tools, max_steps=10):\n    messages = [{'role': 'user', 'content': task}]\n    for step in range(max_steps):\n        response = client.messages.create(\n            model='claude-sonnet-4-6',\n            tools=tools,\n            messages=messages\n        )\n        if response.stop_reason == 'end_turn':\n            return response.content\n        # Process tool calls\n        for block in response.content:\n            if block.type == 'tool_use':\n                result = execute_tool(block.name, block.input)\n                messages.append({'role': 'assistant', 'content': response.content})\n                messages.append({'role': 'user', 'content': [{'type': 'tool_result', 'tool_use_id': block.id, 'content': result}]})"
+    relationships:
+      depends_on: ["tool_use", "chain_of_thought"]
+      enables: ["multi_step_agents", "autonomous_task_completion"]
+      compare_with: ["plan_and_execute", "reflexion"]
+    sources: ["B02 Ch3: ReAct Pattern", "B07 Ch2: Agent Loops"]
+    real_world_analogies: "Like a detective who forms a hypothesis (thought), investigates a lead (action), reviews the evidence (observation), and refines their hypothesis — iterating until the case is solved."
+
+  supervisor_worker_pattern:
+    definition: "A multi-agent architecture where a central supervisor agent delegates tasks to specialized worker agents, collects their results, and synthesizes a final output."
+    core_concepts:
+      - concept_name: "Task Decomposition"
+        explanation: "The supervisor breaks a complex task into subtasks that can be handled by specialized workers. This mirrors how a manager delegates work to team members based on their expertise."
+      - concept_name: "Result Aggregation"
+        explanation: "After workers complete their subtasks, the supervisor aggregates, validates, and synthesizes results into a coherent final output. The supervisor can also resolve conflicts between worker outputs."
+    how_it_works: "The supervisor receives a complex task, analyzes it to identify required subtasks, routes each subtask to the appropriate worker agent, monitors progress, collects results, handles failures (retry or reassign), and produces the final output."
+    design_decisions: "Choose supervisor-worker when you need centralized control and multiple specialized capabilities. The supervisor should be a strong reasoning model (Sonnet/Opus) while workers can be lighter models (Haiku/Sonnet) specialized for their task."
+    relationships:
+      depends_on: ["task_routing", "agent_communication"]
+      enables: ["complex_workflow_automation", "specialized_processing"]
+      compare_with: ["swarm_pattern", "pipeline_pattern"]
+    sources: ["B02 Ch5: Multi-Agent Patterns", "B10 Ch4: Orchestration"]
+
+  plan_and_execute:
+    definition: "A two-phase pattern where the agent first creates a complete plan for solving a task, then executes each step of that plan sequentially, re-planning if execution reveals the plan is invalid."
+    core_concepts:
+      - concept_name: "Upfront Planning"
+        explanation: "Unlike ReAct which plans one step at a time, Plan-and-Execute creates a full plan before taking any action. This is better for tasks where the overall structure is important and steps have dependencies."
+    how_it_works: "Phase 1 (Plan): The agent analyzes the task and generates a structured plan with ordered steps. Phase 2 (Execute): Each step is executed in order. If a step fails or produces unexpected results, the agent can re-plan from the current state."
+    relationships:
+      depends_on: ["structured_output", "state_management"]
+      enables: ["complex_task_completion", "predictable_execution"]
+      compare_with: ["react_pattern", "reflexion"]
+    sources: ["B07 Ch3: Planning Patterns", "B09 Ch2: Agent Strategies"]
+
+  tool_use_patterns:
+    definition: "Structured approaches to giving LLM agents the ability to call external tools, APIs, and functions — extending their capabilities beyond text generation to real-world interaction."
+    core_concepts:
+      - concept_name: "Function Calling"
+        explanation: "The model is given tool definitions (name, description, parameters schema) and can choose to invoke them by generating structured tool_use blocks instead of text. The runtime executes the tool and returns the result."
+      - concept_name: "Tool Selection"
+        explanation: "With multiple tools available, the agent must select the right tool for each subtask. Tool descriptions and parameter schemas guide selection. Too many tools reduce selection accuracy."
+    how_it_works: "Tools are defined as JSON schemas describing their inputs and outputs. The model receives these definitions in its system prompt or tool parameter. When the model decides to use a tool, it generates a tool_use response with the tool name and arguments. The runtime validates and executes the call, returning results as tool_result messages."
+    relationships:
+      depends_on: ["json_schema", "api_design"]
+      enables: ["react_pattern", "autonomous_agents"]
+      compare_with: ["retrieval_augmented_generation"]
+    sources: ["B02 Ch2: Tool Use", "B07 Ch1: Function Calling"]
+
+  state_graph_design:
+    definition: "A graph-based approach to agent state management where nodes represent processing steps and edges represent transitions, with a typed state object flowing through the graph."
+    core_concepts:
+      - concept_name: "State Channels"
+        explanation: "Typed fields in the state object that different nodes can read and write. Channels can use reducers to handle concurrent updates (e.g., append to a list, overwrite, or custom merge)."
+      - concept_name: "Conditional Edges"
+        explanation: "Transitions between nodes can be conditional based on the current state. This enables branching logic, loops, and dynamic routing within the agent workflow."
+    how_it_works: "Define a state schema with typed channels. Create nodes as functions that receive state and return state updates. Connect nodes with edges (unconditional or conditional). Compile the graph and invoke it with initial state. The framework manages state transitions, persistence, and checkpointing."
+    implementation:
+      code_scaffold: "from langgraph.graph import StateGraph\nfrom typing import TypedDict, Annotated\n\nclass AgentState(TypedDict):\n    messages: Annotated[list, add_messages]\n    current_step: str\n    results: dict\n\ndef plan_node(state: AgentState) -> dict:\n    # Generate plan from messages\n    return {'current_step': 'execute'}\n\ndef execute_node(state: AgentState) -> dict:\n    # Execute current step\n    return {'results': {'step_1': 'done'}}\n\ngraph = StateGraph(AgentState)\ngraph.add_node('plan', plan_node)\ngraph.add_node('execute', execute_node)\ngraph.add_edge('plan', 'execute')\ngraph.set_entry_point('plan')"
+    relationships:
+      depends_on: ["graph_theory", "state_management"]
+      enables: ["complex_workflows", "checkpointing", "human_in_the_loop"]
+      compare_with: ["simple_chain", "dag_execution"]
+    sources: ["B02 Ch6: LangGraph Deep Dive", "B10 Ch3: State Management"]
+
+  mcp_protocol:
+    definition: "Model Context Protocol (MCP) is an open standard for connecting AI models to external tools, data sources, and services through a unified interface — replacing custom integrations with standardized servers."
+    core_concepts:
+      - concept_name: "MCP Servers"
+        explanation: "Standalone services that expose tools and resources through the MCP protocol. Each server wraps a specific capability (database access, API integration, file system) behind a standardized interface."
+      - concept_name: "Tool Discovery"
+        explanation: "MCP clients can discover available tools at runtime by querying MCP servers, enabling dynamic tool registration without code changes."
+    how_it_works: "An MCP server exposes tools via a standardized JSON-RPC interface. The client (agent framework) discovers available tools, presents them to the LLM, and routes tool calls to the appropriate server. This decouples tool implementation from agent logic."
+    relationships:
+      depends_on: ["json_rpc", "tool_use_patterns"]
+      enables: ["tool_interoperability", "dynamic_tool_discovery"]
+      compare_with: ["openapi_plugins", "custom_tool_integrations"]
+    sources: ["Anthropic MCP Docs", "B07 Ch5: Tool Standards"]
+
+  memory_architecture:
+    definition: "The design of how agents store, retrieve, and utilize information across different time horizons — from immediate working memory to persistent long-term knowledge."
+    core_concepts:
+      - concept_name: "Working Memory"
+        explanation: "The current conversation context and intermediate results. Limited by the model's context window. Must be managed carefully to avoid context overflow."
+      - concept_name: "Long-term Memory"
+        explanation: "Persistent storage of facts, preferences, and learned patterns that survive across sessions. Typically implemented via vector databases or structured storage."
+    how_it_works: "Working memory is the conversation history + current state. Short-term memory extends this with session-level summaries and scratchpads. Long-term memory uses external storage (vector DB, SQL) for persistent knowledge retrieval."
+    relationships:
+      depends_on: ["context_window_management", "vector_databases"]
+      enables: ["personalization", "learning_from_experience"]
+      compare_with: ["stateless_agents", "rag"]
+    sources: ["B09 Ch4: Agent Memory", "B10 Ch5: Memory Patterns"]
+
+foundations_and_concepts:
+  agent_progression_levels:
+    definition: "A maturity model (L0-L5) for classifying agent capabilities, from simple text completion to fully autonomous multi-agent systems with self-improvement."
+    core_concepts:
+      - concept_name: "L0: Text Completion"
+        explanation: "Basic LLM inference — generate text given a prompt. No tool use, no memory, no autonomy."
+      - concept_name: "L1: Single Tool Agent"
+        explanation: "LLM with access to one or more tools. Can perform actions beyond text generation. Follows the ReAct pattern."
+      - concept_name: "L2: Multi-Step Agent"
+        explanation: "Agent that can plan and execute multi-step workflows with state management and error recovery."
+      - concept_name: "L3: Multi-Agent System"
+        explanation: "Multiple agents collaborating with specialized roles, communication protocols, and shared state."
+      - concept_name: "L4: Autonomous System"
+        explanation: "Agents that can self-monitor, self-correct, and operate with minimal human intervention."
+      - concept_name: "L5: Self-Improving System"
+        explanation: "Agents that improve their own capabilities through experience, meta-learning, and architecture evolution."
+    how_it_works: "Organizations typically progress through levels sequentially. Each level requires new capabilities in tooling, monitoring, and governance. Jumping levels is risky — build the operational foundation at each level before advancing."
+    sources: ["B10 Ch2: Agent Maturity", "Custom Framework"]
+
+  prompt_engineering_for_agents:
+    definition: "The discipline of crafting system prompts, tool descriptions, and instruction sets that reliably steer agent behavior — distinct from conversational prompt engineering."
+    core_concepts:
+      - concept_name: "Role Definition"
+        explanation: "Explicitly defining the agent's persona, capabilities, and boundaries in the system prompt. Agents without clear role boundaries tend to drift outside their intended scope."
+      - concept_name: "Tool Descriptions"
+        explanation: "Precise, unambiguous tool descriptions that help the model select the right tool. Include when to use (and when NOT to use) each tool."
+    how_it_works: "Agent prompts have three layers: system prompt (role, boundaries, style), tool definitions (what the agent can do), and dynamic context (current state, retrieved knowledge). The art is balancing specificity with flexibility."
+    sources: ["B02 Ch1: Agent Prompting", "Anthropic Prompt Engineering Guide"]
+
+  evaluation_driven_development:
+    definition: "A development methodology where test cases and evaluation criteria are defined before agent implementation, ensuring that quality is measurable and regressions are detectable."
+    core_concepts:
+      - concept_name: "Golden Dataset"
+        explanation: "A curated set of input-output pairs that represent the expected behavior of the agent. Used as the primary benchmark for measuring performance."
+      - concept_name: "Automated Evaluation"
+        explanation: "Using LLMs as judges, custom scoring functions, or human evaluation to score agent outputs against expected results."
+    how_it_works: "1. Define test cases before writing agent code. 2. Build the agent. 3. Run evaluation suite. 4. Analyze failures. 5. Iterate. The evaluation suite grows with production edge cases over time."
+    sources: ["B07 Ch4: Agent Evaluation", "B09 Ch6: Testing Strategies"]
+
+  cost_optimization:
+    definition: "Strategies for minimizing the token and API costs of agent operations while maintaining quality — including model tiering, caching, prompt compression, and batching."
+    core_concepts:
+      - concept_name: "Model Tiering"
+        explanation: "Use expensive models (Opus) only for tasks that require deep reasoning. Route classification, extraction, and routing tasks to cheaper models (Haiku). This can reduce costs by 80%+ without quality loss on routine tasks."
+      - concept_name: "Prompt Caching"
+        explanation: "Cache long system prompts and repeated context to avoid re-processing the same tokens. Anthropic's prompt caching can reduce costs significantly for agents with large system prompts."
+    how_it_works: "Implement a model router that classifies incoming tasks and routes to the appropriate model tier. Cache system prompts and frequently retrieved context. Batch similar requests when latency allows. Monitor cost per task and set budget alerts."
+    sources: ["B10 Ch6: Cost Management", "Anthropic Pricing Docs"]
+
+enterprise_and_governance:
+  trism_framework:
+    definition: "Trust, Risk, and Security Management (TRiSM) for AI — a Gartner-originated framework adapted for agent deployments covering seven trust layers from identity to purpose limitation."
+    core_concepts:
+      - concept_name: "Seven Trust Layers"
+        explanation: "Identity verification, Authentication, Authorization, Purpose limitation, Data minimization, Transparency, and Accountability. Each layer is scored 1-10 for governance assessments."
+      - concept_name: "Continuous Assessment"
+        explanation: "TRiSM is not a one-time audit. Governance assessments should be run at project inception (initial), periodically (quarterly), and in response to incidents."
+    how_it_works: "For each agent deployment, score all seven trust layers. Identify gaps and create action plans. Monitor trust scores over time. Use risk classification (stakes × error visibility) to determine assessment frequency and rigor."
+    sources: ["Gartner TRiSM Framework", "B10 Ch7: AI Governance"]
+
+  responsible_ai_principles:
+    definition: "A set of organizational principles ensuring AI systems are developed and deployed in ways that are fair, transparent, accountable, safe, and privacy-preserving."
+    core_concepts:
+      - concept_name: "Fairness & Bias"
+        explanation: "Ensure agent decisions don't discriminate against protected groups. Test for bias in training data, prompt design, and output patterns."
+      - concept_name: "Transparency"
+        explanation: "Users should understand when they're interacting with an AI agent, what data it accesses, and how it makes decisions."
+    sources: ["Wharton AI Ethics Module", "ISACA AI Framework"]
+
+  compliance_frameworks:
+    definition: "Regulatory and industry frameworks that govern AI deployment — including GDPR, DPDP, ISACA, and sector-specific requirements."
+    core_concepts:
+      - concept_name: "Data Privacy (GDPR/DPDP)"
+        explanation: "Agents that process personal data must comply with data protection regulations: consent, minimization, right to erasure, and cross-border transfer rules."
+      - concept_name: "Audit Trails"
+        explanation: "Maintain comprehensive logs of agent decisions, tool calls, and data access for regulatory audits and incident investigation."
+    sources: ["GDPR Articles", "India DPDP Act", "ISACA AI Governance"]
+
+  agent_security:
+    definition: "Security practices specific to AI agent deployments, covering prompt injection defense, tool permission boundaries, data leakage prevention, and adversarial robustness."
+    core_concepts:
+      - concept_name: "Prompt Injection"
+        explanation: "Attacks where malicious input attempts to override the agent's system prompt or instructions. Defense includes input sanitization, instruction hierarchy, and output filtering."
+      - concept_name: "Least Privilege"
+        explanation: "Agents should have the minimum permissions necessary to complete their tasks. Overprivileged agents are a security risk — one compromised agent shouldn't be able to access all systems."
+    sources: ["OWASP LLM Top 10", "B10 Ch8: Agent Security"]
+
+  caio_maturity_model:
+    definition: "A 12-domain maturity assessment framework for enterprise AI readiness, measuring organizational capability from Ad Hoc (Level 1) to Optimized (Level 5)."
+    core_concepts:
+      - concept_name: "12 Assessment Domains"
+        explanation: "Vision & Strategy, Governance & Oversight, Ethics & Responsible AI, Data Strategy, Fairness & Bias, Privacy & Compliance, Talent & Culture, Technology & Infrastructure, Portfolio Management, Security, Implementation Excellence, Measurement & ROI."
+      - concept_name: "Maturity Levels"
+        explanation: "Level 1 (Ad Hoc): No formal processes. Level 2 (Initial): Basic awareness. Level 3 (Defined): Documented processes. Level 4 (Managed): Measured and controlled. Level 5 (Optimized): Continuous improvement."
+    sources: ["CAIO Handbook", "Wharton AI Governance Module"]
+
+  wharton_ten_domains:
+    definition: "The Wharton School's 10-domain AI governance assessment covering strategy, innovation, bias, ethics, privacy, governance, readiness, implementation, change management, and measurement."
+    core_concepts:
+      - concept_name: "Assessment Scale"
+        explanation: "Each domain is scored 1.00-3.00 on the Wharton scale. Scores below 2.00 indicate significant gaps requiring immediate attention."
+    sources: ["Wharton AI for Business Program"]

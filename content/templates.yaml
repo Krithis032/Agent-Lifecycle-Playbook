@@ -1,0 +1,1430 @@
+templates:
+  - slug: agent-charter
+    name: "Agent Project Charter"
+    description: "Define scope, objectives, team, and success criteria for an agent project."
+    phase_slug: ideation
+    fields:
+      - key: project_name
+        label: "Project Name"
+        type: text
+        required: true
+        section: "Project Identity"
+      - key: project_code
+        label: "Project Code"
+        type: text
+        required: false
+        section: "Project Identity"
+        placeholder: "e.g., AGT-001"
+      - key: owner
+        label: "Project Owner"
+        type: text
+        required: true
+        section: "Project Identity"
+      - key: date
+        label: "Charter Date"
+        type: date
+        required: true
+        section: "Project Identity"
+      - key: status
+        label: "Status"
+        type: select
+        required: true
+        section: "Project Identity"
+        options: ["Draft", "Under Review", "Approved"]
+      - key: problem_statement
+        label: "Problem Statement"
+        type: textarea
+        required: true
+        section: "Problem & Opportunity"
+        helpText: "What problem does this agent solve? Who experiences it?"
+      - key: current_process
+        label: "Current Process"
+        type: textarea
+        required: true
+        section: "Problem & Opportunity"
+        helpText: "How is this handled today without the agent?"
+      - key: opportunity
+        label: "Opportunity"
+        type: textarea
+        required: true
+        section: "Problem & Opportunity"
+        helpText: "What improvement does the agent enable? Quantify if possible."
+      - key: architecture_pattern
+        label: "Architecture Pattern"
+        type: select
+        required: true
+        section: "Agent Design"
+        options: ["Single Agent", "Pipeline", "Supervisor-Workers", "Hierarchical", "Collaborative Swarm", "State Machine"]
+      - key: framework
+        label: "Framework"
+        type: select
+        required: true
+        section: "Agent Design"
+        options: ["LangGraph", "CrewAI", "AutoGen", "Claude Agent SDK", "Semantic Kernel", "Phidata"]
+      - key: model_strategy
+        label: "Model Tier Strategy"
+        type: select
+        required: true
+        section: "Agent Design"
+        options: ["Haiku Only", "Sonnet Only", "Opus Only", "Mixed (Haiku+Sonnet)", "Mixed (Sonnet+Opus)", "Full Tiered (Haiku+Sonnet+Opus)"]
+      - key: autonomy_level
+        label: "Target Autonomy Level"
+        type: select
+        required: true
+        section: "Agent Design"
+        options: ["L0 - Manual", "L1 - Assistive", "L2 - Collaborative", "L3 - Supervised Autonomous", "L4 - Highly Autonomous", "L5 - Fully Autonomous"]
+      - key: tools_required
+        label: "Tools & Integrations"
+        type: textarea
+        required: false
+        section: "Agent Design"
+        helpText: "List MCP servers, APIs, databases, file systems the agent needs access to"
+      - key: success_metrics
+        label: "Success Metrics"
+        type: textarea
+        required: true
+        section: "Success Criteria"
+        helpText: "KPIs that define success. Include targets."
+      - key: acceptance_criteria
+        label: "Acceptance Criteria"
+        type: textarea
+        required: true
+        section: "Success Criteria"
+        helpText: "What must be true for the project to be considered complete?"
+      - key: risk_classification
+        label: "Risk Classification"
+        type: select
+        required: true
+        section: "Success Criteria"
+        options: ["Automate (Low Stakes)", "Accelerate (Medium Stakes)", "Augment (High Stakes)", "Advise Only (Critical Stakes)"]
+      - key: team_members
+        label: "Team Members"
+        type: textarea
+        required: true
+        section: "Team & Timeline"
+        helpText: "Name, role, hours/week"
+      - key: timeline
+        label: "Estimated Timeline"
+        type: text
+        required: true
+        section: "Team & Timeline"
+        placeholder: "e.g., 6 weeks"
+      - key: budget
+        label: "Budget Estimate"
+        type: text
+        required: false
+        section: "Team & Timeline"
+
+  - slug: adr
+    name: "Architecture Decision Record"
+    description: "Document architecture choices with alternatives and rationale."
+    phase_slug: architecture
+    fields:
+      - key: adr_number
+        label: "ADR Number"
+        type: text
+        required: true
+        section: "Header"
+        placeholder: "ADR-001"
+      - key: title
+        label: "Decision Title"
+        type: text
+        required: true
+        section: "Header"
+      - key: date
+        label: "Date"
+        type: date
+        required: true
+        section: "Header"
+      - key: status
+        label: "Status"
+        type: select
+        required: true
+        section: "Header"
+        options: ["Proposed", "Accepted", "Deprecated", "Superseded"]
+      - key: deciders
+        label: "Decision Makers"
+        type: text
+        required: true
+        section: "Header"
+      - key: context
+        label: "Context & Problem"
+        type: textarea
+        required: true
+        section: "Decision"
+        helpText: "What is the issue? What forces are at play?"
+      - key: decision
+        label: "Decision"
+        type: textarea
+        required: true
+        section: "Decision"
+        helpText: "State the decision clearly"
+      - key: rationale
+        label: "Rationale"
+        type: textarea
+        required: true
+        section: "Decision"
+        helpText: "Why was this chosen over alternatives?"
+      - key: alternatives
+        label: "Alternatives Considered"
+        type: textarea
+        required: true
+        section: "Analysis"
+        helpText: "List each alternative and why it was not chosen"
+      - key: consequences_positive
+        label: "Positive Consequences"
+        type: textarea
+        required: true
+        section: "Analysis"
+      - key: consequences_negative
+        label: "Negative Consequences / Trade-offs"
+        type: textarea
+        required: true
+        section: "Analysis"
+      - key: related_adrs
+        label: "Related ADRs"
+        type: text
+        required: false
+        section: "Analysis"
+        placeholder: "e.g., ADR-003, ADR-005"
+
+  - slug: eval-report
+    name: "Agent Evaluation Report"
+    description: "Record evaluation results and recommendation."
+    phase_slug: prototype
+    fields:
+      - key: agent_name
+        label: "Agent / System Name"
+        type: text
+        required: true
+        section: "Header"
+      - key: eval_date
+        label: "Evaluation Date"
+        type: date
+        required: true
+        section: "Header"
+      - key: evaluator
+        label: "Evaluator"
+        type: text
+        required: true
+        section: "Header"
+      - key: eval_type
+        label: "Evaluation Type"
+        type: select
+        required: true
+        section: "Header"
+        options: ["Framework Selection", "Architecture Selection", "Agent Performance", "Custom"]
+      - key: executive_summary
+        label: "Executive Summary"
+        type: textarea
+        required: true
+        section: "Summary"
+      - key: recommendation
+        label: "Recommendation"
+        type: textarea
+        required: true
+        section: "Summary"
+      - key: confidence_level
+        label: "Confidence Level"
+        type: select
+        required: true
+        section: "Summary"
+        options: ["High", "Medium", "Low"]
+      - key: methodology
+        label: "Evaluation Methodology"
+        type: textarea
+        required: true
+        section: "Details"
+      - key: criteria_used
+        label: "Criteria & Weights"
+        type: textarea
+        required: true
+        section: "Details"
+      - key: results
+        label: "Detailed Results"
+        type: textarea
+        required: true
+        section: "Details"
+      - key: risks_tradeoffs
+        label: "Risks & Trade-offs"
+        type: textarea
+        required: true
+        section: "Details"
+      - key: next_steps
+        label: "Next Steps"
+        type: textarea
+        required: true
+        section: "Details"
+
+  - slug: pilot-runbook
+    name: "Pilot Runbook"
+    description: "Operational plan for pilot deployment."
+    phase_slug: pilot
+    fields:
+      - key: pilot_name
+        label: "Pilot Name"
+        type: text
+        required: true
+        section: "Overview"
+      - key: start_date
+        label: "Start Date"
+        type: date
+        required: true
+        section: "Overview"
+      - key: end_date
+        label: "End Date"
+        type: date
+        required: true
+        section: "Overview"
+      - key: pilot_scope
+        label: "Pilot Scope"
+        type: textarea
+        required: true
+        section: "Overview"
+        helpText: "What users/processes are included? What is excluded?"
+      - key: success_criteria
+        label: "Pilot Success Criteria"
+        type: textarea
+        required: true
+        section: "Overview"
+      - key: deployment_steps
+        label: "Deployment Steps"
+        type: textarea
+        required: true
+        section: "Operations"
+      - key: monitoring_plan
+        label: "Monitoring Plan"
+        type: textarea
+        required: true
+        section: "Operations"
+        helpText: "What metrics are tracked? Where? Alert thresholds?"
+      - key: rollback_plan
+        label: "Rollback Plan"
+        type: textarea
+        required: true
+        section: "Operations"
+      - key: escalation_path
+        label: "Escalation Path"
+        type: textarea
+        required: true
+        section: "Operations"
+      - key: feedback_mechanism
+        label: "Feedback Collection"
+        type: textarea
+        required: true
+        section: "Evaluation"
+      - key: go_nogo_criteria
+        label: "Go/No-Go Decision Criteria"
+        type: textarea
+        required: true
+        section: "Evaluation"
+      - key: stakeholders
+        label: "Stakeholders & Sign-off"
+        type: textarea
+        required: true
+        section: "Evaluation"
+
+  - slug: prod-checklist
+    name: "Production Readiness Checklist"
+    description: "Pre-production sign-off checklist."
+    phase_slug: production
+    fields:
+      - key: system_name
+        label: "System Name"
+        type: text
+        required: true
+        section: "System"
+      - key: review_date
+        label: "Review Date"
+        type: date
+        required: true
+        section: "System"
+      - key: reviewer
+        label: "Reviewer"
+        type: text
+        required: true
+        section: "System"
+      - key: performance_tested
+        label: "Performance/Load Testing Done"
+        type: checkbox
+        required: true
+        section: "Technical Readiness"
+      - key: security_reviewed
+        label: "Security Review Completed"
+        type: checkbox
+        required: true
+        section: "Technical Readiness"
+      - key: monitoring_active
+        label: "Monitoring & Alerting Active"
+        type: checkbox
+        required: true
+        section: "Technical Readiness"
+      - key: rollback_tested
+        label: "Rollback Procedure Tested"
+        type: checkbox
+        required: true
+        section: "Technical Readiness"
+      - key: guardrails_active
+        label: "Input/Output Guardrails Active"
+        type: checkbox
+        required: true
+        section: "Technical Readiness"
+      - key: hitl_gates
+        label: "HITL Gates Configured"
+        type: checkbox
+        required: true
+        section: "Technical Readiness"
+      - key: governance_passed
+        label: "Governance Assessment Passed"
+        type: checkbox
+        required: true
+        section: "Governance Readiness"
+      - key: compliance_checked
+        label: "Compliance Checklist Completed"
+        type: checkbox
+        required: true
+        section: "Governance Readiness"
+      - key: data_privacy_reviewed
+        label: "Data Privacy Impact Assessed"
+        type: checkbox
+        required: true
+        section: "Governance Readiness"
+      - key: bias_audited
+        label: "Bias Audit Completed"
+        type: checkbox
+        required: true
+        section: "Governance Readiness"
+      - key: runbook_available
+        label: "Operations Runbook Available"
+        type: checkbox
+        required: true
+        section: "Operational Readiness"
+      - key: oncall_assigned
+        label: "On-call Rotation Assigned"
+        type: checkbox
+        required: true
+        section: "Operational Readiness"
+      - key: incident_plan
+        label: "Incident Response Plan in Place"
+        type: checkbox
+        required: true
+        section: "Operational Readiness"
+      - key: stakeholders_signed
+        label: "Stakeholder Sign-off Obtained"
+        type: checkbox
+        required: true
+        section: "Operational Readiness"
+      - key: notes
+        label: "Notes / Blockers"
+        type: textarea
+        required: false
+        section: "Notes"
+
+  - slug: incident-plan
+    name: "Incident Response Plan"
+    description: "Incident classification and response procedures."
+    phase_slug: operations
+    fields:
+      - key: system_name
+        label: "Agent System Name"
+        type: text
+        required: true
+        section: "Overview"
+      - key: version
+        label: "Plan Version"
+        type: text
+        required: true
+        section: "Overview"
+      - key: last_updated
+        label: "Last Updated"
+        type: date
+        required: true
+        section: "Overview"
+      - key: owner
+        label: "Plan Owner"
+        type: text
+        required: true
+        section: "Overview"
+      - key: severity_definitions
+        label: "Severity Levels & Definitions"
+        type: textarea
+        required: true
+        section: "Classification"
+        helpText: "Define SEV1 (critical) through SEV4 (informational) with response times"
+      - key: incident_types
+        label: "Incident Types"
+        type: textarea
+        required: true
+        section: "Classification"
+        helpText: "e.g., Hallucination, Data Leak, Guardrail Bypass, Performance Degradation, Bias Detected"
+      - key: detection
+        label: "Detection Mechanisms"
+        type: textarea
+        required: true
+        section: "Response Procedures"
+      - key: triage_steps
+        label: "Triage Steps"
+        type: textarea
+        required: true
+        section: "Response Procedures"
+      - key: containment
+        label: "Containment Actions"
+        type: textarea
+        required: true
+        section: "Response Procedures"
+        helpText: "Kill switch location, traffic diversion, fallback mode"
+      - key: communication_plan
+        label: "Communication Plan"
+        type: textarea
+        required: true
+        section: "Response Procedures"
+      - key: recovery_steps
+        label: "Recovery Steps"
+        type: textarea
+        required: true
+        section: "Response Procedures"
+      - key: post_mortem_template
+        label: "Post-Mortem Template"
+        type: textarea
+        required: false
+        section: "Post-Incident"
+      - key: escalation_contacts
+        label: "Escalation Contacts"
+        type: textarea
+        required: true
+        section: "Post-Incident"
+  - slug: use-case-assessment
+    name: "Use Case Assessment"
+    description: "Evaluate whether a problem is suited for agentic AI vs simpler automation."
+    phase_slug: ideation
+    fields:
+      - key: use_case_name
+        label: "Use Case Name"
+        type: text
+        required: true
+        section: "Overview"
+      - key: date
+        label: "Assessment Date"
+        type: date
+        required: true
+        section: "Overview"
+      - key: assessor
+        label: "Assessor"
+        type: text
+        required: true
+        section: "Overview"
+      - key: current_workflow
+        label: "Current Workflow Description"
+        type: textarea
+        required: true
+        section: "Current State"
+        helpText: "Map the end-to-end workflow with bottlenecks and handoffs"
+      - key: cost_of_status_quo
+        label: "Cost of Status Quo"
+        type: textarea
+        required: true
+        section: "Current State"
+        helpText: "Person-hours, error rates, customer wait times, compliance gaps"
+      - key: requires_multi_step
+        label: "Requires Multi-Step Reasoning"
+        type: checkbox
+        required: true
+        section: "Agent-Fit Criteria"
+      - key: requires_tool_use
+        label: "Requires Tool Use"
+        type: checkbox
+        required: true
+        section: "Agent-Fit Criteria"
+      - key: requires_adaptive_decisions
+        label: "Requires Adaptive Decision-Making"
+        type: checkbox
+        required: true
+        section: "Agent-Fit Criteria"
+      - key: has_feedback_loop
+        label: "Has Reason-Act-Observe Loop"
+        type: checkbox
+        required: true
+        section: "Agent-Fit Criteria"
+      - key: agent_fit_score
+        label: "Agent-Fit Score (1-10)"
+        type: select
+        required: true
+        section: "Agent-Fit Criteria"
+        options: ["1","2","3","4","5","6","7","8","9","10"]
+      - key: recommendation
+        label: "Recommendation"
+        type: select
+        required: true
+        section: "Decision"
+        options: ["Proceed with Agent", "Use Simpler Automation", "Needs More Research", "Not Suitable"]
+      - key: rationale
+        label: "Rationale"
+        type: textarea
+        required: true
+        section: "Decision"
+
+  - slug: stakeholder-analysis
+    name: "Stakeholder Analysis"
+    description: "Identify and align all project stakeholders with RACI mapping."
+    phase_slug: ideation
+    fields:
+      - key: project_name
+        label: "Project Name"
+        type: text
+        required: true
+        section: "Overview"
+      - key: date
+        label: "Date"
+        type: date
+        required: true
+        section: "Overview"
+      - key: business_sponsors
+        label: "Business Sponsors"
+        type: textarea
+        required: true
+        section: "Stakeholders"
+        helpText: "Name, role, interest, influence level"
+      - key: end_users
+        label: "End Users"
+        type: textarea
+        required: true
+        section: "Stakeholders"
+      - key: security_compliance
+        label: "Security & Compliance Teams"
+        type: textarea
+        required: true
+        section: "Stakeholders"
+      - key: infrastructure_owners
+        label: "Infrastructure Owners"
+        type: textarea
+        required: true
+        section: "Stakeholders"
+      - key: downstream_systems
+        label: "Affected Downstream Systems"
+        type: textarea
+        required: true
+        section: "Stakeholders"
+      - key: raci_matrix
+        label: "RACI Matrix"
+        type: textarea
+        required: true
+        section: "Governance"
+        helpText: "Responsible, Accountable, Consulted, Informed for each major decision"
+      - key: communication_plan
+        label: "Communication Plan"
+        type: textarea
+        required: true
+        section: "Governance"
+
+  - slug: risk-register
+    name: "Risk Register"
+    description: "Pre-mortem risk identification and mitigation planning."
+    phase_slug: ideation
+    fields:
+      - key: project_name
+        label: "Project Name"
+        type: text
+        required: true
+        section: "Overview"
+      - key: date
+        label: "Date"
+        type: date
+        required: true
+        section: "Overview"
+      - key: risk_classification
+        label: "Risk Classification"
+        type: select
+        required: true
+        section: "Overview"
+        options: ["Low Risk", "Medium Risk", "High Risk", "Critical Risk"]
+      - key: stakes_level
+        label: "Stakes Level"
+        type: select
+        required: true
+        section: "Risk Matrix"
+        options: ["Low", "High"]
+      - key: error_visibility
+        label: "Error Visibility"
+        type: select
+        required: true
+        section: "Risk Matrix"
+        options: ["Easy to Detect", "Hard to Detect"]
+      - key: pre_mortem
+        label: "Pre-Mortem Exercise"
+        type: textarea
+        required: true
+        section: "Risk Identification"
+        helpText: "Imagine the project failed in 6 months — what went wrong?"
+      - key: technical_risks
+        label: "Technical Risks"
+        type: textarea
+        required: true
+        section: "Risk Identification"
+      - key: operational_risks
+        label: "Operational Risks"
+        type: textarea
+        required: true
+        section: "Risk Identification"
+      - key: compliance_risks
+        label: "Compliance & Legal Risks"
+        type: textarea
+        required: true
+        section: "Risk Identification"
+      - key: mitigations
+        label: "Mitigation Strategies"
+        type: textarea
+        required: true
+        section: "Mitigation"
+      - key: kill_criteria
+        label: "Kill Criteria"
+        type: textarea
+        required: true
+        section: "Mitigation"
+        helpText: "Specific thresholds that trigger pivot or cancellation"
+
+  - slug: tool-integration-spec
+    name: "Tool & Integration Spec"
+    description: "Design the agent's tool ecosystem with interface contracts."
+    phase_slug: architecture
+    fields:
+      - key: agent_name
+        label: "Agent Name"
+        type: text
+        required: true
+        section: "Overview"
+      - key: date
+        label: "Date"
+        type: date
+        required: true
+        section: "Overview"
+      - key: tool_inventory
+        label: "Tool Inventory"
+        type: textarea
+        required: true
+        section: "Tools"
+        helpText: "List all APIs, databases, file systems, MCP servers the agent needs"
+      - key: mcp_servers
+        label: "MCP Server Registry"
+        type: textarea
+        required: false
+        section: "Tools"
+        helpText: "MCP servers for standardized tool interfaces"
+      - key: input_schemas
+        label: "Input Schemas"
+        type: textarea
+        required: true
+        section: "Interface Contracts"
+        helpText: "JSON Schema or OpenAPI spec for each tool input"
+      - key: output_schemas
+        label: "Output Schemas"
+        type: textarea
+        required: true
+        section: "Interface Contracts"
+      - key: error_handling
+        label: "Error Handling Contracts"
+        type: textarea
+        required: true
+        section: "Interface Contracts"
+        helpText: "Timeout policies, retry behavior, fallback actions per tool"
+      - key: permission_boundaries
+        label: "Permission Boundaries"
+        type: textarea
+        required: true
+        section: "Security"
+        helpText: "Least-privilege access for each tool"
+      - key: integration_diagram
+        label: "Integration Architecture Notes"
+        type: textarea
+        required: false
+        section: "Security"
+
+  - slug: state-memory-design
+    name: "State & Memory Design"
+    description: "Design agent state management and memory tiers."
+    phase_slug: architecture
+    fields:
+      - key: agent_name
+        label: "Agent Name"
+        type: text
+        required: true
+        section: "Overview"
+      - key: framework
+        label: "Framework"
+        type: select
+        required: true
+        section: "Overview"
+        options: ["LangGraph", "CrewAI", "AutoGen", "Claude Agent SDK", "Semantic Kernel", "Phidata"]
+      - key: state_schema
+        label: "State Schema Definition"
+        type: textarea
+        required: true
+        section: "State Design"
+        helpText: "Define typed state channels/fields the agent maintains"
+      - key: working_memory
+        label: "Working Memory"
+        type: textarea
+        required: true
+        section: "Memory Tiers"
+        helpText: "Current conversation/task context"
+      - key: short_term_memory
+        label: "Short-Term Memory"
+        type: textarea
+        required: true
+        section: "Memory Tiers"
+        helpText: "Session-level context"
+      - key: long_term_memory
+        label: "Long-Term Memory"
+        type: textarea
+        required: true
+        section: "Memory Tiers"
+        helpText: "Persistent knowledge store"
+      - key: persistence_strategy
+        label: "Persistence Strategy"
+        type: select
+        required: true
+        section: "Infrastructure"
+        options: ["In-Memory (Prototype)", "SQLite", "PostgreSQL", "Redis", "Vector DB", "Custom"]
+      - key: persistence_details
+        label: "Persistence Details"
+        type: textarea
+        required: true
+        section: "Infrastructure"
+
+  - slug: test-case-dataset
+    name: "Test Case Dataset"
+    description: "Define evaluation test cases for agent prototype validation."
+    phase_slug: prototype
+    fields:
+      - key: agent_name
+        label: "Agent Name"
+        type: text
+        required: true
+        section: "Overview"
+      - key: date
+        label: "Date"
+        type: date
+        required: true
+        section: "Overview"
+      - key: total_cases
+        label: "Total Test Cases"
+        type: text
+        required: true
+        section: "Overview"
+        placeholder: "e.g., 75"
+      - key: golden_path
+        label: "Golden Path Cases"
+        type: textarea
+        required: true
+        section: "Test Categories"
+        helpText: "Expected/happy-path inputs and expected outputs"
+      - key: edge_cases
+        label: "Edge Cases"
+        type: textarea
+        required: true
+        section: "Test Categories"
+        helpText: "Boundary conditions and unusual inputs"
+      - key: adversarial_cases
+        label: "Adversarial Cases"
+        type: textarea
+        required: true
+        section: "Test Categories"
+        helpText: "Attempts to break or mislead the agent (min 20%)"
+      - key: real_world_samples
+        label: "Real-World Samples"
+        type: textarea
+        required: false
+        section: "Test Categories"
+        helpText: "From production data if available"
+      - key: scoring_rubric
+        label: "Scoring Rubric"
+        type: textarea
+        required: true
+        section: "Evaluation"
+        helpText: "How each test case is graded (pass/fail, score 1-5, etc.)"
+      - key: pass_threshold
+        label: "Pass Threshold"
+        type: text
+        required: true
+        section: "Evaluation"
+        placeholder: "e.g., 85% task completion rate"
+
+  - slug: prompt-engineering-log
+    name: "Prompt Engineering Log"
+    description: "Track prompt iterations, versions, and performance impact."
+    phase_slug: prototype
+    fields:
+      - key: agent_name
+        label: "Agent Name"
+        type: text
+        required: true
+        section: "Overview"
+      - key: prompt_version
+        label: "Prompt Version"
+        type: text
+        required: true
+        section: "Overview"
+        placeholder: "e.g., v3.2"
+      - key: date
+        label: "Date"
+        type: date
+        required: true
+        section: "Overview"
+      - key: system_prompt
+        label: "System Prompt"
+        type: textarea
+        required: true
+        section: "Prompt Content"
+      - key: user_prompt_template
+        label: "User Prompt Template"
+        type: textarea
+        required: true
+        section: "Prompt Content"
+      - key: few_shot_examples
+        label: "Few-Shot Examples"
+        type: textarea
+        required: false
+        section: "Prompt Content"
+      - key: changes_from_prev
+        label: "Changes from Previous Version"
+        type: textarea
+        required: true
+        section: "Iteration"
+        helpText: "What changed and why"
+      - key: eval_results
+        label: "Evaluation Results"
+        type: textarea
+        required: true
+        section: "Iteration"
+        helpText: "Performance metrics compared to previous version"
+      - key: failure_modes_addressed
+        label: "Failure Modes Addressed"
+        type: textarea
+        required: false
+        section: "Iteration"
+  - slug: shadow-mode-report
+    name: "Shadow Mode Report"
+    description: "Compare agent outputs against current system during shadow deployment."
+    phase_slug: pilot
+    fields:
+      - key: agent_name
+        label: "Agent Name"
+        type: text
+        required: true
+        section: "Overview"
+      - key: period
+        label: "Shadow Period"
+        type: text
+        required: true
+        section: "Overview"
+        placeholder: "e.g., Jan 15-29, 2025"
+      - key: total_requests
+        label: "Total Requests Shadowed"
+        type: text
+        required: true
+        section: "Overview"
+      - key: accuracy_comparison
+        label: "Accuracy: Agent vs Current System"
+        type: textarea
+        required: true
+        section: "Comparison Results"
+      - key: latency_comparison
+        label: "Latency: Agent vs Current System"
+        type: textarea
+        required: true
+        section: "Comparison Results"
+      - key: cost_comparison
+        label: "Cost: Agent vs Current System"
+        type: textarea
+        required: true
+        section: "Comparison Results"
+      - key: disagreements
+        label: "Disagreement Analysis"
+        type: textarea
+        required: true
+        section: "Analysis"
+        helpText: "Cases where agent and current system produced different outputs"
+      - key: failure_patterns
+        label: "Failure Patterns"
+        type: textarea
+        required: true
+        section: "Analysis"
+      - key: recommendation
+        label: "Recommendation"
+        type: select
+        required: true
+        section: "Decision"
+        options: ["Proceed to Supervised Mode", "Extend Shadow Period", "Redesign Required", "Abort"]
+
+  - slug: user-feedback-survey
+    name: "User Feedback Survey"
+    description: "Structured feedback collection from pilot users."
+    phase_slug: pilot
+    fields:
+      - key: agent_name
+        label: "Agent Name"
+        type: text
+        required: true
+        section: "Overview"
+      - key: respondent
+        label: "Respondent Name"
+        type: text
+        required: true
+        section: "Overview"
+      - key: date
+        label: "Date"
+        type: date
+        required: true
+        section: "Overview"
+      - key: overall_satisfaction
+        label: "Overall Satisfaction (1-5)"
+        type: select
+        required: true
+        section: "Ratings"
+        options: ["1 - Very Poor", "2 - Poor", "3 - Acceptable", "4 - Good", "5 - Excellent"]
+      - key: accuracy_rating
+        label: "Accuracy Rating (1-5)"
+        type: select
+        required: true
+        section: "Ratings"
+        options: ["1 - Very Poor", "2 - Poor", "3 - Acceptable", "4 - Good", "5 - Excellent"]
+      - key: speed_rating
+        label: "Speed Rating (1-5)"
+        type: select
+        required: true
+        section: "Ratings"
+        options: ["1 - Very Poor", "2 - Poor", "3 - Acceptable", "4 - Good", "5 - Excellent"]
+      - key: what_worked
+        label: "What Worked Well"
+        type: textarea
+        required: true
+        section: "Qualitative"
+      - key: what_didnt_work
+        label: "What Didn't Work"
+        type: textarea
+        required: true
+        section: "Qualitative"
+      - key: surprising
+        label: "What Was Surprising"
+        type: textarea
+        required: false
+        section: "Qualitative"
+      - key: suggestions
+        label: "Improvement Suggestions"
+        type: textarea
+        required: true
+        section: "Qualitative"
+
+  - slug: security-threat-model
+    name: "Security Threat Model"
+    description: "Threat modeling specific to agent capabilities and attack surfaces."
+    phase_slug: production
+    fields:
+      - key: system_name
+        label: "Agent System Name"
+        type: text
+        required: true
+        section: "Overview"
+      - key: date
+        label: "Date"
+        type: date
+        required: true
+        section: "Overview"
+      - key: modeler
+        label: "Threat Modeler"
+        type: text
+        required: true
+        section: "Overview"
+      - key: attack_surface
+        label: "Attack Surface Inventory"
+        type: textarea
+        required: true
+        section: "Threat Analysis"
+        helpText: "All inputs, tools, APIs, data stores the agent touches"
+      - key: prompt_injection
+        label: "Prompt Injection Threats"
+        type: textarea
+        required: true
+        section: "Threat Analysis"
+        helpText: "Direct and indirect injection vectors"
+      - key: data_exfiltration
+        label: "Data Exfiltration Risks"
+        type: textarea
+        required: true
+        section: "Threat Analysis"
+      - key: privilege_escalation
+        label: "Privilege Escalation Risks"
+        type: textarea
+        required: true
+        section: "Threat Analysis"
+      - key: input_validation
+        label: "Input Validation Controls"
+        type: textarea
+        required: true
+        section: "Mitigations"
+      - key: output_filtering
+        label: "Output Filtering Controls"
+        type: textarea
+        required: true
+        section: "Mitigations"
+      - key: rate_limiting
+        label: "Rate Limiting & Abuse Prevention"
+        type: textarea
+        required: true
+        section: "Mitigations"
+      - key: audit_logging
+        label: "Audit Logging Strategy"
+        type: textarea
+        required: true
+        section: "Mitigations"
+      - key: pentest_results
+        label: "Penetration Test Results"
+        type: textarea
+        required: false
+        section: "Validation"
+
+  - slug: performance-profile
+    name: "Performance Profile"
+    description: "Load testing results and optimization backlog."
+    phase_slug: production
+    fields:
+      - key: system_name
+        label: "System Name"
+        type: text
+        required: true
+        section: "Overview"
+      - key: date
+        label: "Profile Date"
+        type: date
+        required: true
+        section: "Overview"
+      - key: load_test_tool
+        label: "Load Test Tool"
+        type: select
+        required: true
+        section: "Overview"
+        options: ["k6", "Locust", "Artillery", "JMeter", "Custom"]
+      - key: baseline_latency
+        label: "Baseline Latency (p50/p95/p99)"
+        type: textarea
+        required: true
+        section: "Results"
+      - key: throughput
+        label: "Throughput (requests/sec)"
+        type: textarea
+        required: true
+        section: "Results"
+      - key: bottlenecks
+        label: "Identified Bottlenecks"
+        type: textarea
+        required: true
+        section: "Results"
+        helpText: "Tool calls, model inference, state management, DB queries"
+      - key: cost_per_task
+        label: "Cost per Task Under Load"
+        type: textarea
+        required: true
+        section: "Results"
+      - key: optimizations
+        label: "Optimization Backlog"
+        type: textarea
+        required: true
+        section: "Action Plan"
+        helpText: "Caching, batching, prompt optimization, connection pooling"
+      - key: scaling_plan
+        label: "Scaling Plan"
+        type: textarea
+        required: true
+        section: "Action Plan"
+
+  - slug: slo-definition
+    name: "SLO Definition"
+    description: "Define service level objectives for the agent system."
+    phase_slug: operations
+    fields:
+      - key: service_name
+        label: "Service Name"
+        type: text
+        required: true
+        section: "Overview"
+      - key: date
+        label: "Effective Date"
+        type: date
+        required: true
+        section: "Overview"
+      - key: owner
+        label: "SLO Owner"
+        type: text
+        required: true
+        section: "Overview"
+      - key: availability_slo
+        label: "Availability SLO"
+        type: text
+        required: true
+        section: "SLOs"
+        placeholder: "e.g., 99.9% uptime"
+      - key: latency_slo
+        label: "Latency SLO (p95)"
+        type: text
+        required: true
+        section: "SLOs"
+        placeholder: "e.g., < 5s p95"
+      - key: accuracy_slo
+        label: "Accuracy SLO"
+        type: text
+        required: true
+        section: "SLOs"
+        placeholder: "e.g., > 90% task completion"
+      - key: error_budget
+        label: "Error Budget"
+        type: textarea
+        required: true
+        section: "SLOs"
+        helpText: "Allowed failure rate before action is required"
+      - key: measurement_method
+        label: "Measurement Method"
+        type: textarea
+        required: true
+        section: "Monitoring"
+      - key: alerting_thresholds
+        label: "Alerting Thresholds"
+        type: textarea
+        required: true
+        section: "Monitoring"
+        helpText: "Warning and critical thresholds for each SLO"
+      - key: burn_rate_policy
+        label: "Burn Rate Policy"
+        type: textarea
+        required: true
+        section: "Monitoring"
+        helpText: "Actions when error budget is being consumed too quickly"
+
+  - slug: post-mortem
+    name: "Post-Mortem Report"
+    description: "Structured incident analysis with action items."
+    phase_slug: operations
+    fields:
+      - key: incident_id
+        label: "Incident ID"
+        type: text
+        required: true
+        section: "Header"
+        placeholder: "e.g., INC-042"
+      - key: date
+        label: "Incident Date"
+        type: date
+        required: true
+        section: "Header"
+      - key: severity
+        label: "Severity"
+        type: select
+        required: true
+        section: "Header"
+        options: ["SEV1 - Critical", "SEV2 - Major", "SEV3 - Minor", "SEV4 - Informational"]
+      - key: author
+        label: "Post-Mortem Author"
+        type: text
+        required: true
+        section: "Header"
+      - key: summary
+        label: "Incident Summary"
+        type: textarea
+        required: true
+        section: "Timeline"
+      - key: timeline
+        label: "Detailed Timeline"
+        type: textarea
+        required: true
+        section: "Timeline"
+        helpText: "Chronological sequence of events with timestamps"
+      - key: impact
+        label: "Impact Assessment"
+        type: textarea
+        required: true
+        section: "Analysis"
+        helpText: "Users affected, data impact, duration, financial cost"
+      - key: root_cause
+        label: "Root Cause"
+        type: textarea
+        required: true
+        section: "Analysis"
+      - key: contributing_factors
+        label: "Contributing Factors"
+        type: textarea
+        required: true
+        section: "Analysis"
+      - key: what_went_well
+        label: "What Went Well"
+        type: textarea
+        required: true
+        section: "Learnings"
+      - key: what_went_wrong
+        label: "What Went Wrong"
+        type: textarea
+        required: true
+        section: "Learnings"
+      - key: action_items
+        label: "Action Items"
+        type: textarea
+        required: true
+        section: "Learnings"
+        helpText: "Specific, assigned, time-bound actions to prevent recurrence"
+      - key: mttd
+        label: "MTTD (Mean Time to Detect)"
+        type: text
+        required: true
+        section: "Metrics"
+      - key: mttr
+        label: "MTTR (Mean Time to Resolve)"
+        type: text
+        required: true
+        section: "Metrics"
+
+  - slug: capability-roadmap
+    name: "Capability Expansion Roadmap"
+    description: "Plan systematic expansion of agent capabilities based on production data."
+    phase_slug: evolution
+    fields:
+      - key: agent_name
+        label: "Agent Name"
+        type: text
+        required: true
+        section: "Overview"
+      - key: date
+        label: "Roadmap Date"
+        type: date
+        required: true
+        section: "Overview"
+      - key: current_autonomy
+        label: "Current Autonomy Level"
+        type: select
+        required: true
+        section: "Current State"
+        options: ["L0 - Manual", "L1 - Assistive", "L2 - Collaborative", "L3 - Supervised Autonomous", "L4 - Highly Autonomous", "L5 - Fully Autonomous"]
+      - key: target_autonomy
+        label: "Target Autonomy Level"
+        type: select
+        required: true
+        section: "Current State"
+        options: ["L1 - Assistive", "L2 - Collaborative", "L3 - Supervised Autonomous", "L4 - Highly Autonomous", "L5 - Fully Autonomous"]
+      - key: override_analysis
+        label: "Human Override Pattern Analysis"
+        type: textarea
+        required: true
+        section: "Analysis"
+        helpText: "Most common override reasons — these are expansion opportunities"
+      - key: new_tools
+        label: "New Tools to Add"
+        type: textarea
+        required: true
+        section: "Expansion Plan"
+      - key: expanded_decisions
+        label: "Expanded Decision Boundaries"
+        type: textarea
+        required: true
+        section: "Expansion Plan"
+        helpText: "What new decisions can the agent make autonomously?"
+      - key: validation_plan
+        label: "Validation Plan"
+        type: textarea
+        required: true
+        section: "Expansion Plan"
+        helpText: "Mini prototype-pilot cycle for each expansion"
+      - key: timeline
+        label: "Timeline"
+        type: textarea
+        required: true
+        section: "Expansion Plan"
+
+  - slug: user-guide
+    name: "Product User Guide"
+    description: "Admin and end-user guide template covering module walkthroughs, RBAC reference, admin setup, and troubleshooting. Available in PDF and PPTX formats."
+    phase_slug: operations
+    fields:
+      - key: product_name
+        label: "Product / Portal Name"
+        type: text
+        required: true
+        section: "Header"
+      - key: version
+        label: "Guide Version"
+        type: text
+        required: true
+        section: "Header"
+        placeholder: "e.g., v1.0"
+      - key: date
+        label: "Publication Date"
+        type: date
+        required: true
+        section: "Header"
+      - key: author
+        label: "Author / Owner"
+        type: text
+        required: true
+        section: "Header"
+      - key: output_format
+        label: "Output Format"
+        type: select
+        required: true
+        section: "Header"
+        options: ["PDF", "PPTX", "Both"]
+      - key: getting_started
+        label: "Getting Started"
+        type: textarea
+        required: true
+        section: "Getting Started"
+        helpText: "Prerequisites, access requirements, initial login steps"
+      - key: module_overview
+        label: "Module Overview"
+        type: textarea
+        required: true
+        section: "Module Overview"
+        helpText: "List all modules with one-line descriptions"
+      - key: strategize_walkthrough
+        label: "Strategize Phase Walkthrough"
+        type: textarea
+        required: true
+        section: "Phase Walkthroughs"
+        helpText: "Step-by-step guide for Strategize phase modules"
+      - key: build_walkthrough
+        label: "Build Phase Walkthrough"
+        type: textarea
+        required: true
+        section: "Phase Walkthroughs"
+        helpText: "Step-by-step guide for Build phase modules"
+      - key: govern_walkthrough
+        label: "Govern Phase Walkthrough"
+        type: textarea
+        required: true
+        section: "Phase Walkthroughs"
+        helpText: "Step-by-step guide for Govern phase modules"
+      - key: rbac_reference
+        label: "Role-Based Permissions Reference"
+        type: textarea
+        required: true
+        section: "Role-Based Access Control"
+        helpText: "Table of roles (Admin, Manager, Viewer) and their access rights per module"
+      - key: admin_setup
+        label: "Admin Setup Guide"
+        type: textarea
+        required: true
+        section: "Admin Setup"
+        helpText: "Environment setup, API keys, database, user provisioning"
+      - key: common_workflows
+        label: "Common Workflows"
+        type: textarea
+        required: true
+        section: "Common Workflows"
+        helpText: "Top 5–10 end-to-end workflows with numbered steps"
+      - key: troubleshooting
+        label: "Troubleshooting & FAQ"
+        type: textarea
+        required: true
+        section: "Troubleshooting & FAQ"
+        helpText: "Common issues, error messages, and their resolutions"
+      - key: support_contact
+        label: "Support Contact"
+        type: text
+        required: false
+        section: "Troubleshooting & FAQ"
+        placeholder: "e.g., support@company.com or Slack #help-channel"
+

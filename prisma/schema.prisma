@@ -1,0 +1,387 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model KbDomain {
+  id           Int          @id @default(autoincrement())
+  kbSource     String       @map("kb_source") @db.VarChar(10)
+  domainKey    String       @map("domain_key") @db.VarChar(100)
+  domainName   String       @map("domain_name") @db.VarChar(200)
+  description  String?      @db.Text
+  conceptCount Int          @default(0) @map("concept_count")
+  concepts     KbConcept[]
+
+  @@unique([kbSource, domainKey], name: "uq_domain")
+  @@map("kb_domains")
+}
+
+model KbConcept {
+  id            Int       @id @default(autoincrement())
+  domainId      Int       @map("domain_id")
+  conceptKey    String    @map("concept_key") @db.VarChar(200)
+  conceptName   String    @map("concept_name") @db.VarChar(300)
+  definition    String?   @db.Text
+  explanation   String?   @db.Text
+  sources       Json?
+  codeScaffold  String?   @map("code_scaffold") @db.Text
+  relationships Json?
+  metadata      Json?
+  domain        KbDomain  @relation(fields: [domainId], references: [id])
+
+  @@index([conceptKey], name: "idx_concept_key")
+  @@map("kb_concepts")
+}
+
+model PlaybookPhase {
+  id             Int                    @id @default(autoincrement())
+  phaseNum       Int                    @map("phase_num") @db.TinyInt
+  slug           String                 @unique @db.VarChar(50)
+  name           String                 @db.VarChar(100)
+  icon           String?                @db.VarChar(10)
+  color          String?                @db.VarChar(7)
+  duration       String?                @db.VarChar(30)
+  subtitle       String?                @db.VarChar(300)
+  interviewAngle String?                @map("interview_angle") @db.Text
+  sortOrder      Int                    @map("sort_order") @db.TinyInt
+  steps          PlaybookStep[]
+  gateChecks     GateCheck[]
+  projects       Project[]              @relation("currentPhase")
+  phaseProgress  ProjectPhaseProgress[]
+  templates      Template[]
+
+  @@map("playbook_phases")
+}
+
+model PlaybookStep {
+  id           Int                    @id @default(autoincrement())
+  phaseId      Int                    @map("phase_id")
+  stepNum      Int                    @map("step_num") @db.TinyInt
+  title        String                 @db.VarChar(200)
+  body         String                 @db.Text
+  codeExample  String?                @map("code_example") @db.Text
+  proTip       String?                @map("pro_tip") @db.Text
+  deliverables Json?
+  tools        Json?
+  tableData    Json?                  @map("table_data")
+  sortOrder    Int                    @map("sort_order") @db.TinyInt
+  phase        PlaybookPhase          @relation(fields: [phaseId], references: [id])
+  stepProgress ProjectStepProgress[]
+
+  @@map("playbook_steps")
+}
+
+model GateCheck {
+  id              Int                  @id @default(autoincrement())
+  phaseId         Int                  @map("phase_id")
+  gateTitle       String               @map("gate_title") @db.VarChar(200)
+  checkItems      Json                 @map("check_items")
+  phase           PlaybookPhase        @relation(fields: [phaseId], references: [id])
+  projectGates    ProjectGateCheck[]
+
+  @@map("gate_checks")
+}
+
+model Project {
+  id                  Int                    @id @default(autoincrement())
+  name                String                 @db.VarChar(200)
+  description         String?                @db.Text
+  status              String                 @default("active") @db.VarChar(20)
+  currentPhaseId      Int?                   @map("current_phase_id")
+  architecturePattern String?                @map("architecture_pattern") @db.VarChar(50)
+  framework           String?                @db.VarChar(50)
+  modelStrategy       Json?                  @map("model_strategy")
+  teamMembers         Json?                  @map("team_members")
+  createdAt           DateTime               @default(now()) @map("created_at")
+  updatedAt           DateTime               @updatedAt @map("updated_at")
+  currentPhase        PlaybookPhase?         @relation("currentPhase", fields: [currentPhaseId], references: [id])
+  phaseProgress       ProjectPhaseProgress[]
+  gateChecks          ProjectGateCheck[]
+  stepProgress        ProjectStepProgress[]
+  templateFills       TemplateFill[]
+  governance          GovernanceAssessment[]
+  caioAssessments     CaioAssessment[]
+  evaluations         Evaluation[]
+  kbQueries           KbQuery[]
+  documents           Document[]
+
+  @@map("projects")
+}
+
+model ProjectPhaseProgress {
+  id          Int           @id @default(autoincrement())
+  projectId   Int           @map("project_id")
+  phaseId     Int           @map("phase_id")
+  status      String        @default("not_started") @db.VarChar(20)
+  startedAt   DateTime?     @map("started_at")
+  completedAt DateTime?     @map("completed_at")
+  notes       String?       @db.Text
+  project     Project       @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  phase       PlaybookPhase @relation(fields: [phaseId], references: [id])
+
+  @@unique([projectId, phaseId], name: "uq_proj_phase")
+  @@map("project_phase_progress")
+}
+
+model ProjectStepProgress {
+  id              Int          @id @default(autoincrement())
+  projectId       Int          @map("project_id")
+  stepId          Int          @map("step_id")
+  status          String       @default("not_started") @db.VarChar(20)
+  notes           String?      @db.Text
+  deliverableData Json?        @map("deliverable_data")
+  startedAt       DateTime?    @map("started_at")
+  completedAt     DateTime?    @map("completed_at")
+  project         Project      @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  step            PlaybookStep @relation(fields: [stepId], references: [id])
+
+  @@unique([projectId, stepId], name: "uq_proj_step")
+  @@map("project_step_progress")
+}
+
+model ProjectGateCheck {
+  id          Int       @id @default(autoincrement())
+  projectId   Int       @map("project_id")
+  gateCheckId Int       @map("gate_check_id")
+  itemIndex   Int       @map("item_index") @db.TinyInt
+  checked     Boolean   @default(false)
+  checkedAt   DateTime? @map("checked_at")
+  notes       String?   @db.Text
+  project     Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  gateCheck   GateCheck @relation(fields: [gateCheckId], references: [id])
+
+  @@map("project_gate_checks")
+}
+
+model Template {
+  id          Int            @id @default(autoincrement())
+  slug        String         @unique @db.VarChar(100)
+  name        String         @db.VarChar(200)
+  description String?        @db.Text
+  phaseId     Int?           @map("phase_id")
+  fields      Json
+  phase       PlaybookPhase? @relation(fields: [phaseId], references: [id])
+  fills       TemplateFill[]
+
+  @@map("templates")
+}
+
+model TemplateFill {
+  id          Int       @id @default(autoincrement())
+  templateId  Int       @map("template_id")
+  projectId   Int?      @map("project_id")
+  title       String    @db.VarChar(200)
+  fieldValues Json      @map("field_values")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+  template    Template  @relation(fields: [templateId], references: [id])
+  project     Project?  @relation(fields: [projectId], references: [id], onDelete: SetNull)
+
+  @@map("template_fills")
+}
+
+model GovernanceAssessment {
+  id                 Int                  @id @default(autoincrement())
+  projectId          Int                  @map("project_id")
+  assessmentType     String               @default("initial") @map("assessment_type") @db.VarChar(20)
+  trustLayerScores   Json?                @map("trust_layer_scores")
+  riskClassification String?              @map("risk_classification") @db.VarChar(20)
+  complianceStatus   Json?                @map("compliance_status")
+  overallScore       Decimal?             @map("overall_score") @db.Decimal(4, 1)
+  assessor           String?              @db.VarChar(100)
+  assessedAt         DateTime             @default(now()) @map("assessed_at")
+  notes              String?              @db.Text
+  project            Project              @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  riskItems          RiskItem[]
+  whartonScores      WhartonDomainScore[]
+
+  @@map("governance_assessments")
+}
+
+model RiskItem {
+  id           Int                  @id @default(autoincrement())
+  assessmentId Int                  @map("assessment_id")
+  category     String               @db.VarChar(20)
+  severity     String               @db.VarChar(20)
+  title        String               @db.VarChar(200)
+  description  String?              @db.Text
+  mitigation   String?              @db.Text
+  status       String               @default("open") @db.VarChar(20)
+  assessment   GovernanceAssessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+
+  @@map("risk_items")
+}
+
+model WhartonDomainScore {
+  id             Int                  @id @default(autoincrement())
+  assessmentId   Int                  @map("assessment_id")
+  domainKey      String               @map("domain_key") @db.VarChar(30)
+  domainName     String               @map("domain_name") @db.VarChar(100)
+  score          Decimal              @db.Decimal(3, 2)
+  riskLevel      String?              @map("risk_level") @db.VarChar(20)
+  currentState   Json?                @map("current_state")
+  gaps           Json?
+  actions        Json?
+  questionScores Json?                @map("question_scores")
+  assessment     GovernanceAssessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+
+  @@map("wharton_domain_scores")
+}
+
+model CaioAssessment {
+  id                 Int               @id @default(autoincrement())
+  projectId          Int?              @map("project_id")
+  initiativeName     String            @map("initiative_name") @db.VarChar(200)
+  assessmentMode     String            @default("audit") @map("assessment_mode") @db.VarChar(20)
+  overallScore       Decimal?          @map("overall_score") @db.Decimal(3, 2)
+  maturityLevel      Int?              @map("maturity_level") @db.TinyInt
+  maturityLabel      String?           @map("maturity_label") @db.VarChar(20)
+  targetMaturity     Int?              @map("target_maturity") @db.TinyInt
+  riskClassification String?           @map("risk_classification") @db.VarChar(20)
+  executiveSummary   String?           @map("executive_summary") @db.Text
+  assessor           String?           @db.VarChar(100)
+  assessedAt         DateTime          @default(now()) @map("assessed_at")
+  project            Project?          @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  domainScores       CaioDomainScore[]
+  findings           CaioFinding[]
+  actionItems        CaioActionItem[]
+
+  @@map("caio_assessments")
+}
+
+model CaioDomainScore {
+  id             Int            @id @default(autoincrement())
+  assessmentId   Int            @map("assessment_id")
+  domainKey      String         @map("domain_key") @db.VarChar(30)
+  domainName     String         @map("domain_name") @db.VarChar(100)
+  score          Decimal        @db.Decimal(3, 2)
+  riskLevel      String?        @map("risk_level") @db.VarChar(20)
+  currentState   Json?          @map("current_state")
+  gaps           Json?
+  actions        Json?
+  questionScores Json?          @map("question_scores")
+  assessment     CaioAssessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+
+  @@map("caio_domain_scores")
+}
+
+model CaioFinding {
+  id           Int            @id @default(autoincrement())
+  assessmentId Int            @map("assessment_id")
+  domainKey    String         @map("domain_key") @db.VarChar(30)
+  severity     String         @db.VarChar(20)
+  title        String         @db.VarChar(200)
+  finding      String         @db.Text
+  rationale    String?        @db.Text
+  frameworkRef String?        @map("framework_ref") @db.VarChar(200)
+  assessment   CaioAssessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+
+  @@map("caio_findings")
+}
+
+model CaioActionItem {
+  id           Int            @id @default(autoincrement())
+  assessmentId Int            @map("assessment_id")
+  phase        String         @db.VarChar(20)
+  domainKey    String         @map("domain_key") @db.VarChar(30)
+  action       String         @db.Text
+  frameworkRef String?        @map("framework_ref") @db.VarChar(200)
+  owner        String?        @db.VarChar(50)
+  status       String         @default("pending") @db.VarChar(20)
+  assessment   CaioAssessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+
+  @@map("caio_action_items")
+}
+
+model Evaluation {
+  id             Int      @id @default(autoincrement())
+  projectId      Int?     @map("project_id")
+  evalType       String   @map("eval_type") @db.VarChar(30)
+  title          String   @db.VarChar(200)
+  options        Json
+  criteria       Json
+  scores         Json
+  recommendation String?  @db.VarChar(200)
+  rationale      String?  @db.Text
+  createdAt      DateTime @default(now()) @map("created_at")
+  project        Project? @relation(fields: [projectId], references: [id], onDelete: SetNull)
+
+  @@map("evaluations")
+}
+
+model KbQuery {
+  id           Int      @id @default(autoincrement())
+  projectId    Int?     @map("project_id")
+  queryText    String   @map("query_text") @db.Text
+  response     String?  @db.Text
+  conceptsUsed Json?    @map("concepts_used")
+  modelUsed    String?  @map("model_used") @db.VarChar(50)
+  tokensUsed   Int?     @map("tokens_used")
+  createdAt    DateTime @default(now()) @map("created_at")
+  project      Project? @relation(fields: [projectId], references: [id], onDelete: SetNull)
+
+  @@map("kb_queries")
+}
+
+model User {
+  id                Int          @id @default(autoincrement())
+  email             String       @unique @db.VarChar(255)
+  passwordHash      String       @map("password_hash") @db.VarChar(255)
+  name              String?      @db.VarChar(100)
+  role              String       @default("viewer") @db.VarChar(20)
+  status            String       @default("active") @db.VarChar(20)
+  teamId            Int?         @map("team_id")
+  resetToken        String?      @unique @map("reset_token") @db.VarChar(255)
+  resetTokenExpiry  DateTime?    @map("reset_token_expiry")
+  createdAt         DateTime     @default(now()) @map("created_at")
+  updatedAt         DateTime     @updatedAt @map("updated_at")
+  settings          Setting[]
+  documents         Document[]
+  team              Team?        @relation(fields: [teamId], references: [id], onDelete: SetNull)
+
+  @@map("users")
+}
+
+model Team {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique @db.VarChar(100)
+  description String?  @db.Text
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+  members     User[]
+
+  @@map("teams")
+}
+
+model Setting {
+  id           Int     @id @default(autoincrement())
+  userId       Int     @map("user_id")
+  settingKey   String  @map("setting_key") @db.VarChar(100)
+  settingValue String? @map("setting_value") @db.Text
+  user         User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, settingKey], name: "uq_user_setting")
+  @@map("settings")
+}
+
+model Document {
+  id           Int      @id @default(autoincrement())
+  title        String   @db.VarChar(255)
+  filename     String   @db.VarChar(255)
+  filePath     String   @map("file_path") @db.VarChar(500)
+  fileSize     Int      @map("file_size")
+  mimeType     String   @map("mime_type") @db.VarChar(100)
+  category     String?  @db.VarChar(50)
+  uploadedById Int?     @map("uploaded_by_id")
+  projectId    Int?     @map("project_id")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+  uploadedBy   User?    @relation(fields: [uploadedById], references: [id], onDelete: SetNull)
+  project      Project? @relation(fields: [projectId], references: [id], onDelete: SetNull)
+
+  @@map("documents")
+}

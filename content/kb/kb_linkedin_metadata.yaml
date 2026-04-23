@@ -1,0 +1,402 @@
+linkedin_learning_sources:
+  index:
+    description: Comprehensive index of LinkedIn Learning (LL) source materials extracted and incorporated into agent KB framework. Each source is tagged with LL prefix (LL01-LL16) for reference and traceability. Sources span eight LinkedIn Learning folders covering AI agents, agentic AI, RAG, MCP, strategy, productivity, tools, and infrastructure domains.
+    total_sources: 16
+    source_prefix: LL
+    last_updated: '2026-04-23'
+    owner: Padmasani Srimadhan
+
+  folder_01_ai_agents_foundations:
+    folder_name: "01 - AI Agents and Agentic AI"
+    folder_contents: Foundational materials on AI agents, agent types, implementation playbooks, and real-world use cases
+    sources:
+    - source_id: LL01
+      title: "How to Build AI Agent Playbook 2025"
+      topics:
+      - 4-layer architecture (Foundation, Core, Intelligence, Production)
+      - Agent types (conversational, task, knowledge, creative, autonomous)
+      - Design principles (modular, stateful, tool-augmented, self-improving)
+      - 4-phase implementation (design, develop, deploy, optimize)
+      - 4-level maturity model
+      kb_files:
+      - kb_linkedin_agents_agentic.yaml
+      key_concepts:
+      - Four-layer architecture pattern
+      - Agent type taxonomy
+      - Five design principles
+      - Implementation phases
+      - Maturity progression model
+
+    - source_id: LL02
+      title: "AI Agents 65+ Use Cases (StackAI)"
+      topics:
+      - Finance domain (18 use cases)
+      - Education domain (11 use cases)
+      - Private lending (2 use cases)
+      - Enterprise workflow automation
+      - Industry-specific applications
+      kb_files:
+      - kb_linkedin_agents_agentic.yaml
+      key_concepts:
+      - Enterprise use case patterns
+      - Domain-specific agent design
+      - Workflow automation opportunities
+      - ROI estimation for agent deployment
+
+    - source_id: LL03
+      title: "Google Report on AI Agents 2026"
+      topics:
+      - Market trends (52% executives with agents in production)
+      - Agents as digital workforce
+      - Agents for every workflow (agentic ecommerce, AP2 protocol)
+      - Customer concierge agents (49% adoption)
+      - Security automation agents (82% SOC alert fatigue, 46% using agents)
+      - Talent upskilling (skill half-life 4 years)
+      kb_files:
+      - kb_linkedin_agents_agentic.yaml
+      key_concepts:
+      - Market adoption trends
+      - Digital workforce transformation
+      - Customer engagement patterns
+      - Security automation opportunities
+      - Upskilling requirements
+
+    - source_id: LL04
+      title: "Gen AI vs Agentic AI vs AI Agents"
+      topics:
+      - Clear distinctions between paradigms
+      - Generative AI (reactive content generation)
+      - Agentic AI (planning and reasoning within boundaries)
+      - AI Agents (autonomous multi-step with learning)
+      - Tool selection framework
+      kb_files:
+      - kb_linkedin_agents_agentic.yaml
+      key_concepts:
+      - Paradigm distinctions
+      - Technology-problem matching
+      - Autonomy spectrum
+      - Correct tool selection
+
+    - source_id: LL05
+      title: "AI Automation Starter Guide 2026"
+      topics:
+      - n8n-focused automation framework
+      - Workflow automation patterns
+      - Integration strategies
+      kb_files:
+      - (referenced for context, not detailed in KB)
+      key_concepts:
+      - Workflow automation
+      - Integration patterns
+
+  folder_02_rag_and_retrieval:
+    folder_name: "02 - RAG and Retrieval"
+    folder_contents: Detailed materials on Retrieval-Augmented Generation, chunking strategies, and knowledge integration
+    sources:
+    - source_id: LL06
+      title: "7 Different Chunking Methods for RAG"
+      topics:
+      - Fixed-size chunking
+      - Content-defined chunking
+      - Delimiter-based chunking
+      - Semantic chunking
+      - Recursive chunking
+      - Overlapping chunking
+      - Paragraph-based chunking
+      kb_files:
+      - kb_linkedin_agents_agentic.yaml
+      key_concepts:
+      - Seven chunking strategies
+      - Chunking tradeoffs
+      - Context window optimization
+      - Retrieval quality factors
+
+    - source_id: LL07
+      title: "RAG vs MCP Decision Framework"
+      topics:
+      - RAG for document search and retrieval
+      - MCP for tool interaction and integration
+      - Hybrid approaches combining both
+      - Decision criteria for selection
+      kb_files:
+      - (architectural decision framework referenced in design)
+      key_concepts:
+      - Technology selection patterns
+      - Retrieval vs integration distinction
+      - Hybrid architecture design
+
+  folder_03_mcp_framework:
+    folder_name: "03 - Model Context Protocol"
+    folder_contents: MCP architecture, capabilities, limitations, and implementation patterns
+    sources:
+    - source_id: LL08
+      title: "MCP Interview Questions"
+      topics:
+      - 10 MCP interview Q&A
+      - Host/Server/Client architecture fundamentals
+      - Three capabilities (Tools, Resources, Prompts)
+      - Protocol specification overview
+      kb_files:
+      - kb_linkedin_mcp_strategy.yaml
+      key_concepts:
+      - Three-tier architecture
+      - MCP fundamentals
+      - Interview preparation
+
+    - source_id: LL09
+      title: "MCP Tools Resources and Prompts"
+      topics:
+      - Three core MCP capabilities detailed
+      - Python implementation examples
+      - Tool handler patterns
+      - Resource access patterns
+      - Prompt template patterns
+      kb_files:
+      - kb_linkedin_mcp_strategy.yaml
+      key_concepts:
+      - Implementation patterns
+      - Python examples
+      - Capability deep dive
+      - Tool design best practices
+
+    - source_id: LL10
+      title: "MCP Limitations"
+      topics:
+      - No state management across requests
+      - No async capability (synchronous only)
+      - No tool-to-tool communication
+      - Weak security model
+      - Workaround strategies
+      kb_files:
+      - kb_linkedin_mcp_strategy.yaml
+      key_concepts:
+      - Known limitations
+      - Constraint patterns
+      - Workaround strategies
+      - Design implications
+
+    - source_id: LL11
+      title: "A2A vs MCP"
+      topics:
+      - Google Agent-to-Agent protocol
+      - Anthropic Model Context Protocol
+      - Complementary rather than competitive
+      - Use case distinctions
+      - Integration patterns
+      kb_files:
+      - kb_linkedin_mcp_strategy.yaml
+      key_concepts:
+      - MCP vs A2A distinction
+      - Complementary protocols
+      - Combined architecture patterns
+
+  folder_05_strategy_transformation:
+    folder_name: "05 - Strategy and Transformation"
+    folder_contents: "Strategic frameworks for AI transformation, organizational change, and capability development"
+    sources:
+    - source_id: LL12
+      title: "McKinsey AI Transformation Manifesto (April 2026)"
+      topics:
+      - 12 themes for Rewired companies
+      - 20% EBITDA uplift achievable target
+      - $3 ROI for every $1 invested
+      - "30-70 shifts principle (30% tech, 70% people)"
+      - Transformation maturity roadmap
+      kb_files:
+      - kb_linkedin_mcp_strategy.yaml
+      key_concepts:
+      - Transformation framework
+      - ROI metrics
+      - People-centric change
+      - Holistic capability development
+
+  folder_06_productivity_frameworks:
+    folder_name: "06 - Productivity and Learning"
+    folder_contents: Productivity frameworks, skill development patterns, and resource recommendations
+    sources:
+    - source_id: LL13
+      title: "MIT Monk 4-Step Framework"
+      topics:
+      - Intelligent Laziness principle
+      - Two Curves model (capped vs uncapped payoff)
+      - DRAG framework (Drafting, Research, Analysis, Grunt)
+      - Intelligent Hill (prompting levels)
+      - Four reasoning camps
+      - Intelligent Gym (spotter model, progressive overload)
+      - Intelligent Fool (beginner's mind, neuroplasticity)
+      - AIM Protocol (Act, Input, Mission)
+      kb_files:
+      - kb_linkedin_productivity_tools.yaml
+      key_concepts:
+      - Intelligent Laziness framework
+      - Work categorization model
+      - Prompting sophistication levels
+      - Skill development progression
+      - Learning patterns
+
+  folder_07_tools_and_resources:
+    folder_name: "07 - AI Tools and Resources"
+    folder_contents: Product management tools, learning resources, and practical tool recommendations
+    sources:
+    - source_id: LL14
+      title: "8 Free AI Courses"
+      topics:
+      - Google AI Learning Path
+      - Microsoft Deep Learning
+      - Harvard AI with Python
+      - Vanderbilt Prompt Engineering
+      - OpenAI Developer Prompting
+      - UC Davis Big Data Specialization
+      - Andrew Ng AI for Everyone
+      - EdX Application Building
+      kb_files:
+      - kb_linkedin_productivity_tools.yaml
+      key_concepts:
+      - Free learning resources
+      - Skill progression paths
+      - Learning resource taxonomy
+
+    - source_id: LL15
+      title: "AI Tools for Product Managers"
+      topics:
+      - Research and Competitive Intelligence (Crayon AI, Copy AI)
+      - Documentation and Design (Notion AI, Figma+FigJam AI)
+      - Research and Strategy (Perplexity, Jasper AI)
+      - AI Agents and Core PM (ChatGPT, n8n)
+      - Top specialized tools (Propad, Otter AI)
+      kb_files:
+      - kb_linkedin_productivity_tools.yaml
+      key_concepts:
+      - Tool category taxonomy
+      - PM-specific applications
+      - Productivity multiplication patterns
+
+  folder_08_infrastructure_data:
+    folder_name: "08 - Infrastructure and Databases"
+    folder_contents: Database types, infrastructure patterns, and architectural foundations
+    sources:
+    - source_id: LL16
+      title: "9 Types of Databases"
+      topics:
+      - SQL (banking, ERP)
+      - Columnar (data warehousing, BI)
+      - Time-Series (IoT, monitoring)
+      - In-Memory (caching, fraud detection)
+      - Graph (recommendations, social)
+      - Document (CMS, e-commerce)
+      - Vector (RAG, embeddings, AI apps)
+      - Object-Oriented (CAD/CAM, telecom)
+      - Blockchain (supply chain, digital identity)
+      kb_files:
+      - kb_linkedin_productivity_tools.yaml
+      key_concepts:
+      - Database taxonomy
+      - Use case matching
+      - Polyglot persistence patterns
+
+  cross_domain_references:
+    description: Topics appearing across multiple sources
+    agent_implementation:
+      sources:
+      - LL01 (4-layer architecture)
+      - LL02 (65+ use cases)
+      - LL04 (paradigm distinctions)
+
+    knowledge_and_retrieval:
+      sources:
+      - LL06 (chunking methods)
+      - LL09 (MCP Resources capability)
+      - LL16 (Vector databases)
+
+    tool_integration:
+      sources:
+      - LL08 (MCP Host/Server/Client)
+      - LL09 (Tools capability)
+      - LL10 (tool-to-tool communication)
+
+    organizational_transformation:
+      sources:
+      - LL12 (McKinsey transformation)
+      - LL13 (intelligent laziness)
+      - LL14 (learning resources)
+
+    skill_development:
+      sources:
+      - LL13 (progressive overload)
+      - LL14 (learning resources)
+      - LL15 (tool adoption)
+
+  kb_file_mapping:
+    kb_linkedin_agents_agentic.yaml:
+      sources:
+      - LL01
+      - LL02
+      - LL03
+      - LL04
+      - LL06
+      sections:
+      - Four-layer architecture
+      - Agent types taxonomy
+      - Design principles
+      - Implementation phases
+      - Maturity model
+      - Enterprise use cases
+      - Market trends
+      - Paradigm comparison
+      - RAG fundamentals
+
+    kb_linkedin_mcp_strategy.yaml:
+      sources:
+      - LL08
+      - LL09
+      - LL10
+      - LL11
+      - LL12
+      sections:
+      - MCP architecture
+      - Capabilities deep dive
+      - MCP limitations
+      - A2A vs MCP framework
+      - AI transformation framework
+
+    kb_linkedin_productivity_tools.yaml:
+      sources:
+      - LL13
+      - LL14
+      - LL15
+      - LL16
+      sections:
+      - Intelligent Laziness framework
+      - Intelligent prompting patterns
+      - Progressive skill development
+      - Free learning resources
+      - AI tools for product managers
+      - Database taxonomy
+
+  usage_guidelines:
+    how_to_reference:
+      - "Use source IDs in documentation and discussions"
+      - "Cross-reference related sources for context"
+      - "Cite specific sections for precision"
+    updating_sources:
+      - "Source IDs are stable - do not reuse LL prefix for new sources"
+      - "Create new source entries with sequential IDs (LL17, LL18, etc.)"
+      - "Update KB files to include new sources and maintain cross-references"
+      - "Document source retirement if materials become obsolete"
+    quality_standards:
+      - "Each KB section must cite original source (LL prefix)"
+      - "Explanations must be 2-4 sentences minimum for depth"
+      - "Examples and patterns should connect to real use cases"
+      - "Relationships between sources should be documented"
+
+_metadata:
+  version: "1.0"
+  created_date: "2026-04-23"
+  created_by: "Padmasani Srimadhan"
+  update_frequency: "As new LinkedIn Learning sources are extracted"
+  total_files_created: 4
+  files:
+    - kb_linkedin_agents_agentic.yaml
+    - kb_linkedin_mcp_strategy.yaml
+    - kb_linkedin_productivity_tools.yaml
+    - kb_linkedin_metadata.yaml
