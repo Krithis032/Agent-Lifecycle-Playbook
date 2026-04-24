@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { redirect } from 'next/navigation';
 import prisma from '@/lib/prisma';
 import Card from '@/components/ui/Card';
 import Badge from '@/components/ui/Badge';
@@ -10,6 +11,12 @@ import {
 export const dynamic = 'force-dynamic';
 
 export default async function HomePage() {
+  // Redirect to setup if no users exist (first-time deployment)
+  const userCount = await prisma.user.count();
+  if (userCount === 0) {
+    redirect('/setup');
+  }
+
   const [
     activeCount, , conceptCount, ,
     evalCount, assessmentCount, caioCount, fillCount, openRisks,

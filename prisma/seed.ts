@@ -1,6 +1,4 @@
 import { Prisma, PrismaClient } from '@prisma/client';
-import { randomBytes } from 'crypto';
-import bcrypt from 'bcryptjs';
 import path from 'path';
 import {
   parseKbYaml,
@@ -10,10 +8,6 @@ import {
 } from '../src/lib/yaml-parser';
 
 const prisma = new PrismaClient();
-
-async function hashPassword(pw: string): Promise<string> {
-  return bcrypt.hash(pw, 12);
-}
 
 function detectKbSource(filename: string): string {
   const lower = filename.toLowerCase();
@@ -195,25 +189,13 @@ async function main() {
 
   console.log(`Seeded ${totalTemplates} templates`);
 
-  // 4. Seed default admin user (generate random password if creating)
-  const existingAdmin = await prisma.user.findUnique({ where: { email: 'admin@adp.local' } });
-  if (!existingAdmin) {
-    const generatedPassword = randomBytes(16).toString('hex');
-    await prisma.user.create({
-      data: {
-        email: 'admin@adp.local',
-        passwordHash: await hashPassword(generatedPassword),
-        name: 'Admin',
-        role: 'admin',
-      },
-    });
-    console.log('\n========================================');
-    console.log('  ADMIN CREDENTIALS (save these now!)');
-    console.log('  Email:    admin@adp.local');
-    console.log(`  Password: ${generatedPassword}`);
-    console.log('========================================\n');
+  // 4. Admin user creation is handled via the /setup page on first visit.
+  //    This ensures no credentials are logged or hardcoded.
+  const userCount = await prisma.user.count();
+  if (userCount === 0) {
+    console.log('\nNo admin user found. Visit /setup in your browser to create one.');
   } else {
-    console.log('Admin user already exists, skipping.');
+    console.log(`${userCount} user(s) already exist, skipping admin setup.`);
   }
 
   console.log('Seeding complete!');
