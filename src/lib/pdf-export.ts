@@ -136,11 +136,12 @@ function truncate(text: string, maxLen: number): string {
   return text.substring(0, maxLen - 3) + '...';
 }
 
-/** Render lines one by one to avoid jsPDF's text justification / spacing bugs */
+/** Render lines one by one to avoid jsPDF's text justification / spacing bugs.
+ *  Every line is sanitized for safe PDF rendering before being drawn. */
 function drawLines(doc: jsPDF, lines: string[], x: number, startY: number, lineHeight: number): number {
   let y = startY;
   for (const line of lines) {
-    doc.text(line, x, y);
+    doc.text(sanitizeForPdf(line), x, y);
     y += lineHeight;
   }
   return y;
@@ -177,7 +178,7 @@ function addSectionHeader(doc: jsPDF, title: string, y: number, fontName: string
   doc.setFontSize(FONT.SECTION_HEADER);
   doc.setFont(fontName, 'bold');
   doc.setTextColor(...WHITE);
-  doc.text(title.toUpperCase(), MARGIN_L + 4, y + 8);
+  doc.text(sanitizeForPdf(title.toUpperCase()), MARGIN_L + 4, y + 8);
   return y + 18;
 }
 
@@ -243,6 +244,48 @@ function stripMarkdownInline(text: string): string {
     .replace(/`(.+?)`/g, '$1')
     .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
     .replace(/^#+\s*/, '');
+}
+
+/**
+ * Sanitize text for safe jsPDF rendering.
+ * Replaces Unicode characters that are not in the Urbanist/Helvetica glyph tables
+ * with ASCII equivalents. Characters the font cannot render cause jsPDF to fall back
+ * to character-by-character placement with broken letter-spacing.
+ */
+function sanitizeForPdf(text: string): string {
+  if (!text) return '';
+  return text
+    // Currency symbols
+    .replace(/\u20B9/g, 'Rs.')   // ₹ Indian Rupee
+    .replace(/\u20AC/g, 'EUR')   // € Euro
+    .replace(/\u00A3/g, 'GBP')   // £ Pound (sometimes missing)
+    .replace(/\u00A5/g, 'JPY')   // ¥ Yen
+    // Superscript / subscript digits
+    .replace(/\u00B9/g, '1')     // ¹
+    .replace(/\u00B2/g, '2')     // ²
+    .replace(/\u00B3/g, '3')     // ³
+    .replace(/\u2070/g, '0')     // ⁰
+    .replace(/\u2074/g, '4')     // ⁴
+    .replace(/\u2075/g, '5')     // ⁵
+    .replace(/\u2076/g, '6')     // ⁶
+    .replace(/\u2077/g, '7')     // ⁷
+    .replace(/\u2078/g, '8')     // ⁸
+    .replace(/\u2079/g, '9')     // ⁹
+    // Common typographic replacements
+    .replace(/\u2018|\u2019/g, "'")  // Smart quotes → straight
+    .replace(/\u201C|\u201D/g, '"')  // Smart double quotes
+    .replace(/\u2026/g, '...')       // Ellipsis
+    .replace(/\u00AD/g, '')          // Soft hyphen
+    // Arrows
+    .replace(/\u2192/g, '->')   // →
+    .replace(/\u2190/g, '<-')   // ←
+    .replace(/\u2194/g, '<->') // ↔
+    // Strip any remaining chars > U+2800 that aren't common symbols we use
+    // (keeps \u2022 bullet, \u2014 em-dash, \u00b7 middle dot, \u2713/\u2717 check/cross, \u00a9 copyright, \u2500 box drawing)
+    .replace(/[\u2800-\uFFFF]/g, '')
+    // Also strip markdown asterisks that may have survived parsing
+    .replace(/\*\*(.+?)\*\*/g, '$1')
+    .replace(/\*(.+?)\*/g, '$1');
 }
 
 function hasMarkdown(text: string): boolean {
@@ -373,7 +416,7 @@ function renderTable(
     let maxLines = 1;
     const cellTexts: string[][] = [];
     for (let c = 0; c < colCount; c++) {
-      const cellVal = stripMarkdownInline(rows[r][columns[c].key] || '');
+      const cellVal = sanitizeForPdf(stripMarkdownInline(rows[r][columns[c].key] || ''));
       const lines = doc.splitTextToSize(cellVal, colW - cellPad * 2 - 1);
       cellTexts.push(lines);
       maxLines = Math.max(maxLines, Math.min(lines.length, 8));
@@ -399,7 +442,7 @@ function renderTable(
     for (let c = 0; c < colCount; c++) {
       const lines = cellTexts[c];
       for (let l = 0; l < Math.min(lines.length, 8); l++) {
-        doc.text(lines[l], MARGIN_L + c * colW + cellPad, y + 4 + l * LH.TABLE);
+        doc.text(sanitizeForPdf(lines[l]), MARGIN_L + c * colW + cellPad, y + 4 + l * LH.TABLE);
       }
     }
     y += rowH;
@@ -444,7 +487,7 @@ function renderRepeatable(
       doc.setFontSize(FONT.REPEATABLE_LABEL);
       doc.setFont(fontName, 'bold');
       doc.setTextColor(...ACCENT);
-      doc.text(sf.label + ':', MARGIN_L + 8, y);
+      doc.text(sanitizeForPdf(sf.label) + ':', MARGIN_L + 8, y);
       y += 5;
 
       // Sub-field value with markdown support
@@ -500,7 +543,7 @@ function renderCheckboxWithRationale(
   doc.setFontSize(FONT.BODY);
   doc.setFont(fontName, 'normal');
   doc.setTextColor(...DARK_TEXT);
-  doc.text(label, MARGIN_L + 8, y);
+  doc.text(sanitizeForPdf(label), MARGIN_L + 8, y);
   y += 6;
 
   if (data.rationale?.trim()) {
@@ -530,7 +573,7 @@ function renderKeyValueField(
   const contentW = getContentWidth(doc);
   y = checkPageBreak(doc, y, 14, projectName, fontName);
 
-  const cleanLabel = sanitizeText(label);
+  const cleanLabel = sanitizeForPdf(sanitizeText(label));
 
   // Label with subtle background pill
   doc.setFontSize(FONT.LABEL);
@@ -675,7 +718,7 @@ export function generateProjectPdf(
       // Title
       doc.setFont(fontName, 'normal');
       doc.setTextColor(...DARK_TEXT);
-      const tocTitle = truncate(sections[i].title, 65);
+      const tocTitle = sanitizeForPdf(truncate(sections[i].title, 65));
       doc.text(tocTitle, 40, tocY);
       // Dotted leader
       doc.setDrawColor(...DIVIDER);
@@ -710,7 +753,7 @@ export function generateProjectPdf(
         doc.setFontSize(FONT.LABEL);
         doc.setFont(fontName, 'bold');
         doc.setTextColor(...ACCENT);
-        doc.text(sanitizeText(item.label), CONTENT_START_X, y);
+        doc.text(sanitizeForPdf(sanitizeText(item.label)), CONTENT_START_X, y);
         y += 6;
         y = renderTable(doc, capArray(parsed as Record<string, string>[]), item.columns, y, projectName, fontName);
         continue;
@@ -722,7 +765,7 @@ export function generateProjectPdf(
         doc.setFontSize(FONT.LABEL);
         doc.setFont(fontName, 'bold');
         doc.setTextColor(...ACCENT);
-        doc.text(sanitizeText(item.label), CONTENT_START_X, y);
+        doc.text(sanitizeForPdf(sanitizeText(item.label)), CONTENT_START_X, y);
         y += 6;
         const autoColumns = Object.keys(parsed[0] as Record<string, unknown>).map(k => ({
           key: k,
@@ -738,7 +781,7 @@ export function generateProjectPdf(
         doc.setFontSize(FONT.LABEL);
         doc.setFont(fontName, 'bold');
         doc.setTextColor(...ACCENT);
-        doc.text(sanitizeText(item.label), CONTENT_START_X, y);
+        doc.text(sanitizeForPdf(sanitizeText(item.label)), CONTENT_START_X, y);
         y += 6;
         y = renderRepeatable(doc, capArray(parsed as Record<string, string>[]), item.subFields, y, projectName, fontName);
         continue;
@@ -778,7 +821,7 @@ export function generateProjectPdf(
         doc.setTextColor(...DARK_TEXT);
         doc.setFont(fontName, 'normal');
         doc.setFontSize(FONT.BODY);
-        doc.text(sanitizeText(item.label), MARGIN_L + 8, y);
+        doc.text(sanitizeForPdf(sanitizeText(item.label)), MARGIN_L + 8, y);
         y += 7;
         continue;
       }
@@ -794,7 +837,7 @@ export function generateProjectPdf(
         doc.setFontSize(FONT.DIVIDER_LABEL);
         doc.setFont(fontName, 'bold');
         doc.setTextColor(...ACCENT);
-        doc.text(dividerLabel, 63, y + 0.5);
+        doc.text(sanitizeForPdf(dividerLabel), 63, y + 0.5);
         const labelEndX = 63 + doc.getTextWidth(dividerLabel) + 4;
         doc.line(labelEndX, y, pageW - MARGIN_R, y);
         y += 8;
