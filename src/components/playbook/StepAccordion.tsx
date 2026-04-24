@@ -21,7 +21,7 @@ export default function StepAccordion({
 
       {deliverables.length > 0 && (
         <div className="mb-4">
-          <div className="text-[9px] font-bold tracking-[2.5px] uppercase text-[var(--green)] mb-2">
+          <div className="text-[9px] font-extrabold tracking-[2.5px] uppercase text-[var(--green)] mb-2">
             Deliverables
           </div>
           <ul className="space-y-1">
@@ -36,7 +36,7 @@ export default function StepAccordion({
 
       {tools.length > 0 && (
         <div className="mb-4">
-          <div className="text-[9px] font-bold tracking-[2.5px] uppercase text-[var(--purple)] mb-2">
+          <div className="text-[9px] font-extrabold tracking-[2.5px] uppercase text-[var(--purple)] mb-2">
             Tools
           </div>
           <div className="flex flex-wrap gap-1.5">
@@ -49,7 +49,7 @@ export default function StepAccordion({
 
       {codeExample && (
         <div className="mb-4">
-          <div className="text-[9px] font-bold tracking-[2.5px] uppercase text-[var(--cyan)] mb-2">
+          <div className="text-[9px] font-extrabold tracking-[2.5px] uppercase text-[var(--cyan)] mb-2">
             Code Example
           </div>
           <pre className="text-xs">{codeExample}</pre>
@@ -58,7 +58,7 @@ export default function StepAccordion({
 
       {proTip && (
         <div className="bg-[var(--amber-soft)] border border-[var(--amber)] border-opacity-20 rounded-lg p-4">
-          <div className="text-[9px] font-bold tracking-[2.5px] uppercase text-[var(--amber)] mb-1.5">
+          <div className="text-[9px] font-extrabold tracking-[2.5px] uppercase text-[var(--amber)] mb-1.5">
             Pro Tip
           </div>
           <p className="text-[13px] text-[var(--text-2)]">{proTip}</p>
