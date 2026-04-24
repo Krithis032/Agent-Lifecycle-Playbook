@@ -24,7 +24,7 @@ export default function ProjectPhasesPage({ params }: { params: { id: string } }
       <Link href={`/projects/${id}`}>
         <Button variant="ghost" size="sm" className="mb-6">Back to Project</Button>
       </Link>
-      <h1 className="text-2xl font-extrabold tracking-tight mb-6">Phase Progress: {project.name}</h1>
+      <h1 className="text-2xl font-bold tracking-tight mb-6">Phase Progress: {project.name}</h1>
       <PhaseProgress phases={phases} />
     </div>
   );

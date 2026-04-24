@@ -97,7 +97,7 @@ export default function ReferencePage() {
   return (
     <div>
       <div className="eyebrow mb-4">Quick Reference</div>
-      <h1 className="text-3xl font-extrabold tracking-tight mb-8 text-[var(--text)]">
+      <h1 className="text-3xl font-bold tracking-tight mb-8 text-[var(--text)]">
         Reference <span className="text-[var(--accent)] font-light italic">Materials</span>
       </h1>
 

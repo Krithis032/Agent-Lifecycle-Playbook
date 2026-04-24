@@ -77,25 +77,25 @@ export default function DomainBrowser() {
               <Accordion key={c.id} title={c.conceptName}>
                 {c.definition && (
                   <div className="mb-3">
-                    <div className="text-[9px] font-extrabold tracking-[2.5px] uppercase text-[var(--accent)] mb-1">Definition</div>
+                    <div className="text-[9px] font-bold tracking-[2.5px] uppercase text-[var(--accent)] mb-1">Definition</div>
                     <p className="text-[13px] text-[var(--text-2)]">{c.definition}</p>
                   </div>
                 )}
                 {c.explanation && (
                   <div className="mb-3">
-                    <div className="text-[9px] font-extrabold tracking-[2.5px] uppercase text-[var(--purple)] mb-1">Explanation</div>
+                    <div className="text-[9px] font-bold tracking-[2.5px] uppercase text-[var(--purple)] mb-1">Explanation</div>
                     <p className="text-[13px] text-[var(--text-2)] whitespace-pre-line">{c.explanation}</p>
                   </div>
                 )}
                 {c.codeScaffold && (
                   <div className="mb-3">
-                    <div className="text-[9px] font-extrabold tracking-[2.5px] uppercase text-[var(--cyan)] mb-1">Code Scaffold</div>
+                    <div className="text-[9px] font-bold tracking-[2.5px] uppercase text-[var(--cyan)] mb-1">Code Scaffold</div>
                     <pre className="text-xs">{c.codeScaffold}</pre>
                   </div>
                 )}
                 {c.relationships && (
                   <div className="mb-3">
-                    <div className="text-[9px] font-extrabold tracking-[2.5px] uppercase text-[var(--green)] mb-1">Relationships</div>
+                    <div className="text-[9px] font-bold tracking-[2.5px] uppercase text-[var(--green)] mb-1">Relationships</div>
                     <div className="grid grid-cols-3 gap-2 text-[12px]">
                       <div><strong>Depends on:</strong> {c.relationships.depends_on.join(', ') || 'None'}</div>
                       <div><strong>Enables:</strong> {c.relationships.enables.join(', ') || 'None'}</div>

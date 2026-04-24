@@ -205,33 +205,44 @@ export default function ProjectDetailPage({ params }: { params: { id: string } }
                 const stepStatus = getStepStatus(step.id);
                 const isSelected = activeStepId === step.id;
                 return (
-                  <button
+                  <div
                     key={step.id}
-                    onClick={() => setActiveStepId(step.id)}
-                    className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-[var(--radius-sm)] text-left transition-all ${
+                    className={`w-full flex items-start gap-2.5 px-3 py-2.5 rounded-[var(--radius-sm)] text-left transition-all cursor-pointer ${
                       isSelected
                         ? 'bg-[var(--accent-soft)] ring-1 ring-[var(--accent)]'
                         : 'hover:bg-[var(--surface-hover)]'
                     }`}
+                    onClick={() => setActiveStepId(step.id)}
                   >
-                    {stepStatus === 'completed' ? (
-                      <CheckCircle2 size={16} className="text-[var(--green)] shrink-0" />
-                    ) : stepStatus === 'in_progress' ? (
-                      <PlayCircle size={16} className="text-[var(--accent)] shrink-0" />
-                    ) : (
-                      <Circle size={16} className="text-[var(--text-4)] shrink-0" />
-                    )}
-                    <div className="min-w-0">
-                      <span className="text-[12px] font-bold text-[var(--text)] block truncate">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (stepStatus === 'not_started') updateStepProgress(step.id, { status: 'in_progress' });
+                        else if (stepStatus === 'in_progress') updateStepProgress(step.id, { status: 'completed' });
+                        else if (stepStatus === 'completed') updateStepProgress(step.id, { status: 'not_started' });
+                      }}
+                      className="mt-0.5 shrink-0 hover:scale-110 transition-transform"
+                      title={stepStatus === 'not_started' ? 'Click to start' : stepStatus === 'in_progress' ? 'Click to complete' : 'Click to reset'}
+                    >
+                      {stepStatus === 'completed' ? (
+                        <CheckCircle2 size={18} className="text-[var(--success)]" />
+                      ) : stepStatus === 'in_progress' ? (
+                        <PlayCircle size={18} className="text-[var(--accent)]" />
+                      ) : (
+                        <Circle size={18} className="text-[var(--text-4)]" />
+                      )}
+                    </button>
+                    <div className="flex-1 min-w-0">
+                      <span className="text-[12px] font-bold text-[var(--text)] block leading-snug">
                         Step {step.stepNum}: {step.title}
                       </span>
-                      <span className="text-[10px] text-[var(--text-4)]">
+                      <span className="text-[10px] text-[var(--text-4)] mt-0.5 block">
                         {(step.deliverables as string[] | null)?.length || 0} deliverables
                         {step.tools ? ` / ${(step.tools as string[]).length} tools` : ''}
                       </span>
                     </div>
-                    <ChevronRight size={14} className="text-[var(--text-4)] shrink-0 ml-auto" />
-                  </button>
+                    <ChevronRight size={14} className="text-[var(--text-4)] shrink-0 mt-1" />
+                  </div>
                 );
               })}
             </div>
