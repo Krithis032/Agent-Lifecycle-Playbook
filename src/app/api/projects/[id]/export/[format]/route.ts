@@ -271,10 +271,23 @@ export async function GET(
   if (project.templateFills.length > 0) {
     for (const tf of project.templateFills.slice(0, 5)) {
       const values = tf.fieldValues as Record<string, string>;
-      const fields = tf.template.fields as { key: string; label: string; section?: string }[];
+      const fields = tf.template.fields as {
+        key: string;
+        label: string;
+        type?: string;
+        section?: string;
+        columns?: { key: string; header: string }[];
+        subFields?: { key: string; label: string }[];
+      }[];
       const filledFields = fields
         .filter((f) => values[f.key])
-        .map((f) => ({ label: f.label, value: values[f.key] }));
+        .map((f) => ({
+          label: f.label,
+          value: values[f.key],
+          type: f.type,
+          columns: f.columns,
+          subFields: f.subFields,
+        }));
 
       if (filledFields.length > 0) {
         sections.push({

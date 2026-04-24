@@ -117,12 +117,27 @@ export interface TemplateData {
 export interface TemplateField {
   key: string;
   label: string;
-  type: 'text' | 'textarea' | 'select' | 'date' | 'checkbox';
+  type: 'text' | 'textarea' | 'select' | 'date' | 'checkbox' | 'repeatable' | 'table' | 'checkbox_with_rationale';
   placeholder?: string;
   required?: boolean;
   helpText?: string;
   options?: string[];
   section?: string;
+  /** For repeatable: sub-fields in each repeated group */
+  subFields?: TemplateField[];
+  /** For table: column definitions */
+  columns?: TableColumnDef[];
+  /** For table: default number of initial rows */
+  defaultRows?: number;
+}
+
+export interface TableColumnDef {
+  key: string;
+  header: string;
+  type: 'text' | 'select' | 'number';
+  width?: string;
+  options?: string[];
+  helpText?: string;
 }
 
 export interface CreateProjectInput {

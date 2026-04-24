@@ -5,6 +5,9 @@ import Card from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
 import Badge from '@/components/ui/Badge';
 import Tooltip from '@/components/ui/Tooltip';
+import EditableTable from '@/components/templates/EditableTable';
+import RepeatableField from '@/components/templates/RepeatableField';
+import CheckboxWithRationale from '@/components/templates/CheckboxWithRationale';
 import { FileText, Save, X, CheckCircle2, CloudOff, HelpCircle } from 'lucide-react';
 import type { TemplateData, TemplateFill } from '@/types/project';
 
@@ -38,7 +41,6 @@ export default function TemplateFillForm({ template, projectId, existingFill, on
     if (existingFill) return existingFill.fieldValues || {};
     const initial: Record<string, string> = {};
     for (const field of template.fields) {
-      // Auto-set today's date for date fields
       if (field.type === 'date') {
         initial[field.key] = new Date().toISOString().split('T')[0];
       } else {
@@ -102,10 +104,160 @@ export default function TemplateFillForm({ template, projectId, existingFill, on
     }
   };
 
-  const filledCount = Object.values(fieldValues).filter((v) => v.trim()).length;
+  const filledCount = Object.entries(fieldValues).filter(([, v]) => {
+    if (!v) return false;
+    try {
+      const parsed = JSON.parse(v);
+      if (Array.isArray(parsed)) {
+        return parsed.some((row: Record<string, string>) =>
+          Object.values(row).some(val => val?.toString().trim())
+        );
+      }
+      if (typeof parsed === 'object' && parsed !== null) {
+        return parsed.checked || parsed.rationale?.trim();
+      }
+    } catch {
+      return v.trim().length > 0;
+    }
+    return v.trim().length > 0;
+  }).length;
   const totalFields = template.fields.length;
   const requiredFields = template.fields.filter((f) => f.required);
-  const requiredFilled = requiredFields.filter((f) => (fieldValues[f.key] || '').trim()).length;
+  const requiredFilled = requiredFields.filter((f) => {
+    const v = fieldValues[f.key];
+    if (!v) return false;
+    if (f.type === 'checkbox') return v === 'true';
+    if (f.type === 'checkbox_with_rationale') {
+      try { const parsed = JSON.parse(v); return parsed.checked; } catch { return v === 'true'; }
+    }
+    if (f.type === 'table' || f.type === 'repeatable') {
+      try {
+        const parsed = JSON.parse(v);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return parsed.some((row: Record<string, string>) =>
+            Object.values(row).some(val => val?.toString().trim())
+          );
+        }
+      } catch { return !!v?.trim(); }
+      return false;
+    }
+    return v.trim().length > 0;
+  }).length;
+
+  const renderField = (field: TemplateData['fields'][number]) => {
+    const value = fieldValues[field.key] || '';
+    const onChange = (v: string) => setFieldValues({ ...fieldValues, [field.key]: v });
+
+    // Table field
+    if (field.type === 'table' && field.columns) {
+      return (
+        <Card key={field.key} padding="sm">
+          <EditableTable
+            columns={field.columns}
+            value={value}
+            onChange={onChange}
+            label={field.label}
+            helpText={field.helpText}
+            required={field.required}
+            defaultRows={field.defaultRows}
+          />
+        </Card>
+      );
+    }
+
+    // Repeatable field
+    if (field.type === 'repeatable' && field.subFields) {
+      return (
+        <Card key={field.key} padding="sm">
+          <RepeatableField
+            label={field.label}
+            helpText={field.helpText}
+            required={field.required}
+            subFields={field.subFields}
+            value={value}
+            onChange={onChange}
+          />
+        </Card>
+      );
+    }
+
+    // Checkbox with rationale
+    if (field.type === 'checkbox_with_rationale') {
+      return (
+        <Card key={field.key} padding="sm">
+          <CheckboxWithRationale
+            label={field.label}
+            helpText={field.helpText}
+            required={field.required}
+            value={value}
+            onChange={onChange}
+          />
+        </Card>
+      );
+    }
+
+    // Standard fields
+    return (
+      <Card key={field.key} padding="sm">
+        <div className="flex items-center gap-1.5 mb-1.5">
+          <label className="text-[12px] font-bold text-[var(--text-2)]">
+            {field.label} {field.required && <span className="text-[var(--coral)]">*</span>}
+          </label>
+          {field.helpText && (
+            <Tooltip content={field.helpText} position="top">
+              <HelpCircle size={13} className="text-[var(--text-4)] hover:text-[var(--accent)] cursor-help transition-colors" />
+            </Tooltip>
+          )}
+        </div>
+        {field.type === 'textarea' ? (
+          <textarea
+            className="w-full px-3 py-2 border border-[var(--border)] rounded-lg text-[13px] bg-[var(--bg)] text-[var(--text)] focus:border-[var(--accent)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-soft)] resize-y transition-all"
+            rows={4}
+            placeholder={field.placeholder || ''}
+            title={field.helpText || `Enter ${field.label.toLowerCase()}`}
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+          />
+        ) : field.type === 'select' ? (
+          <select
+            className="w-full px-3 py-2 border border-[var(--border)] rounded-lg text-[13px] bg-[var(--bg)] text-[var(--text)] focus:border-[var(--accent)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-soft)] transition-all"
+            title={field.helpText || `Select ${field.label.toLowerCase()}`}
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+          >
+            <option value="">Select...</option>
+            {field.options?.map((opt: string) => <option key={opt} value={opt}>{opt}</option>)}
+          </select>
+        ) : field.type === 'checkbox' ? (
+          <label className="flex items-center gap-2 cursor-pointer" title={field.helpText || `Toggle ${field.label.toLowerCase()}`}>
+            <input
+              type="checkbox"
+              checked={value === 'true'}
+              onChange={(e) => onChange(e.target.checked ? 'true' : 'false')}
+              className="w-4 h-4 accent-[var(--accent)] rounded"
+            />
+            <span className="text-sm text-[var(--text-2)]">{field.label}</span>
+          </label>
+        ) : field.type === 'date' ? (
+          <input
+            type="date"
+            className="w-full px-3 py-2 border border-[var(--border)] rounded-lg text-[13px] bg-[var(--bg)] text-[var(--text)] focus:border-[var(--accent)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-soft)] transition-all"
+            title={field.helpText || `Select ${field.label.toLowerCase()}`}
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+          />
+        ) : (
+          <input
+            className="w-full px-3 py-2 border border-[var(--border)] rounded-lg text-[13px] bg-[var(--bg)] text-[var(--text)] focus:border-[var(--accent)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-soft)] transition-all"
+            placeholder={field.placeholder || ''}
+            title={field.helpText || `Enter ${field.label.toLowerCase()}`}
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+          />
+        )}
+      </Card>
+    );
+  };
 
   return (
     <div>
@@ -178,66 +330,7 @@ export default function TemplateFillForm({ template, projectId, existingFill, on
 
       {/* Fields */}
       <div className="space-y-4">
-        {template.fields.map((field) => (
-          <Card key={field.key} padding="sm">
-            <div className="flex items-center gap-1.5 mb-1.5">
-              <label className="text-[12px] font-bold text-[var(--text-2)]">
-                {field.label} {field.required && <span className="text-[var(--coral)]">*</span>}
-              </label>
-              {field.helpText && (
-                <Tooltip content={field.helpText} position="top">
-                  <HelpCircle size={13} className="text-[var(--text-4)] hover:text-[var(--accent)] cursor-help transition-colors" />
-                </Tooltip>
-              )}
-            </div>
-            {field.type === 'textarea' ? (
-              <textarea
-                className="w-full px-3 py-2 border border-[var(--border)] rounded-lg text-[13px] bg-[var(--bg)] text-[var(--text)] focus:border-[var(--accent)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-soft)] resize-y transition-all"
-                rows={4}
-                placeholder={field.placeholder || ''}
-                title={field.helpText || `Enter ${field.label.toLowerCase()}`}
-                value={fieldValues[field.key] || ''}
-                onChange={(e) => setFieldValues({ ...fieldValues, [field.key]: e.target.value })}
-              />
-            ) : field.type === 'select' ? (
-              <select
-                className="w-full px-3 py-2 border border-[var(--border)] rounded-lg text-[13px] bg-[var(--bg)] text-[var(--text)] focus:border-[var(--accent)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-soft)] transition-all"
-                title={field.helpText || `Select ${field.label.toLowerCase()}`}
-                value={fieldValues[field.key] || ''}
-                onChange={(e) => setFieldValues({ ...fieldValues, [field.key]: e.target.value })}
-              >
-                <option value="">Select...</option>
-                {field.options?.map((opt: string) => <option key={opt} value={opt}>{opt}</option>)}
-              </select>
-            ) : field.type === 'checkbox' ? (
-              <label className="flex items-center gap-2 cursor-pointer" title={field.helpText || `Toggle ${field.label.toLowerCase()}`}>
-                <input
-                  type="checkbox"
-                  checked={fieldValues[field.key] === 'true'}
-                  onChange={(e) => setFieldValues({ ...fieldValues, [field.key]: e.target.checked ? 'true' : 'false' })}
-                  className="w-4 h-4 accent-[var(--accent)] rounded"
-                />
-                <span className="text-sm text-[var(--text-2)]">{field.label}</span>
-              </label>
-            ) : field.type === 'date' ? (
-              <input
-                type="date"
-                className="w-full px-3 py-2 border border-[var(--border)] rounded-lg text-[13px] bg-[var(--bg)] text-[var(--text)] focus:border-[var(--accent)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-soft)] transition-all"
-                title={field.helpText || `Select ${field.label.toLowerCase()}`}
-                value={fieldValues[field.key] || ''}
-                onChange={(e) => setFieldValues({ ...fieldValues, [field.key]: e.target.value })}
-              />
-            ) : (
-              <input
-                className="w-full px-3 py-2 border border-[var(--border)] rounded-lg text-[13px] bg-[var(--bg)] text-[var(--text)] focus:border-[var(--accent)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-soft)] transition-all"
-                placeholder={field.placeholder || ''}
-                title={field.helpText || `Enter ${field.label.toLowerCase()}`}
-                value={fieldValues[field.key] || ''}
-                onChange={(e) => setFieldValues({ ...fieldValues, [field.key]: e.target.value })}
-              />
-            )}
-          </Card>
-        ))}
+        {template.fields.map((field) => renderField(field))}
       </div>
     </div>
   );

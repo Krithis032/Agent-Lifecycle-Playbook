@@ -9,6 +9,8 @@ interface TemplateField {
   label: string;
   type: string;
   section?: string;
+  columns?: { key: string; header: string }[];
+  subFields?: { key: string; label: string }[];
 }
 
 export async function POST(
@@ -32,7 +34,13 @@ export async function POST(
     const values = fill.fieldValues as Record<string, string>;
 
     // Group fields by section
-    const sectionMap = new Map<string, { label: string; value: string; type: string }[]>();
+    const sectionMap = new Map<string, {
+      label: string;
+      value: string;
+      type: string;
+      columns?: { key: string; header: string }[];
+      subFields?: { key: string; label: string }[];
+    }[]>();
     for (const field of fields) {
       const section = field.section || 'General';
       if (!sectionMap.has(section)) sectionMap.set(section, []);
@@ -40,6 +48,8 @@ export async function POST(
         label: field.label,
         value: values[field.key] || '',
         type: field.type,
+        columns: field.columns,
+        subFields: field.subFields,
       });
     }
 

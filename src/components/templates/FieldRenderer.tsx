@@ -2,8 +2,30 @@
 
 import { useEffect } from 'react';
 import AIAssistButton from './AIAssistButton';
+import EditableTable from './EditableTable';
+import RepeatableField from './RepeatableField';
+import CheckboxWithRationale from './CheckboxWithRationale';
 import Tooltip from '@/components/ui/Tooltip';
 import { HelpCircle } from 'lucide-react';
+
+interface SubFieldDef {
+  key: string;
+  label: string;
+  type: string;
+  placeholder?: string;
+  required?: boolean;
+  helpText?: string;
+  options?: string[];
+}
+
+interface TableColumnDef {
+  key: string;
+  header: string;
+  type: 'text' | 'select' | 'number';
+  width?: string;
+  options?: string[];
+  helpText?: string;
+}
 
 interface FieldDef {
   key: string;
@@ -13,6 +35,9 @@ interface FieldDef {
   required?: boolean;
   helpText?: string;
   options?: string[];
+  subFields?: SubFieldDef[];
+  columns?: TableColumnDef[];
+  defaultRows?: number;
 }
 
 interface FieldRendererProps {
@@ -34,6 +59,48 @@ export default function FieldRenderer({ field, value, onChange, templateName, al
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // ---- Table field type ----
+  if (field.type === 'table' && field.columns) {
+    return (
+      <EditableTable
+        columns={field.columns}
+        value={value}
+        onChange={onChange}
+        label={field.label}
+        helpText={field.helpText}
+        required={field.required}
+        defaultRows={field.defaultRows}
+      />
+    );
+  }
+
+  // ---- Repeatable field type ----
+  if (field.type === 'repeatable' && field.subFields) {
+    return (
+      <RepeatableField
+        label={field.label}
+        helpText={field.helpText}
+        required={field.required}
+        subFields={field.subFields}
+        value={value}
+        onChange={onChange}
+      />
+    );
+  }
+
+  // ---- Checkbox with rationale ----
+  if (field.type === 'checkbox_with_rationale') {
+    return (
+      <CheckboxWithRationale
+        label={field.label}
+        helpText={field.helpText}
+        required={field.required}
+        value={value}
+        onChange={onChange}
+      />
+    );
+  }
 
   return (
     <div className="space-y-1.5">

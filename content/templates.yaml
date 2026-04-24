@@ -109,10 +109,25 @@ templates:
         helpText: "Low stakes = automate freely. Critical stakes = agent advises, human decides. Matches the 4A Framework."
       - key: team_members
         label: "Team Members"
-        type: textarea
+        type: table
         required: true
         section: "Team & Timeline"
-        helpText: "Name, role, hours/week for each team member"
+        helpText: "Name, role, and weekly commitment for each team member"
+        defaultRows: 3
+        columns:
+          - key: name
+            header: "Name"
+            type: text
+          - key: role
+            header: "Role"
+            type: select
+            options: ["Project Lead", "AI Engineer", "ML Engineer", "Backend Engineer", "Frontend Engineer", "DevOps", "QA", "Security", "Product Owner", "Data Scientist", "Other"]
+          - key: hours_per_week
+            header: "Hours/Week"
+            type: number
+          - key: notes
+            header: "Notes"
+            type: text
       - key: timeline
         label: "Estimated Timeline"
         type: text
@@ -171,155 +186,52 @@ templates:
         section: "Record Header"
         helpText: "People who reviewed or approved these decisions. Include role and sign-off status."
 
-      - key: decision_1_title
-        label: "Decision 1 — Title"
-        type: text
+      - key: decisions
+        label: "Architecture Decisions"
+        type: repeatable
         required: true
-        section: "Decision 1"
-        helpText: "A concise title for this decision (e.g., Use LangGraph for agent orchestration)"
-      - key: decision_1_status
-        label: "Decision 1 — Status"
-        type: select
-        required: true
-        section: "Decision 1"
-        options: ["Proposed", "Accepted", "Deprecated", "Superseded"]
-        helpText: "Current status of this specific decision"
-      - key: decision_1_context
-        label: "Decision 1 — Context & Problem"
-        type: textarea
-        required: true
-        section: "Decision 1"
-        helpText: "What is the issue that motivates this decision? What forces are at play (technical, business, team, cost)?"
-      - key: decision_1_decision
-        label: "Decision 1 — Decision"
-        type: textarea
-        required: true
-        section: "Decision 1"
-        helpText: "State the decision clearly and unambiguously. Start with 'We will...' or 'We chose...'"
-      - key: decision_1_rationale
-        label: "Decision 1 — Rationale"
-        type: textarea
-        required: true
-        section: "Decision 1"
-        helpText: "Why was this option chosen over alternatives? Include key criteria that drove the choice."
-      - key: decision_1_alternatives
-        label: "Decision 1 — Alternatives Considered"
-        type: textarea
-        required: true
-        section: "Decision 1"
-        helpText: "List each alternative with a brief explanation of why it was not chosen"
-      - key: decision_1_consequences_positive
-        label: "Decision 1 — Positive Consequences"
-        type: textarea
-        required: true
-        section: "Decision 1"
-        helpText: "Benefits and advantages of this decision (e.g., faster iteration, better observability)"
-      - key: decision_1_consequences_negative
-        label: "Decision 1 — Negative Consequences / Trade-offs"
-        type: textarea
-        required: true
-        section: "Decision 1"
-        helpText: "Downsides, risks, or trade-offs accepted (e.g., vendor lock-in, steeper learning curve)"
-
-      - key: decision_2_title
-        label: "Decision 2 — Title"
-        type: text
-        required: false
-        section: "Decision 2"
-        helpText: "Title for a second decision in this ADR. Leave blank if not applicable."
-      - key: decision_2_status
-        label: "Decision 2 — Status"
-        type: select
-        required: false
-        section: "Decision 2"
-        options: ["Proposed", "Accepted", "Deprecated", "Superseded"]
-        helpText: "Current status of this specific decision"
-      - key: decision_2_context
-        label: "Decision 2 — Context & Problem"
-        type: textarea
-        required: false
-        section: "Decision 2"
-        helpText: "What is the issue that motivates this decision?"
-      - key: decision_2_decision
-        label: "Decision 2 — Decision"
-        type: textarea
-        required: false
-        section: "Decision 2"
-        helpText: "State the decision clearly"
-      - key: decision_2_rationale
-        label: "Decision 2 — Rationale"
-        type: textarea
-        required: false
-        section: "Decision 2"
-        helpText: "Why was this chosen over alternatives?"
-      - key: decision_2_alternatives
-        label: "Decision 2 — Alternatives Considered"
-        type: textarea
-        required: false
-        section: "Decision 2"
-        helpText: "List alternatives and why they were not chosen"
-      - key: decision_2_consequences_positive
-        label: "Decision 2 — Positive Consequences"
-        type: textarea
-        required: false
-        section: "Decision 2"
-        helpText: "Benefits and advantages of this decision"
-      - key: decision_2_consequences_negative
-        label: "Decision 2 — Negative Consequences / Trade-offs"
-        type: textarea
-        required: false
-        section: "Decision 2"
-        helpText: "Downsides, risks, or trade-offs accepted"
-
-      - key: decision_3_title
-        label: "Decision 3 — Title"
-        type: text
-        required: false
-        section: "Decision 3"
-        helpText: "Title for a third decision. Leave blank if not applicable."
-      - key: decision_3_status
-        label: "Decision 3 — Status"
-        type: select
-        required: false
-        section: "Decision 3"
-        options: ["Proposed", "Accepted", "Deprecated", "Superseded"]
-        helpText: "Current status of this specific decision"
-      - key: decision_3_context
-        label: "Decision 3 — Context & Problem"
-        type: textarea
-        required: false
-        section: "Decision 3"
-        helpText: "What is the issue that motivates this decision?"
-      - key: decision_3_decision
-        label: "Decision 3 — Decision"
-        type: textarea
-        required: false
-        section: "Decision 3"
-        helpText: "State the decision clearly"
-      - key: decision_3_rationale
-        label: "Decision 3 — Rationale"
-        type: textarea
-        required: false
-        section: "Decision 3"
-        helpText: "Why was this chosen over alternatives?"
-      - key: decision_3_alternatives
-        label: "Decision 3 — Alternatives Considered"
-        type: textarea
-        required: false
-        section: "Decision 3"
-        helpText: "List alternatives and why they were not chosen"
-      - key: decision_3_consequences_positive
-        label: "Decision 3 — Positive Consequences"
-        type: textarea
-        required: false
-        section: "Decision 3"
-        helpText: "Benefits and advantages of this decision"
-      - key: decision_3_consequences_negative
-        label: "Decision 3 — Negative Consequences / Trade-offs"
-        type: textarea
-        required: false
-        section: "Decision 3"
-        helpText: "Downsides, risks, or trade-offs accepted"
+        section: "Decisions"
+        helpText: "Add one entry per architecture decision. Click 'Add' to record additional decisions."
+        subFields:
+          - key: title
+            label: "Decision Title"
+            type: text
+            required: true
+            helpText: "A concise title (e.g., Use LangGraph for agent orchestration)"
+          - key: status
+            label: "Status"
+            type: select
+            required: true
+            options: ["Proposed", "Accepted", "Deprecated", "Superseded"]
+            helpText: "Current status of this specific decision"
+          - key: context
+            label: "Context & Problem"
+            type: textarea
+            required: true
+            helpText: "What is the issue that motivates this decision? What forces are at play?"
+          - key: decision
+            label: "Decision"
+            type: textarea
+            required: true
+            helpText: "State the decision clearly. Start with 'We will...' or 'We chose...'"
+          - key: rationale
+            label: "Rationale"
+            type: textarea
+            required: true
+            helpText: "Why was this option chosen over alternatives?"
+          - key: alternatives
+            label: "Alternatives Considered"
+            type: textarea
+            required: true
+            helpText: "List each alternative with a brief explanation of why it was not chosen"
+          - key: positive_consequences
+            label: "Positive Consequences"
+            type: textarea
+            helpText: "Benefits and advantages of this decision"
+          - key: negative_consequences
+            label: "Negative Consequences / Trade-offs"
+            type: textarea
+            helpText: "Downsides, risks, or trade-offs accepted"
 
       - key: related_adrs
         label: "Related ADRs"
@@ -391,11 +303,32 @@ templates:
         section: "Details"
         helpText: "Describe how the evaluation was conducted (test scenarios, data sources, environment)"
       - key: criteria_used
-        label: "Criteria & Weights"
-        type: textarea
+        label: "Evaluation Criteria & Weights"
+        type: table
         required: true
         section: "Details"
-        helpText: "What criteria were used and their relative importance (e.g., accuracy 30%, latency 25%, cost 20%)"
+        helpText: "Define each evaluation criterion and its relative weight"
+        defaultRows: 4
+        columns:
+          - key: criterion
+            header: "Criterion"
+            type: text
+            helpText: "e.g., Accuracy, Latency, Cost, Scalability"
+          - key: weight
+            header: "Weight %"
+            type: number
+            helpText: "Relative importance (all weights should sum to 100)"
+          - key: option_a_score
+            header: "Option A Score"
+            type: number
+            helpText: "Score 1-10 for Option A"
+          - key: option_b_score
+            header: "Option B Score"
+            type: number
+            helpText: "Score 1-10 for Option B"
+          - key: notes
+            header: "Notes"
+            type: text
       - key: results
         label: "Detailed Results"
         type: textarea
@@ -452,10 +385,29 @@ templates:
         helpText: "Measurable criteria that define whether the pilot is successful (e.g., >85% accuracy, <3s response time)"
       - key: deployment_steps
         label: "Deployment Steps"
-        type: textarea
+        type: repeatable
         required: true
         section: "Operations"
-        helpText: "Step-by-step instructions to deploy the agent into the pilot environment"
+        helpText: "Step-by-step deployment instructions. Add one entry per step."
+        subFields:
+          - key: step_number
+            label: "Step #"
+            type: text
+            required: true
+            placeholder: "1"
+          - key: action
+            label: "Action"
+            type: textarea
+            required: true
+            helpText: "What to do in this step"
+          - key: owner
+            label: "Owner"
+            type: text
+            helpText: "Person responsible for this step"
+          - key: verification
+            label: "Verification"
+            type: text
+            helpText: "How to confirm this step succeeded"
       - key: monitoring_plan
         label: "Monitoring Plan"
         type: textarea
@@ -518,85 +470,85 @@ templates:
         helpText: "Person conducting the production readiness review"
       - key: performance_tested
         label: "Performance/Load Testing Done"
-        type: checkbox
+        type: checkbox_with_rationale
         required: true
         section: "Technical Readiness"
         helpText: "Confirm load/stress testing has been completed with acceptable results"
       - key: security_reviewed
         label: "Security Review Completed"
-        type: checkbox
+        type: checkbox_with_rationale
         required: true
         section: "Technical Readiness"
         helpText: "Confirm security review including threat modeling and vulnerability scan"
       - key: monitoring_active
         label: "Monitoring & Alerting Active"
-        type: checkbox
+        type: checkbox_with_rationale
         required: true
         section: "Technical Readiness"
         helpText: "Confirm monitoring dashboards and alerting are configured and tested"
       - key: rollback_tested
         label: "Rollback Procedure Tested"
-        type: checkbox
+        type: checkbox_with_rationale
         required: true
         section: "Technical Readiness"
         helpText: "Confirm rollback has been tested and can be executed within acceptable time"
       - key: guardrails_active
         label: "Input/Output Guardrails Active"
-        type: checkbox
+        type: checkbox_with_rationale
         required: true
         section: "Technical Readiness"
         helpText: "Confirm input validation, output filtering, and content safety filters are live"
       - key: hitl_gates
         label: "HITL Gates Configured"
-        type: checkbox
+        type: checkbox_with_rationale
         required: true
         section: "Technical Readiness"
         helpText: "Confirm Human-in-the-Loop gates are active for high-stakes decisions"
       - key: governance_passed
         label: "Governance Assessment Passed"
-        type: checkbox
+        type: checkbox_with_rationale
         required: true
         section: "Governance Readiness"
         helpText: "Confirm TRiSM governance assessment has been completed with passing score"
       - key: compliance_checked
         label: "Compliance Checklist Completed"
-        type: checkbox
+        type: checkbox_with_rationale
         required: true
         section: "Governance Readiness"
         helpText: "Confirm all applicable compliance requirements (GDPR, SOC2, etc.) are met"
       - key: data_privacy_reviewed
         label: "Data Privacy Impact Assessed"
-        type: checkbox
+        type: checkbox_with_rationale
         required: true
         section: "Governance Readiness"
         helpText: "Confirm data privacy impact assessment has been completed"
       - key: bias_audited
         label: "Bias Audit Completed"
-        type: checkbox
+        type: checkbox_with_rationale
         required: true
         section: "Governance Readiness"
         helpText: "Confirm bias testing has been performed across demographic groups"
       - key: runbook_available
         label: "Operations Runbook Available"
-        type: checkbox
+        type: checkbox_with_rationale
         required: true
         section: "Operational Readiness"
         helpText: "Confirm an operations runbook with troubleshooting guides exists"
       - key: oncall_assigned
         label: "On-call Rotation Assigned"
-        type: checkbox
+        type: checkbox_with_rationale
         required: true
         section: "Operational Readiness"
         helpText: "Confirm on-call engineers are assigned and trained"
       - key: incident_plan
         label: "Incident Response Plan in Place"
-        type: checkbox
+        type: checkbox_with_rationale
         required: true
         section: "Operational Readiness"
         helpText: "Confirm incident response plan with severity definitions and escalation paths"
       - key: stakeholders_signed
         label: "Stakeholder Sign-off Obtained"
-        type: checkbox
+        type: checkbox_with_rationale
         required: true
         section: "Operational Readiness"
         helpText: "Confirm all required stakeholders have approved production deployment"
@@ -638,16 +590,47 @@ templates:
         helpText: "The person responsible for maintaining this plan"
       - key: severity_definitions
         label: "Severity Levels & Definitions"
-        type: textarea
+        type: table
         required: true
         section: "Classification"
-        helpText: "Define SEV1 (critical) through SEV4 (informational) with response times"
+        helpText: "Define each severity level with description and response time target"
+        defaultRows: 4
+        columns:
+          - key: level
+            header: "Severity"
+            type: select
+            options: ["SEV1 - Critical", "SEV2 - Major", "SEV3 - Minor", "SEV4 - Info"]
+          - key: description
+            header: "Description"
+            type: text
+            helpText: "What constitutes this severity"
+          - key: response_time
+            header: "Response Time"
+            type: text
+            helpText: "e.g., 15 min, 1 hour, 4 hours"
+          - key: resolution_time
+            header: "Resolution Target"
+            type: text
+            helpText: "e.g., 1 hour, 4 hours, 24 hours"
       - key: incident_types
         label: "Incident Types"
-        type: textarea
+        type: table
         required: true
         section: "Classification"
-        helpText: "e.g., Hallucination, Data Leak, Guardrail Bypass, Performance Degradation, Bias Detected"
+        helpText: "Categorize possible incident types and default severity"
+        defaultRows: 5
+        columns:
+          - key: type
+            header: "Incident Type"
+            type: text
+            helpText: "e.g., Hallucination, Data Leak, Guardrail Bypass"
+          - key: default_severity
+            header: "Default Severity"
+            type: select
+            options: ["SEV1", "SEV2", "SEV3", "SEV4"]
+          - key: description
+            header: "Description"
+            type: text
       - key: detection
         label: "Detection Mechanisms"
         type: textarea
@@ -686,22 +669,41 @@ templates:
         helpText: "Template or checklist for conducting post-incident reviews"
       - key: escalation_contacts
         label: "Escalation Contacts"
-        type: textarea
+        type: table
         required: true
         section: "Post-Incident"
-        helpText: "Contact list with names, roles, phone numbers, and escalation order"
+        helpText: "Contact list with escalation order for incident response"
+        defaultRows: 4
+        columns:
+          - key: order
+            header: "Order"
+            type: number
+            helpText: "Escalation priority (1 = first contact)"
+          - key: name
+            header: "Name"
+            type: text
+          - key: role
+            header: "Role"
+            type: text
+          - key: contact
+            header: "Phone / Slack"
+            type: text
+          - key: severity_scope
+            header: "For Severity"
+            type: select
+            options: ["All", "SEV1-SEV2", "SEV1 Only", "SEV3-SEV4"]
 
   - slug: use-case-assessment
     name: "Use Case Assessment"
-    description: "Evaluate whether a problem is suited for agentic AI vs simpler automation."
+    description: "Evaluate whether a problem is suited for agentic AI vs simpler automation. Supports multiple use cases per assessment."
     phase_slug: ideation
     fields:
-      - key: use_case_name
-        label: "Use Case Name"
+      - key: assessment_title
+        label: "Assessment Title"
         type: text
         required: true
         section: "Overview"
-        helpText: "A descriptive name for the use case being assessed"
+        helpText: "A title for this assessment batch (e.g., Q4 2025 Use Case Evaluation)"
       - key: date
         label: "Assessment Date"
         type: date
@@ -714,62 +716,78 @@ templates:
         required: true
         section: "Overview"
         helpText: "Person conducting the assessment"
-      - key: current_workflow
-        label: "Current Workflow Description"
-        type: textarea
+      - key: use_cases
+        label: "Use Cases"
+        type: repeatable
         required: true
-        section: "Current State"
-        helpText: "Map the end-to-end workflow with bottlenecks and handoffs"
-      - key: cost_of_status_quo
-        label: "Cost of Status Quo"
-        type: textarea
-        required: true
-        section: "Current State"
-        helpText: "Person-hours, error rates, customer wait times, compliance gaps"
+        section: "Use Cases"
+        helpText: "Add each use case you are evaluating. Click 'Add' to assess additional use cases."
+        subFields:
+          - key: use_case_name
+            label: "Use Case Name"
+            type: text
+            required: true
+            helpText: "A descriptive name for the use case being assessed"
+          - key: current_workflow
+            label: "Current Workflow"
+            type: textarea
+            required: true
+            helpText: "Map the end-to-end workflow with bottlenecks and handoffs"
+          - key: cost_of_status_quo
+            label: "Cost of Status Quo"
+            type: textarea
+            helpText: "Person-hours, error rates, customer wait times, compliance gaps"
+          - key: agent_fit_score
+            label: "Agent-Fit Score (1-10)"
+            type: select
+            options: ["1","2","3","4","5","6","7","8","9","10"]
+            helpText: "1-3 = simple automation, 4-6 = borderline, 7-10 = strong agent fit"
+          - key: recommendation
+            label: "Recommendation"
+            type: select
+            options: ["Proceed with Agent", "Use Simpler Automation", "Needs More Research", "Not Suitable"]
+            helpText: "Your recommendation for this specific use case"
+          - key: rationale
+            label: "Rationale"
+            type: textarea
+            helpText: "Explain why this recommendation was made"
       - key: requires_multi_step
         label: "Requires Multi-Step Reasoning"
-        type: checkbox
+        type: checkbox_with_rationale
         required: true
         section: "Agent-Fit Criteria"
         helpText: "Does the task require chaining multiple reasoning steps to reach a conclusion?"
       - key: requires_tool_use
         label: "Requires Tool Use"
-        type: checkbox
+        type: checkbox_with_rationale
         required: true
         section: "Agent-Fit Criteria"
         helpText: "Does the task require calling APIs, querying databases, or using external tools?"
       - key: requires_adaptive_decisions
         label: "Requires Adaptive Decision-Making"
-        type: checkbox
+        type: checkbox_with_rationale
         required: true
         section: "Agent-Fit Criteria"
         helpText: "Does the agent need to adjust its approach based on intermediate results?"
       - key: has_feedback_loop
         label: "Has Reason-Act-Observe Loop"
-        type: checkbox
+        type: checkbox_with_rationale
         required: true
         section: "Agent-Fit Criteria"
         helpText: "Does the task involve a cycle of reasoning, taking action, and observing outcomes?"
-      - key: agent_fit_score
-        label: "Agent-Fit Score (1-10)"
-        type: select
-        required: true
-        section: "Agent-Fit Criteria"
-        options: ["1","2","3","4","5","6","7","8","9","10"]
-        helpText: "Overall agent-fit score. 1-3 = simple automation, 4-6 = borderline, 7-10 = strong agent fit."
-      - key: recommendation
-        label: "Recommendation"
+      - key: overall_recommendation
+        label: "Overall Recommendation"
         type: select
         required: true
         section: "Decision"
         options: ["Proceed with Agent", "Use Simpler Automation", "Needs More Research", "Not Suitable"]
-        helpText: "Your recommendation based on the agent-fit criteria analysis"
-      - key: rationale
-        label: "Rationale"
+        helpText: "Your overall recommendation across all use cases assessed"
+      - key: overall_rationale
+        label: "Overall Rationale"
         type: textarea
         required: true
         section: "Decision"
-        helpText: "Explain why this recommendation was made, referencing the criteria above"
+        helpText: "Explain your overall recommendation, referencing the criteria and individual use case assessments above"
 
   - slug: stakeholder-analysis
     name: "Stakeholder Analysis"
@@ -788,52 +806,94 @@ templates:
         required: true
         section: "Overview"
         helpText: "Date this analysis was performed"
-      - key: business_sponsors
-        label: "Business Sponsors"
-        type: textarea
+      - key: stakeholder_registry
+        label: "Stakeholder Registry"
+        type: table
         required: true
         section: "Stakeholders"
-        helpText: "Name, role, interest, influence level for each business sponsor"
-      - key: end_users
-        label: "End Users"
-        type: textarea
-        required: true
-        section: "Stakeholders"
-        helpText: "Who will interact with the agent daily? List user groups and their needs."
-      - key: security_compliance
-        label: "Security & Compliance Teams"
-        type: textarea
-        required: true
-        section: "Stakeholders"
-        helpText: "Security and compliance reviewers. Include their specific concerns."
-      - key: infrastructure_owners
-        label: "Infrastructure Owners"
-        type: textarea
-        required: true
-        section: "Stakeholders"
-        helpText: "Platform/infra teams responsible for hosting, scaling, and monitoring"
-      - key: downstream_systems
-        label: "Affected Downstream Systems"
-        type: textarea
-        required: true
-        section: "Stakeholders"
-        helpText: "Systems and teams that depend on or are affected by the agent's output"
+        helpText: "Register all stakeholders with their category, interest level, and influence"
+        defaultRows: 5
+        columns:
+          - key: name
+            header: "Name"
+            type: text
+          - key: role
+            header: "Role / Title"
+            type: text
+          - key: category
+            header: "Category"
+            type: select
+            options: ["Business Sponsor", "End User", "Security/Compliance", "Infrastructure", "Executive", "External Partner", "Other"]
+          - key: interest
+            header: "Interest"
+            type: select
+            options: ["High", "Medium", "Low"]
+            helpText: "How interested is this stakeholder in the project?"
+          - key: influence
+            header: "Influence"
+            type: select
+            options: ["High", "Medium", "Low"]
+            helpText: "How much power does this stakeholder have over project outcomes?"
+          - key: concerns
+            header: "Key Concerns"
+            type: text
       - key: raci_matrix
         label: "RACI Matrix"
-        type: textarea
+        type: table
         required: true
         section: "Governance"
-        helpText: "Responsible, Accountable, Consulted, Informed for each major decision"
+        helpText: "For each major decision/activity, assign R (Responsible), A (Accountable), C (Consulted), I (Informed)"
+        defaultRows: 6
+        columns:
+          - key: activity
+            header: "Activity / Decision"
+            type: text
+            helpText: "e.g., Architecture Selection, Production Deployment, Incident Response"
+          - key: responsible
+            header: "R (Responsible)"
+            type: text
+            helpText: "Who does the work"
+          - key: accountable
+            header: "A (Accountable)"
+            type: text
+            helpText: "Who is ultimately answerable (only one person)"
+          - key: consulted
+            header: "C (Consulted)"
+            type: text
+            helpText: "Who provides input before the decision"
+          - key: informed
+            header: "I (Informed)"
+            type: text
+            helpText: "Who is notified after the decision"
       - key: communication_plan
         label: "Communication Plan"
-        type: textarea
+        type: table
         required: true
         section: "Governance"
-        helpText: "How and how often each stakeholder group will be updated"
+        helpText: "Define communication cadence for each stakeholder group"
+        defaultRows: 4
+        columns:
+          - key: audience
+            header: "Audience"
+            type: text
+          - key: channel
+            header: "Channel"
+            type: select
+            options: ["Email", "Slack", "Meeting", "Dashboard", "Report", "Other"]
+          - key: frequency
+            header: "Frequency"
+            type: select
+            options: ["Daily", "Weekly", "Bi-Weekly", "Monthly", "As Needed"]
+          - key: content
+            header: "Content / Purpose"
+            type: text
+          - key: owner
+            header: "Owner"
+            type: text
 
   - slug: risk-register
     name: "Risk Register"
-    description: "Pre-mortem risk identification and mitigation planning."
+    description: "Pre-mortem risk identification and mitigation planning with structured risk table."
     phase_slug: ideation
     fields:
       - key: project_name
@@ -849,7 +909,7 @@ templates:
         section: "Overview"
         helpText: "Date this risk register was created or updated"
       - key: risk_classification
-        label: "Risk Classification"
+        label: "Overall Risk Classification"
         type: select
         required: true
         section: "Overview"
@@ -875,35 +935,58 @@ templates:
         required: true
         section: "Risk Identification"
         helpText: "Imagine the project failed in 6 months — what went wrong?"
-      - key: technical_risks
-        label: "Technical Risks"
-        type: textarea
+      - key: risk_table
+        label: "Risk Register Table"
+        type: table
         required: true
-        section: "Risk Identification"
-        helpText: "Risks from technology choices, model reliability, integration complexity"
-      - key: operational_risks
-        label: "Operational Risks"
-        type: textarea
-        required: true
-        section: "Risk Identification"
-        helpText: "Risks from team capacity, vendor dependencies, operational complexity"
-      - key: compliance_risks
-        label: "Compliance & Legal Risks"
-        type: textarea
-        required: true
-        section: "Risk Identification"
-        helpText: "Regulatory, legal, or compliance risks (GDPR, SOC2, industry-specific)"
-      - key: mitigations
-        label: "Mitigation Strategies"
-        type: textarea
-        required: true
-        section: "Mitigation"
-        helpText: "For each risk, describe the mitigation plan and residual risk"
+        section: "Risk Register"
+        helpText: "Add each identified risk with probability, impact, score, and mitigation strategy"
+        defaultRows: 5
+        columns:
+          - key: risk_id
+            header: "ID"
+            type: text
+            helpText: "Unique risk ID (e.g., R-001)"
+          - key: description
+            header: "Risk Description"
+            type: text
+          - key: category
+            header: "Category"
+            type: select
+            options: ["Technical", "Operational", "Compliance", "Financial", "Reputational", "Security"]
+          - key: probability
+            header: "Prob (1-5)"
+            type: select
+            options: ["1", "2", "3", "4", "5"]
+            helpText: "1=Very Low, 5=Very High"
+          - key: impact
+            header: "Impact (1-5)"
+            type: select
+            options: ["1", "2", "3", "4", "5"]
+            helpText: "1=Negligible, 5=Critical"
+          - key: score
+            header: "Score"
+            type: number
+            helpText: "Probability x Impact"
+          - key: level
+            header: "Level"
+            type: select
+            options: ["Low", "Medium", "High", "Critical"]
+          - key: mitigation
+            header: "Mitigation Strategy"
+            type: text
+          - key: owner
+            header: "Owner"
+            type: text
+          - key: status
+            header: "Status"
+            type: select
+            options: ["Open", "In Progress", "Mitigated", "Accepted", "Closed"]
       - key: kill_criteria
         label: "Kill Criteria"
         type: textarea
         required: true
-        section: "Mitigation"
+        section: "Kill Criteria"
         helpText: "Specific thresholds that trigger pivot or cancellation"
 
   - slug: tool-integration-spec
@@ -925,16 +1008,51 @@ templates:
         helpText: "Date this spec was created"
       - key: tool_inventory
         label: "Tool Inventory"
-        type: textarea
+        type: table
         required: true
         section: "Tools"
         helpText: "List all APIs, databases, file systems, MCP servers the agent needs"
+        defaultRows: 4
+        columns:
+          - key: tool_name
+            header: "Tool Name"
+            type: text
+          - key: type
+            header: "Type"
+            type: select
+            options: ["API", "Database", "File System", "MCP Server", "SDK", "CLI", "Other"]
+          - key: purpose
+            header: "Purpose"
+            type: text
+          - key: access_level
+            header: "Access"
+            type: select
+            options: ["Read-Only", "Read-Write", "Admin"]
+          - key: auth_method
+            header: "Auth Method"
+            type: select
+            options: ["API Key", "OAuth", "Token", "mTLS", "IAM", "None"]
       - key: mcp_servers
         label: "MCP Server Registry"
-        type: textarea
+        type: table
         required: false
         section: "Tools"
-        helpText: "MCP servers for standardized tool interfaces (e.g., filesystem, database, web search)"
+        helpText: "MCP servers for standardized tool interfaces"
+        defaultRows: 2
+        columns:
+          - key: server_name
+            header: "Server Name"
+            type: text
+          - key: protocol
+            header: "Protocol"
+            type: select
+            options: ["stdio", "SSE", "HTTP"]
+          - key: tools_exposed
+            header: "Tools Exposed"
+            type: text
+          - key: notes
+            header: "Notes"
+            type: text
       - key: input_schemas
         label: "Input Schemas"
         type: textarea
@@ -1046,30 +1164,35 @@ templates:
         section: "Overview"
         placeholder: "e.g., 75"
         helpText: "Total number of test cases in this dataset (recommend 50-100 minimum)"
-      - key: golden_path
-        label: "Golden Path Cases"
-        type: textarea
+      - key: test_cases
+        label: "Test Cases"
+        type: table
         required: true
-        section: "Test Categories"
-        helpText: "Expected/happy-path inputs and expected outputs"
-      - key: edge_cases
-        label: "Edge Cases"
-        type: textarea
-        required: true
-        section: "Test Categories"
-        helpText: "Boundary conditions and unusual inputs"
-      - key: adversarial_cases
-        label: "Adversarial Cases"
-        type: textarea
-        required: true
-        section: "Test Categories"
-        helpText: "Attempts to break or mislead the agent (min 20% of total cases)"
-      - key: real_world_samples
-        label: "Real-World Samples"
-        type: textarea
-        required: false
-        section: "Test Categories"
-        helpText: "From production data if available"
+        section: "Test Cases"
+        helpText: "Define each test case with input, expected output, and category"
+        defaultRows: 5
+        columns:
+          - key: id
+            header: "ID"
+            type: text
+            helpText: "e.g., TC-001"
+          - key: category
+            header: "Category"
+            type: select
+            options: ["Golden Path", "Edge Case", "Adversarial", "Real-World"]
+          - key: input
+            header: "Input"
+            type: text
+          - key: expected_output
+            header: "Expected Output"
+            type: text
+          - key: priority
+            header: "Priority"
+            type: select
+            options: ["Critical", "High", "Medium", "Low"]
+          - key: notes
+            header: "Notes"
+            type: text
       - key: scoring_rubric
         label: "Scoring Rubric"
         type: textarea
@@ -1122,10 +1245,25 @@ templates:
         helpText: "Template for user messages with {placeholders} for dynamic content"
       - key: few_shot_examples
         label: "Few-Shot Examples"
-        type: textarea
+        type: repeatable
         required: false
         section: "Prompt Content"
-        helpText: "Example input/output pairs included in the prompt for guidance"
+        helpText: "Add example input/output pairs for the prompt. Click 'Add' for more examples."
+        subFields:
+          - key: input
+            label: "Example Input"
+            type: textarea
+            required: true
+            helpText: "The user message or scenario"
+          - key: output
+            label: "Expected Output"
+            type: textarea
+            required: true
+            helpText: "The ideal agent response"
+          - key: notes
+            label: "Notes"
+            type: text
+            helpText: "Why this example was chosen"
       - key: changes_from_prev
         label: "Changes from Previous Version"
         type: textarea
@@ -1134,10 +1272,26 @@ templates:
         helpText: "What changed and why (be specific about added/removed/modified sections)"
       - key: eval_results
         label: "Evaluation Results"
-        type: textarea
+        type: table
         required: true
         section: "Iteration"
-        helpText: "Performance metrics compared to previous version (accuracy, latency, cost)"
+        helpText: "Performance metrics compared to previous version"
+        defaultRows: 4
+        columns:
+          - key: metric
+            header: "Metric"
+            type: text
+            helpText: "e.g., Accuracy, Latency, Cost, Hallucination Rate"
+          - key: previous
+            header: "Previous"
+            type: text
+          - key: current
+            header: "Current"
+            type: text
+          - key: delta
+            header: "Delta"
+            type: text
+            helpText: "e.g., +5%, -200ms"
       - key: failure_modes_addressed
         label: "Failure Modes Addressed"
         type: textarea
@@ -1189,16 +1343,50 @@ templates:
         helpText: "Cost per request/task comparison including compute and API costs"
       - key: disagreements
         label: "Disagreement Analysis"
-        type: textarea
+        type: table
         required: true
         section: "Analysis"
-        helpText: "Cases where agent and current system produced different outputs — who was right?"
+        helpText: "Cases where agent and current system produced different outputs"
+        defaultRows: 5
+        columns:
+          - key: case_id
+            header: "Case ID"
+            type: text
+          - key: agent_output
+            header: "Agent Output"
+            type: text
+          - key: system_output
+            header: "System Output"
+            type: text
+          - key: correct_party
+            header: "Who Was Right?"
+            type: select
+            options: ["Agent", "System", "Neither", "Both Valid"]
+          - key: category
+            header: "Category"
+            type: text
       - key: failure_patterns
         label: "Failure Patterns"
-        type: textarea
+        type: table
         required: true
         section: "Analysis"
-        helpText: "Recurring patterns in agent failures. Categorize by type."
+        helpText: "Recurring patterns in agent failures categorized by type"
+        defaultRows: 3
+        columns:
+          - key: pattern
+            header: "Failure Pattern"
+            type: text
+          - key: frequency
+            header: "Frequency"
+            type: text
+            helpText: "e.g., 15% of cases"
+          - key: severity
+            header: "Severity"
+            type: select
+            options: ["Critical", "High", "Medium", "Low"]
+          - key: root_cause
+            header: "Root Cause"
+            type: text
       - key: recommendation
         label: "Recommendation"
         type: select
@@ -1301,10 +1489,27 @@ templates:
         helpText: "Person or team who created this threat model"
       - key: attack_surface
         label: "Attack Surface Inventory"
-        type: textarea
+        type: table
         required: true
         section: "Threat Analysis"
         helpText: "All inputs, tools, APIs, data stores the agent touches"
+        defaultRows: 4
+        columns:
+          - key: surface
+            header: "Attack Surface"
+            type: text
+            helpText: "e.g., User Input, API Endpoint, Tool Call"
+          - key: type
+            header: "Type"
+            type: select
+            options: ["Input", "Output", "Tool", "Data Store", "Network", "Other"]
+          - key: threat_level
+            header: "Threat Level"
+            type: select
+            options: ["Critical", "High", "Medium", "Low"]
+          - key: mitigation
+            header: "Mitigation"
+            type: text
       - key: prompt_injection
         label: "Prompt Injection Threats"
         type: textarea
@@ -1392,10 +1597,30 @@ templates:
         helpText: "Maximum sustained throughput and at what concurrency level"
       - key: bottlenecks
         label: "Identified Bottlenecks"
-        type: textarea
+        type: table
         required: true
         section: "Results"
-        helpText: "Tool calls, model inference, state management, DB queries — what's slowest?"
+        helpText: "Rank bottlenecks by impact on overall performance"
+        defaultRows: 3
+        columns:
+          - key: component
+            header: "Component"
+            type: text
+            helpText: "e.g., LLM Inference, DB Query, Tool Call"
+          - key: latency
+            header: "Avg Latency"
+            type: text
+            helpText: "e.g., 2.3s"
+          - key: pct_of_total
+            header: "% of Total"
+            type: number
+          - key: severity
+            header: "Severity"
+            type: select
+            options: ["Critical", "High", "Medium", "Low"]
+          - key: fix
+            header: "Proposed Fix"
+            type: text
       - key: cost_per_task
         label: "Cost per Task Under Load"
         type: textarea
@@ -1438,33 +1663,34 @@ templates:
         required: true
         section: "Overview"
         helpText: "Person responsible for tracking and maintaining these SLOs"
-      - key: availability_slo
-        label: "Availability SLO"
-        type: text
+      - key: slo_table
+        label: "Service Level Objectives"
+        type: table
         required: true
         section: "SLOs"
-        placeholder: "e.g., 99.9% uptime"
-        helpText: "Target uptime percentage (e.g., 99.9% = 8.76 hours downtime/year)"
-      - key: latency_slo
-        label: "Latency SLO (p95)"
-        type: text
-        required: true
-        section: "SLOs"
-        placeholder: "e.g., < 5s p95"
-        helpText: "95th percentile response time target"
-      - key: accuracy_slo
-        label: "Accuracy SLO"
-        type: text
-        required: true
-        section: "SLOs"
-        placeholder: "e.g., > 90% task completion"
-        helpText: "Target accuracy or task completion rate"
-      - key: error_budget
-        label: "Error Budget"
-        type: textarea
-        required: true
-        section: "SLOs"
-        helpText: "Allowed failure rate before action is required (e.g., 0.1% = 43.8 min/month)"
+        helpText: "Define each SLO with target, error budget, and measurement method"
+        defaultRows: 4
+        columns:
+          - key: slo_name
+            header: "SLO Name"
+            type: text
+            helpText: "e.g., Availability, Latency P95, Accuracy"
+          - key: target
+            header: "Target"
+            type: text
+            helpText: "e.g., 99.9%, <5s, >90%"
+          - key: error_budget
+            header: "Error Budget"
+            type: text
+            helpText: "e.g., 0.1% = 43.8 min/month"
+          - key: measurement
+            header: "Measurement"
+            type: text
+            helpText: "How this SLO is measured"
+          - key: alert_threshold
+            header: "Alert Threshold"
+            type: text
+            helpText: "When to alert (warning/critical)"
       - key: measurement_method
         label: "Measurement Method"
         type: textarea
@@ -1559,10 +1785,29 @@ templates:
         helpText: "Things that failed or could have been better"
       - key: action_items
         label: "Action Items"
-        type: textarea
+        type: table
         required: true
         section: "Learnings"
         helpText: "Specific, assigned, time-bound actions to prevent recurrence"
+        defaultRows: 3
+        columns:
+          - key: action
+            header: "Action"
+            type: text
+          - key: owner
+            header: "Owner"
+            type: text
+          - key: priority
+            header: "Priority"
+            type: select
+            options: ["P0 - Immediate", "P1 - This Week", "P2 - This Sprint", "P3 - Backlog"]
+          - key: due_date
+            header: "Due Date"
+            type: text
+          - key: status
+            header: "Status"
+            type: select
+            options: ["Open", "In Progress", "Done"]
       - key: mttd
         label: "MTTD (Mean Time to Detect)"
         type: text
@@ -1615,10 +1860,31 @@ templates:
         helpText: "Most common override reasons — these are expansion opportunities"
       - key: new_tools
         label: "New Tools to Add"
-        type: textarea
+        type: table
         required: true
         section: "Expansion Plan"
         helpText: "New tools, APIs, or MCP servers to add to the agent's capabilities"
+        defaultRows: 3
+        columns:
+          - key: tool_name
+            header: "Tool / Capability"
+            type: text
+          - key: type
+            header: "Type"
+            type: select
+            options: ["API", "MCP Server", "Database", "Decision Authority", "Workflow", "Other"]
+          - key: justification
+            header: "Justification"
+            type: text
+            helpText: "Why this capability is needed based on production data"
+          - key: risk_level
+            header: "Risk Level"
+            type: select
+            options: ["Low", "Medium", "High"]
+          - key: status
+            header: "Status"
+            type: select
+            options: ["Planned", "In Development", "Testing", "Deployed"]
       - key: expanded_decisions
         label: "Expanded Decision Boundaries"
         type: textarea

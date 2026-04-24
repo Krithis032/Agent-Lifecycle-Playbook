@@ -6,6 +6,25 @@ import SectionGroup from './SectionGroup';
 import { Save, Loader2, CloudOff, CheckCircle } from 'lucide-react';
 import Tooltip from '@/components/ui/Tooltip';
 
+interface SubFieldDef {
+  key: string;
+  label: string;
+  type: string;
+  placeholder?: string;
+  required?: boolean;
+  helpText?: string;
+  options?: string[];
+}
+
+interface TableColumnDef {
+  key: string;
+  header: string;
+  type: 'text' | 'select' | 'number';
+  width?: string;
+  options?: string[];
+  helpText?: string;
+}
+
 interface FieldDef {
   key: string;
   label: string;
@@ -15,6 +34,9 @@ interface FieldDef {
   helpText?: string;
   options?: string[];
   section?: string;
+  subFields?: SubFieldDef[];
+  columns?: TableColumnDef[];
+  defaultRows?: number;
 }
 
 interface TemplateFormProps {
@@ -127,6 +149,23 @@ export default function TemplateForm({
   const filledRequired = requiredFields.filter(f => {
     const v = values[f.key];
     if (f.type === 'checkbox') return v === 'true';
+    if (f.type === 'checkbox_with_rationale') {
+      try {
+        const parsed = JSON.parse(v);
+        return parsed.checked;
+      } catch { return v === 'true'; }
+    }
+    if (f.type === 'table' || f.type === 'repeatable') {
+      try {
+        const parsed = JSON.parse(v);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return parsed.some((row: Record<string, string>) =>
+            Object.values(row).some(val => val?.trim())
+          );
+        }
+      } catch { return !!v?.trim(); }
+      return false;
+    }
     return v?.trim();
   });
   const progress = requiredFields.length > 0
