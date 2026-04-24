@@ -1,9 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import SectionGroup from './SectionGroup';
-import { Save, Loader2 } from 'lucide-react';
+import { Save, Loader2, CloudOff, CheckCircle } from 'lucide-react';
+import Tooltip from '@/components/ui/Tooltip';
 
 interface FieldDef {
   key: string;
@@ -25,6 +26,12 @@ interface TemplateFormProps {
   fillId?: number;
 }
 
+function getDraftKey(templateSlug: string, fillId?: number) {
+  return fillId
+    ? `adp-draft-${templateSlug}-${fillId}`
+    : `adp-draft-${templateSlug}-new`;
+}
+
 export default function TemplateForm({
   templateSlug,
   templateName,
@@ -34,13 +41,74 @@ export default function TemplateForm({
   fillId,
 }: TemplateFormProps) {
   const router = useRouter();
-  const [title, setTitle] = useState(initialTitle);
-  const [values, setValues] = useState<Record<string, string>>(initialValues);
+  const draftKey = getDraftKey(templateSlug, fillId);
+
+  // Load draft from localStorage if available
+  const loadDraft = useCallback(() => {
+    try {
+      const raw = localStorage.getItem(draftKey);
+      if (raw) {
+        const draft = JSON.parse(raw);
+        return draft;
+      }
+    } catch {
+      // ignore
+    }
+    return null;
+  }, [draftKey]);
+
+  const [title, setTitle] = useState(() => {
+    const draft = loadDraft();
+    return draft?.title || initialTitle;
+  });
+  const [values, setValues] = useState<Record<string, string>>(() => {
+    const draft = loadDraft();
+    return draft?.values || initialValues;
+  });
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
+  const [draftStatus, setDraftStatus] = useState<'idle' | 'saving' | 'saved'>('idle');
+  const [hasDraft, setHasDraft] = useState(false);
+  const autoSaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Check if a draft exists on mount
+  useEffect(() => {
+    const draft = loadDraft();
+    if (draft) {
+      setHasDraft(true);
+    }
+  }, [loadDraft]);
+
+  // Auto-save to localStorage on changes (debounced 1.5s)
+  useEffect(() => {
+    if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current);
+    autoSaveTimer.current = setTimeout(() => {
+      try {
+        const draft = { title, values, savedAt: new Date().toISOString() };
+        localStorage.setItem(draftKey, JSON.stringify(draft));
+        setDraftStatus('saved');
+        setHasDraft(true);
+        setTimeout(() => setDraftStatus('idle'), 2000);
+      } catch {
+        // storage full or unavailable
+      }
+    }, 1500);
+    return () => {
+      if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current);
+    };
+  }, [title, values, draftKey]);
 
   const handleChange = (key: string, value: string) => {
     setValues(prev => ({ ...prev, [key]: value }));
+  };
+
+  const clearDraft = () => {
+    try {
+      localStorage.removeItem(draftKey);
+      setHasDraft(false);
+    } catch {
+      // ignore
+    }
   };
 
   // Group fields by section
@@ -79,6 +147,7 @@ export default function TemplateForm({
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ title, fieldValues: values }),
         });
+        clearDraft();
         router.push(`/templates/${templateSlug}/${fillId}`);
       } else {
         const res = await fetch(`/api/templates/${templateSlug}/fill`, {
@@ -87,8 +156,12 @@ export default function TemplateForm({
           body: JSON.stringify({ title, fieldValues: values }),
         });
         const data = await res.json();
-        if (res.ok) router.push(`/templates/${templateSlug}/${data.id}`);
-        else setError(data.error || 'Save failed');
+        if (res.ok) {
+          clearDraft();
+          router.push(`/templates/${templateSlug}/${data.id}`);
+        } else {
+          setError(data.error || 'Save failed');
+        }
       }
     } catch (e) {
       console.error(e);
@@ -100,29 +173,60 @@ export default function TemplateForm({
 
   return (
     <div className="space-y-6">
+      {/* Draft status banner */}
+      {hasDraft && (
+        <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-amber-50 border border-amber-200 text-amber-700 text-[13px]">
+          <CloudOff size={14} />
+          <span className="font-medium">Draft auto-saved locally.</span>
+          <span className="text-amber-600">Your progress is preserved even if you leave the page.</span>
+          <button
+            onClick={() => {
+              clearDraft();
+              setTitle(initialTitle);
+              setValues(initialValues);
+            }}
+            className="ml-auto text-[12px] font-semibold underline hover:text-amber-900"
+          >
+            Discard Draft
+          </button>
+        </div>
+      )}
+
       {/* Title + progress */}
       <div className="flex items-end gap-4">
         <div className="flex-1">
-          <label className="block text-sm font-medium text-[var(--text)] mb-1">Document Title</label>
+          <Tooltip content="A descriptive title for this document instance. This will be shown in the document list.">
+            <label className="block text-sm font-medium text-[var(--text)] mb-1 cursor-help">Document Title</label>
+          </Tooltip>
           <input
             type="text"
             value={title}
             onChange={e => setTitle(e.target.value)}
             placeholder={`e.g., ${templateName} — Q4 2024`}
-            className="w-full px-3 py-2 text-sm border border-[var(--border)] rounded-lg focus:outline-none focus:border-[var(--accent)] bg-[var(--bg)]"
+            title="Enter a descriptive title for this document"
+            className="w-full px-3 py-2 text-sm border border-[var(--border)] rounded-lg focus:outline-none focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent-soft)] bg-[var(--bg)] transition-all"
           />
         </div>
         <div className="text-right shrink-0">
-          <div className="text-xs text-[var(--text-4)] mb-1">{filledRequired.length}/{requiredFields.length} required</div>
-          <div className="w-32 h-2 bg-[var(--surface)] rounded-full overflow-hidden">
-            <div
-              className="h-full rounded-full transition-all duration-300"
-              style={{
-                width: `${progress}%`,
-                backgroundColor: progress === 100 ? 'var(--success)' : 'var(--accent)',
-              }}
-            />
+          <div className="flex items-center gap-2 justify-end mb-1">
+            {draftStatus === 'saved' && (
+              <span className="flex items-center gap-1 text-[11px] text-green-600 font-medium">
+                <CheckCircle size={12} /> Draft saved
+              </span>
+            )}
+            <span className="text-xs text-[var(--text-4)]">{filledRequired.length}/{requiredFields.length} required</span>
           </div>
+          <Tooltip content={`${progress}% of required fields completed`}>
+            <div className="w-32 h-2 bg-[var(--surface)] rounded-full overflow-hidden cursor-help">
+              <div
+                className="h-full rounded-full transition-all duration-300"
+                style={{
+                  width: `${progress}%`,
+                  backgroundColor: progress === 100 ? 'var(--success)' : 'var(--accent)',
+                }}
+              />
+            </div>
+          </Tooltip>
         </div>
       </div>
 
@@ -141,20 +245,24 @@ export default function TemplateForm({
       {/* Save bar */}
       {error && <p className="text-sm text-[var(--error)]">{error}</p>}
       <div className="flex justify-end gap-3">
-        <button
-          onClick={() => router.back()}
-          className="px-4 py-2 text-sm font-medium border border-[var(--border)] rounded-lg hover:border-[var(--accent)] transition-colors text-[var(--text-2)]"
-        >
-          Cancel
-        </button>
-        <button
-          onClick={handleSave}
-          disabled={saving}
-          className="px-5 py-2 text-sm font-semibold bg-[var(--accent)] text-white rounded-lg hover:opacity-90 disabled:opacity-40 flex items-center gap-2"
-        >
-          {saving ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />}
-          {saving ? 'Saving...' : fillId ? 'Update' : 'Save'}
-        </button>
+        <Tooltip content="Discard changes and go back">
+          <button
+            onClick={() => router.back()}
+            className="px-4 py-2 text-sm font-medium border border-[var(--border)] rounded-lg hover:border-[var(--accent)] transition-colors text-[var(--text-2)]"
+          >
+            Cancel
+          </button>
+        </Tooltip>
+        <Tooltip content={fillId ? 'Update this document in the database' : 'Save this document to the database'}>
+          <button
+            onClick={handleSave}
+            disabled={saving}
+            className="px-5 py-2 text-sm font-semibold bg-[var(--accent)] text-white rounded-lg hover:opacity-90 disabled:opacity-40 flex items-center gap-2"
+          >
+            {saving ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />}
+            {saving ? 'Saving...' : fillId ? 'Update' : 'Save'}
+          </button>
+        </Tooltip>
       </div>
     </div>
   );

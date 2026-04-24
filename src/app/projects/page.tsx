@@ -6,6 +6,7 @@ import { useProjects } from '@/hooks/useProject';
 import ProjectCard from '@/components/projects/ProjectCard';
 import Button from '@/components/ui/Button';
 import Modal from '@/components/ui/Modal';
+import Tooltip from '@/components/ui/Tooltip';
 
 export default function ProjectsPage() {
   const { projects, loading, createProject } = useProjects();
@@ -40,17 +41,18 @@ export default function ProjectsPage() {
 
       <div className="flex gap-2 mb-6">
         {['all', 'active', 'paused', 'completed', 'archived'].map((s) => (
-          <button
-            key={s}
-            onClick={() => setFilter(s)}
-            className={`px-3 py-1.5 rounded-lg text-[12px] font-semibold transition-all ${
-              filter === s
-                ? 'bg-[var(--accent-soft)] text-[var(--accent)]'
-                : 'text-[var(--text-3)] hover:bg-[var(--surface)]'
-            }`}
-          >
-            {s.charAt(0).toUpperCase() + s.slice(1)}
-          </button>
+          <Tooltip key={s} content={`Show ${s === 'all' ? 'all projects' : s + ' projects only'}`}>
+            <button
+              onClick={() => setFilter(s)}
+              className={`px-3 py-1.5 rounded-lg text-[12px] font-semibold transition-all ${
+                filter === s
+                  ? 'bg-[var(--accent-soft)] text-[var(--accent)]'
+                  : 'text-[var(--text-3)] hover:bg-[var(--surface)]'
+              }`}
+            >
+              {s.charAt(0).toUpperCase() + s.slice(1)}
+            </button>
+          </Tooltip>
         ))}
       </div>
 
@@ -86,29 +88,38 @@ export default function ProjectsPage() {
       <Modal open={showModal} onClose={() => setShowModal(false)} title="New Agent Project">
         <div className="space-y-4">
           <div>
-            <label className="block text-[12px] font-semibold text-[var(--text-3)] mb-1">Project Name *</label>
+            <Tooltip content="A clear, descriptive name for the agent project (e.g., Customer Support Triage Agent)">
+              <label className="block text-[12px] font-semibold text-[var(--text-3)] mb-1 cursor-help">Project Name *</label>
+            </Tooltip>
             <input
-              className="w-full px-3 py-2 border border-[var(--border)] rounded-lg text-[14px] bg-[var(--bg)] text-[var(--text)] focus:border-[var(--accent)] focus:outline-none"
+              className="w-full px-3 py-2 border border-[var(--border)] rounded-lg text-[14px] bg-[var(--bg)] text-[var(--text)] focus:border-[var(--accent)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-soft)] transition-all"
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
               placeholder="e.g., Customer Support Triage Agent"
+              title="A clear, descriptive name for the agent project"
             />
           </div>
           <div>
-            <label className="block text-[12px] font-semibold text-[var(--text-3)] mb-1">Description</label>
+            <Tooltip content="Briefly describe what this agent does, who it serves, and its primary objective">
+              <label className="block text-[12px] font-semibold text-[var(--text-3)] mb-1 cursor-help">Description</label>
+            </Tooltip>
             <textarea
-              className="w-full px-3 py-2 border border-[var(--border)] rounded-lg text-[14px] bg-[var(--bg)] text-[var(--text)] focus:border-[var(--accent)] focus:outline-none h-24"
+              className="w-full px-3 py-2 border border-[var(--border)] rounded-lg text-[14px] bg-[var(--bg)] text-[var(--text)] focus:border-[var(--accent)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-soft)] h-24 transition-all"
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+              title="Describe what this agent does and who it serves"
             />
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-[12px] font-semibold text-[var(--text-3)] mb-1">Architecture Pattern</label>
+              <Tooltip content="The multi-agent topology. Single Agent for simple tasks, Pipeline for sequential, Supervisor-Workers for delegated workflows.">
+                <label className="block text-[12px] font-semibold text-[var(--text-3)] mb-1 cursor-help">Architecture Pattern</label>
+              </Tooltip>
               <select
-                className="w-full px-3 py-2 border border-[var(--border)] rounded-lg text-[14px] bg-[var(--bg)] text-[var(--text)]"
+                className="w-full px-3 py-2 border border-[var(--border)] rounded-lg text-[14px] bg-[var(--bg)] text-[var(--text)] focus:border-[var(--accent)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-soft)] transition-all"
                 value={formData.architecturePattern}
                 onChange={(e) => setFormData({ ...formData, architecturePattern: e.target.value })}
+                title="Select the multi-agent topology for this project"
               >
                 <option value="">Select...</option>
                 <option value="single_agent">Single Agent</option>
@@ -119,11 +130,14 @@ export default function ProjectsPage() {
               </select>
             </div>
             <div>
-              <label className="block text-[12px] font-semibold text-[var(--text-3)] mb-1">Framework</label>
+              <Tooltip content="The agent orchestration framework to build with. Use the Evaluate module to compare options.">
+                <label className="block text-[12px] font-semibold text-[var(--text-3)] mb-1 cursor-help">Framework</label>
+              </Tooltip>
               <select
-                className="w-full px-3 py-2 border border-[var(--border)] rounded-lg text-[14px] bg-[var(--bg)] text-[var(--text)]"
+                className="w-full px-3 py-2 border border-[var(--border)] rounded-lg text-[14px] bg-[var(--bg)] text-[var(--text)] focus:border-[var(--accent)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-soft)] transition-all"
                 value={formData.framework}
                 onChange={(e) => setFormData({ ...formData, framework: e.target.value })}
+                title="Select the framework for agent orchestration"
               >
                 <option value="">Select...</option>
                 <option value="langgraph">LangGraph</option>

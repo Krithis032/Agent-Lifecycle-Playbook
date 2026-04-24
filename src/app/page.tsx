@@ -49,13 +49,13 @@ export default async function HomePage() {
   ]);
 
   const metrics = [
-    { label: 'Active Projects', value: activeCount, icon: FolderKanban, color: 'var(--accent)', bg: 'var(--accent-soft)', href: '/projects' },
-    { label: 'Evaluations', value: evalCount, icon: BarChart3, color: '#6b3fa0', bg: '#f3e8ff', href: '/evaluate' },
-    { label: 'Governance', value: assessmentCount, icon: Shield, color: 'var(--success)', bg: 'var(--success-soft)', href: '/governance' },
-    { label: 'CAIO Assessments', value: caioCount, icon: Award, color: '#b45309', bg: '#fef3c7', href: '/caio' },
-    { label: 'Documents', value: fillCount, icon: FileText, color: '#0e7490', bg: '#e0f2fe', href: '/templates' },
-    { label: 'KB Concepts', value: conceptCount, icon: BookOpen, color: '#64748b', bg: '#f1f5f9', href: '/advisor' },
-    { label: 'Open Risks', value: openRisks, icon: AlertTriangle, color: 'var(--error)', bg: 'var(--error-soft)', href: '/governance' },
+    { label: 'Active Projects', value: activeCount, icon: FolderKanban, color: 'var(--accent)', bg: 'var(--accent-soft)', href: '/projects', tip: 'Agent projects currently in progress. Click to view all projects.' },
+    { label: 'Evaluations', value: evalCount, icon: BarChart3, color: '#6b3fa0', bg: '#f3e8ff', href: '/evaluate', tip: 'Weighted decision-matrix evaluations for comparing frameworks, architectures, or agent performance.' },
+    { label: 'Governance', value: assessmentCount, icon: Shield, color: 'var(--success)', bg: 'var(--success-soft)', href: '/governance', tip: 'TRiSM governance assessments measuring trust across 7 layers, 10 Wharton domains, and compliance frameworks.' },
+    { label: 'CAIO Assessments', value: caioCount, icon: Award, color: '#b45309', bg: '#fef3c7', href: '/caio', tip: 'AI maturity assessments across 12 domains using the CAIO framework (5 maturity levels).' },
+    { label: 'Documents', value: fillCount, icon: FileText, color: '#0e7490', bg: '#e0f2fe', href: '/templates', tip: 'Filled lifecycle phase documents (charters, ADRs, runbooks, checklists, etc.).' },
+    { label: 'KB Concepts', value: conceptCount, icon: BookOpen, color: '#64748b', bg: '#f1f5f9', href: '/advisor', tip: 'Knowledge base concepts across 5 tiers: Core, RAG/MCP, IBM, LinkedIn, and Strategy.' },
+    { label: 'Open Risks', value: openRisks, icon: AlertTriangle, color: 'var(--error)', bg: 'var(--error-soft)', href: '/governance', tip: 'Risk items flagged during governance assessments that remain open and unmitigated.' },
   ];
 
   const quickActions = [
@@ -65,7 +65,7 @@ export default async function HomePage() {
     { label: 'Fill Template', href: '/templates', icon: FileText, desc: 'Generate project documents' },
     { label: 'CAIO Assessment', href: '/caio/assess', icon: Award, desc: 'AI maturity evaluation' },
     { label: 'Query Advisor', href: '/advisor', icon: Sparkles, desc: 'Ask the knowledge base' },
-    { label: 'User Guide', href: '/user-guide', icon: BookMarked, desc: 'PDF & PPTX portal guides' },
+    { label: 'User Guide', href: '/user-guide', icon: BookMarked, desc: 'Comprehensive portal reference' },
   ];
 
   return (
@@ -86,7 +86,7 @@ export default async function HomePage() {
         {metrics.map(m => {
           const Icon = m.icon;
           return (
-            <Link key={m.label} href={m.href} className="group">
+            <Link key={m.label} href={m.href} className="group" title={m.tip}>
               <Card className="flex flex-col items-center gap-2 text-center py-4 group-hover:border-[var(--accent)] transition-colors">
                 <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ backgroundColor: m.bg, color: m.color }}>
                   <Icon size={18} />

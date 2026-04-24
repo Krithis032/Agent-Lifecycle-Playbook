@@ -1,10 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Card from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
 import Badge from '@/components/ui/Badge';
-import { FileText, Save, X, CheckCircle2 } from 'lucide-react';
+import Tooltip from '@/components/ui/Tooltip';
+import { FileText, Save, X, CheckCircle2, CloudOff, HelpCircle } from 'lucide-react';
 import type { TemplateData, TemplateFill } from '@/types/project';
 
 interface TemplateFillFormProps {
@@ -14,25 +15,69 @@ interface TemplateFillFormProps {
   onClose: () => void;
 }
 
-export default function TemplateFillForm({ template, projectId, existingFill, onClose }: TemplateFillFormProps) {
-  const [fieldValues, setFieldValues] = useState<Record<string, string>>({});
-  const [saving, setSaving] = useState(false);
-  const [saved, setSaved] = useState(false);
-  const [title, setTitle] = useState('');
+function getDraftKey(templateId: number, projectId: number, fillId?: number) {
+  return fillId
+    ? `adp-proj-draft-${projectId}-${templateId}-${fillId}`
+    : `adp-proj-draft-${projectId}-${templateId}-new`;
+}
 
-  useEffect(() => {
-    if (existingFill) {
-      setFieldValues(existingFill.fieldValues || {});
-      setTitle(existingFill.title);
-    } else {
-      setTitle(`${template.name} - New`);
-      const initial: Record<string, string> = {};
-      for (const field of template.fields) {
+export default function TemplateFillForm({ template, projectId, existingFill, onClose }: TemplateFillFormProps) {
+  const draftKey = getDraftKey(template.id, projectId, existingFill?.id);
+
+  const loadDraft = () => {
+    try {
+      const raw = localStorage.getItem(draftKey);
+      if (raw) return JSON.parse(raw);
+    } catch { /* ignore */ }
+    return null;
+  };
+
+  const [fieldValues, setFieldValues] = useState<Record<string, string>>(() => {
+    const draft = loadDraft();
+    if (draft?.fieldValues) return draft.fieldValues;
+    if (existingFill) return existingFill.fieldValues || {};
+    const initial: Record<string, string> = {};
+    for (const field of template.fields) {
+      // Auto-set today's date for date fields
+      if (field.type === 'date') {
+        initial[field.key] = new Date().toISOString().split('T')[0];
+      } else {
         initial[field.key] = '';
       }
-      setFieldValues(initial);
     }
-  }, [template, existingFill]);
+    return initial;
+  });
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
+  const [title, setTitle] = useState(() => {
+    const draft = loadDraft();
+    return draft?.title || existingFill?.title || `${template.name} - New`;
+  });
+  const [hasDraft, setHasDraft] = useState(false);
+  const autoSaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Check for draft on mount
+  useEffect(() => {
+    const draft = loadDraft();
+    if (draft) setHasDraft(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Auto-save to localStorage (debounced 1.5s)
+  useEffect(() => {
+    if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current);
+    autoSaveTimer.current = setTimeout(() => {
+      try {
+        localStorage.setItem(draftKey, JSON.stringify({ title, fieldValues, savedAt: new Date().toISOString() }));
+        setHasDraft(true);
+      } catch { /* ignore */ }
+    }, 1500);
+    return () => { if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current); };
+  }, [title, fieldValues, draftKey]);
+
+  const clearDraft = () => {
+    try { localStorage.removeItem(draftKey); setHasDraft(false); } catch { /* ignore */ }
+  };
 
   const handleSave = async () => {
     setSaving(true);
@@ -47,6 +92,7 @@ export default function TemplateFillForm({ template, projectId, existingFill, on
           fillId: existingFill?.id,
         }),
       });
+      clearDraft();
       setSaved(true);
       setTimeout(() => setSaved(false), 2000);
     } catch {
@@ -81,25 +127,52 @@ export default function TemplateFillForm({ template, projectId, existingFill, on
           <Button variant="ghost" size="sm" onClick={onClose}>
             <X size={14} /> Close
           </Button>
-          <Button
-            size="sm"
-            onClick={handleSave}
-            disabled={saving || requiredFilled < requiredFields.length}
-          >
-            {saved ? <CheckCircle2 size={14} /> : <Save size={14} />}
-            {saved ? 'Saved' : saving ? 'Saving...' : 'Save'}
-          </Button>
+          <Tooltip content={requiredFilled < requiredFields.length ? `Complete all ${requiredFields.length} required fields before saving` : 'Save this document to the database'}>
+            <Button
+              size="sm"
+              onClick={handleSave}
+              disabled={saving || requiredFilled < requiredFields.length}
+            >
+              {saved ? <CheckCircle2 size={14} /> : <Save size={14} />}
+              {saved ? 'Saved' : saving ? 'Saving...' : 'Save'}
+            </Button>
+          </Tooltip>
         </div>
       </div>
 
+      {/* Draft banner */}
+      {hasDraft && (
+        <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-amber-50 border border-amber-200 text-amber-700 text-[13px] mb-4">
+          <CloudOff size={14} />
+          <span className="font-medium">Draft auto-saved locally.</span>
+          <button
+            onClick={() => {
+              clearDraft();
+              const initial: Record<string, string> = {};
+              for (const field of template.fields) {
+                initial[field.key] = field.type === 'date' ? new Date().toISOString().split('T')[0] : '';
+              }
+              setFieldValues(existingFill?.fieldValues || initial);
+              setTitle(existingFill?.title || `${template.name} - New`);
+            }}
+            className="ml-auto text-[12px] font-semibold underline hover:text-amber-900"
+          >
+            Discard Draft
+          </button>
+        </div>
+      )}
+
       {/* Title */}
       <Card className="mb-4">
-        <label className="block text-[11px] font-extrabold uppercase tracking-widest text-[var(--text-4)] mb-1.5">Document Title</label>
+        <Tooltip content="A descriptive title for this document instance">
+          <label className="block text-[11px] font-extrabold uppercase tracking-widest text-[var(--text-4)] mb-1.5 cursor-help">Document Title</label>
+        </Tooltip>
         <input
-          className="w-full px-3 py-2 border border-[var(--border)] rounded-lg text-[14px] bg-[var(--bg)] text-[var(--text)] focus:border-[var(--accent)] focus:outline-none"
+          className="w-full px-3 py-2 border border-[var(--border)] rounded-lg text-[14px] bg-[var(--bg)] text-[var(--text)] focus:border-[var(--accent)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-soft)] transition-all"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           placeholder="Title for this document"
+          title="Enter a descriptive title for this document"
         />
       </Card>
 
@@ -107,21 +180,58 @@ export default function TemplateFillForm({ template, projectId, existingFill, on
       <div className="space-y-4">
         {template.fields.map((field) => (
           <Card key={field.key} padding="sm">
-            <label className="block text-[12px] font-bold text-[var(--text-2)] mb-1.5">
-              {field.label} {field.required && <span className="text-[var(--coral)]">*</span>}
-            </label>
+            <div className="flex items-center gap-1.5 mb-1.5">
+              <label className="text-[12px] font-bold text-[var(--text-2)]">
+                {field.label} {field.required && <span className="text-[var(--coral)]">*</span>}
+              </label>
+              {field.helpText && (
+                <Tooltip content={field.helpText} position="top">
+                  <HelpCircle size={13} className="text-[var(--text-4)] hover:text-[var(--accent)] cursor-help transition-colors" />
+                </Tooltip>
+              )}
+            </div>
             {field.type === 'textarea' ? (
               <textarea
-                className="w-full px-3 py-2 border border-[var(--border)] rounded-lg text-[13px] bg-[var(--bg)] text-[var(--text)] focus:border-[var(--accent)] focus:outline-none resize-y"
+                className="w-full px-3 py-2 border border-[var(--border)] rounded-lg text-[13px] bg-[var(--bg)] text-[var(--text)] focus:border-[var(--accent)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-soft)] resize-y transition-all"
                 rows={4}
                 placeholder={field.placeholder || ''}
+                title={field.helpText || `Enter ${field.label.toLowerCase()}`}
+                value={fieldValues[field.key] || ''}
+                onChange={(e) => setFieldValues({ ...fieldValues, [field.key]: e.target.value })}
+              />
+            ) : field.type === 'select' ? (
+              <select
+                className="w-full px-3 py-2 border border-[var(--border)] rounded-lg text-[13px] bg-[var(--bg)] text-[var(--text)] focus:border-[var(--accent)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-soft)] transition-all"
+                title={field.helpText || `Select ${field.label.toLowerCase()}`}
+                value={fieldValues[field.key] || ''}
+                onChange={(e) => setFieldValues({ ...fieldValues, [field.key]: e.target.value })}
+              >
+                <option value="">Select...</option>
+                {field.options?.map((opt: string) => <option key={opt} value={opt}>{opt}</option>)}
+              </select>
+            ) : field.type === 'checkbox' ? (
+              <label className="flex items-center gap-2 cursor-pointer" title={field.helpText || `Toggle ${field.label.toLowerCase()}`}>
+                <input
+                  type="checkbox"
+                  checked={fieldValues[field.key] === 'true'}
+                  onChange={(e) => setFieldValues({ ...fieldValues, [field.key]: e.target.checked ? 'true' : 'false' })}
+                  className="w-4 h-4 accent-[var(--accent)] rounded"
+                />
+                <span className="text-sm text-[var(--text-2)]">{field.label}</span>
+              </label>
+            ) : field.type === 'date' ? (
+              <input
+                type="date"
+                className="w-full px-3 py-2 border border-[var(--border)] rounded-lg text-[13px] bg-[var(--bg)] text-[var(--text)] focus:border-[var(--accent)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-soft)] transition-all"
+                title={field.helpText || `Select ${field.label.toLowerCase()}`}
                 value={fieldValues[field.key] || ''}
                 onChange={(e) => setFieldValues({ ...fieldValues, [field.key]: e.target.value })}
               />
             ) : (
               <input
-                className="w-full px-3 py-2 border border-[var(--border)] rounded-lg text-[13px] bg-[var(--bg)] text-[var(--text)] focus:border-[var(--accent)] focus:outline-none"
+                className="w-full px-3 py-2 border border-[var(--border)] rounded-lg text-[13px] bg-[var(--bg)] text-[var(--text)] focus:border-[var(--accent)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-soft)] transition-all"
                 placeholder={field.placeholder || ''}
+                title={field.helpText || `Enter ${field.label.toLowerCase()}`}
                 value={fieldValues[field.key] || ''}
                 onChange={(e) => setFieldValues({ ...fieldValues, [field.key]: e.target.value })}
               />

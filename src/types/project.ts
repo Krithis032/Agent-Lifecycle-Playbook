@@ -117,9 +117,12 @@ export interface TemplateData {
 export interface TemplateField {
   key: string;
   label: string;
-  type: 'text' | 'textarea';
+  type: 'text' | 'textarea' | 'select' | 'date' | 'checkbox';
   placeholder?: string;
   required?: boolean;
+  helpText?: string;
+  options?: string[];
+  section?: string;
 }
 
 export interface CreateProjectInput {

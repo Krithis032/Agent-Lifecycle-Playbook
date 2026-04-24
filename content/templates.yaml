@@ -9,28 +9,33 @@ templates:
         type: text
         required: true
         section: "Project Identity"
+        helpText: "A clear, descriptive name for the agent project (e.g., Customer Support Triage Agent)"
       - key: project_code
         label: "Project Code"
         type: text
         required: false
         section: "Project Identity"
         placeholder: "e.g., AGT-001"
+        helpText: "An internal tracking code for reference across systems"
       - key: owner
         label: "Project Owner"
         type: text
         required: true
         section: "Project Identity"
+        helpText: "The person accountable for delivery and outcomes of this project"
       - key: date
         label: "Charter Date"
         type: date
         required: true
         section: "Project Identity"
+        helpText: "The date this charter was created or last revised"
       - key: status
         label: "Status"
         type: select
         required: true
         section: "Project Identity"
         options: ["Draft", "Under Review", "Approved"]
+        helpText: "Current approval status of this charter document"
       - key: problem_statement
         label: "Problem Statement"
         type: textarea
@@ -55,24 +60,28 @@ templates:
         required: true
         section: "Agent Design"
         options: ["Single Agent", "Pipeline", "Supervisor-Workers", "Hierarchical", "Collaborative Swarm", "State Machine"]
+        helpText: "The multi-agent topology. Single Agent for simple tasks, Pipeline for sequential, Supervisor-Workers for delegated workflows."
       - key: framework
         label: "Framework"
         type: select
         required: true
         section: "Agent Design"
         options: ["LangGraph", "CrewAI", "AutoGen", "Claude Agent SDK", "Semantic Kernel", "Phidata"]
+        helpText: "The agent orchestration framework to build with. Use the Evaluate module to compare options."
       - key: model_strategy
         label: "Model Tier Strategy"
         type: select
         required: true
         section: "Agent Design"
         options: ["Haiku Only", "Sonnet Only", "Opus Only", "Mixed (Haiku+Sonnet)", "Mixed (Sonnet+Opus)", "Full Tiered (Haiku+Sonnet+Opus)"]
+        helpText: "Which LLM tiers to use. Haiku for speed/cost, Sonnet for balanced, Opus for complex reasoning. Mixed tiers route by task complexity."
       - key: autonomy_level
         label: "Target Autonomy Level"
         type: select
         required: true
         section: "Agent Design"
         options: ["L0 - Manual", "L1 - Assistive", "L2 - Collaborative", "L3 - Supervised Autonomous", "L4 - Highly Autonomous", "L5 - Fully Autonomous"]
+        helpText: "L0=human does everything. L5=fully autonomous. Most production agents start at L2-L3."
       - key: tools_required
         label: "Tools & Integrations"
         type: textarea
@@ -84,7 +93,7 @@ templates:
         type: textarea
         required: true
         section: "Success Criteria"
-        helpText: "KPIs that define success. Include targets."
+        helpText: "KPIs that define success. Include targets (e.g., 90% task completion, <5s latency, 50% cost reduction)."
       - key: acceptance_criteria
         label: "Acceptance Criteria"
         type: textarea
@@ -97,96 +106,234 @@ templates:
         required: true
         section: "Success Criteria"
         options: ["Automate (Low Stakes)", "Accelerate (Medium Stakes)", "Augment (High Stakes)", "Advise Only (Critical Stakes)"]
+        helpText: "Low stakes = automate freely. Critical stakes = agent advises, human decides. Matches the 4A Framework."
       - key: team_members
         label: "Team Members"
         type: textarea
         required: true
         section: "Team & Timeline"
-        helpText: "Name, role, hours/week"
+        helpText: "Name, role, hours/week for each team member"
       - key: timeline
         label: "Estimated Timeline"
         type: text
         required: true
         section: "Team & Timeline"
         placeholder: "e.g., 6 weeks"
+        helpText: "End-to-end timeline from kickoff to production deployment"
       - key: budget
         label: "Budget Estimate"
         type: text
         required: false
         section: "Team & Timeline"
+        helpText: "Estimated total cost including compute, API usage, personnel, and tooling"
 
   - slug: adr
     name: "Architecture Decision Record"
-    description: "Document architecture choices with alternatives and rationale."
+    description: "Document one or more architecture choices with alternatives, rationale, and consequences. Supports multiple decisions per record."
     phase_slug: architecture
     fields:
       - key: adr_number
         label: "ADR Number"
         type: text
         required: true
-        section: "Header"
+        section: "Record Header"
         placeholder: "ADR-001"
-      - key: title
-        label: "Decision Title"
+        helpText: "Unique identifier for this ADR (e.g., ADR-001). Used for cross-referencing between decisions."
+      - key: record_title
+        label: "Record Title"
         type: text
         required: true
-        section: "Header"
+        section: "Record Header"
+        helpText: "A high-level title for this ADR record. If it covers multiple decisions, use a theme (e.g., Agent Architecture Decisions - Phase 1)."
       - key: date
         label: "Date"
         type: date
         required: true
-        section: "Header"
-      - key: status
-        label: "Status"
+        section: "Record Header"
+        helpText: "Date this ADR was created or last updated"
+      - key: overall_status
+        label: "Record Status"
         type: select
         required: true
-        section: "Header"
-        options: ["Proposed", "Accepted", "Deprecated", "Superseded"]
-      - key: deciders
-        label: "Decision Makers"
+        section: "Record Header"
+        options: ["Draft", "Under Review", "Accepted", "Deprecated", "Superseded"]
+        helpText: "Overall status of this ADR record. Individual decisions may have their own status."
+      - key: authors
+        label: "Authors"
         type: text
         required: true
-        section: "Header"
-      - key: context
-        label: "Context & Problem"
+        section: "Record Header"
+        helpText: "Who authored and is responsible for this record"
+      - key: stakeholders
+        label: "Stakeholders & Reviewers"
+        type: textarea
+        required: false
+        section: "Record Header"
+        helpText: "People who reviewed or approved these decisions. Include role and sign-off status."
+
+      - key: decision_1_title
+        label: "Decision 1 — Title"
+        type: text
+        required: true
+        section: "Decision 1"
+        helpText: "A concise title for this decision (e.g., Use LangGraph for agent orchestration)"
+      - key: decision_1_status
+        label: "Decision 1 — Status"
+        type: select
+        required: true
+        section: "Decision 1"
+        options: ["Proposed", "Accepted", "Deprecated", "Superseded"]
+        helpText: "Current status of this specific decision"
+      - key: decision_1_context
+        label: "Decision 1 — Context & Problem"
         type: textarea
         required: true
-        section: "Decision"
-        helpText: "What is the issue? What forces are at play?"
-      - key: decision
-        label: "Decision"
+        section: "Decision 1"
+        helpText: "What is the issue that motivates this decision? What forces are at play (technical, business, team, cost)?"
+      - key: decision_1_decision
+        label: "Decision 1 — Decision"
         type: textarea
         required: true
-        section: "Decision"
+        section: "Decision 1"
+        helpText: "State the decision clearly and unambiguously. Start with 'We will...' or 'We chose...'"
+      - key: decision_1_rationale
+        label: "Decision 1 — Rationale"
+        type: textarea
+        required: true
+        section: "Decision 1"
+        helpText: "Why was this option chosen over alternatives? Include key criteria that drove the choice."
+      - key: decision_1_alternatives
+        label: "Decision 1 — Alternatives Considered"
+        type: textarea
+        required: true
+        section: "Decision 1"
+        helpText: "List each alternative with a brief explanation of why it was not chosen"
+      - key: decision_1_consequences_positive
+        label: "Decision 1 — Positive Consequences"
+        type: textarea
+        required: true
+        section: "Decision 1"
+        helpText: "Benefits and advantages of this decision (e.g., faster iteration, better observability)"
+      - key: decision_1_consequences_negative
+        label: "Decision 1 — Negative Consequences / Trade-offs"
+        type: textarea
+        required: true
+        section: "Decision 1"
+        helpText: "Downsides, risks, or trade-offs accepted (e.g., vendor lock-in, steeper learning curve)"
+
+      - key: decision_2_title
+        label: "Decision 2 — Title"
+        type: text
+        required: false
+        section: "Decision 2"
+        helpText: "Title for a second decision in this ADR. Leave blank if not applicable."
+      - key: decision_2_status
+        label: "Decision 2 — Status"
+        type: select
+        required: false
+        section: "Decision 2"
+        options: ["Proposed", "Accepted", "Deprecated", "Superseded"]
+        helpText: "Current status of this specific decision"
+      - key: decision_2_context
+        label: "Decision 2 — Context & Problem"
+        type: textarea
+        required: false
+        section: "Decision 2"
+        helpText: "What is the issue that motivates this decision?"
+      - key: decision_2_decision
+        label: "Decision 2 — Decision"
+        type: textarea
+        required: false
+        section: "Decision 2"
         helpText: "State the decision clearly"
-      - key: rationale
-        label: "Rationale"
+      - key: decision_2_rationale
+        label: "Decision 2 — Rationale"
         type: textarea
-        required: true
-        section: "Decision"
+        required: false
+        section: "Decision 2"
         helpText: "Why was this chosen over alternatives?"
-      - key: alternatives
-        label: "Alternatives Considered"
+      - key: decision_2_alternatives
+        label: "Decision 2 — Alternatives Considered"
         type: textarea
-        required: true
-        section: "Analysis"
-        helpText: "List each alternative and why it was not chosen"
-      - key: consequences_positive
-        label: "Positive Consequences"
+        required: false
+        section: "Decision 2"
+        helpText: "List alternatives and why they were not chosen"
+      - key: decision_2_consequences_positive
+        label: "Decision 2 — Positive Consequences"
         type: textarea
-        required: true
-        section: "Analysis"
-      - key: consequences_negative
-        label: "Negative Consequences / Trade-offs"
+        required: false
+        section: "Decision 2"
+        helpText: "Benefits and advantages of this decision"
+      - key: decision_2_consequences_negative
+        label: "Decision 2 — Negative Consequences / Trade-offs"
         type: textarea
-        required: true
-        section: "Analysis"
+        required: false
+        section: "Decision 2"
+        helpText: "Downsides, risks, or trade-offs accepted"
+
+      - key: decision_3_title
+        label: "Decision 3 — Title"
+        type: text
+        required: false
+        section: "Decision 3"
+        helpText: "Title for a third decision. Leave blank if not applicable."
+      - key: decision_3_status
+        label: "Decision 3 — Status"
+        type: select
+        required: false
+        section: "Decision 3"
+        options: ["Proposed", "Accepted", "Deprecated", "Superseded"]
+        helpText: "Current status of this specific decision"
+      - key: decision_3_context
+        label: "Decision 3 — Context & Problem"
+        type: textarea
+        required: false
+        section: "Decision 3"
+        helpText: "What is the issue that motivates this decision?"
+      - key: decision_3_decision
+        label: "Decision 3 — Decision"
+        type: textarea
+        required: false
+        section: "Decision 3"
+        helpText: "State the decision clearly"
+      - key: decision_3_rationale
+        label: "Decision 3 — Rationale"
+        type: textarea
+        required: false
+        section: "Decision 3"
+        helpText: "Why was this chosen over alternatives?"
+      - key: decision_3_alternatives
+        label: "Decision 3 — Alternatives Considered"
+        type: textarea
+        required: false
+        section: "Decision 3"
+        helpText: "List alternatives and why they were not chosen"
+      - key: decision_3_consequences_positive
+        label: "Decision 3 — Positive Consequences"
+        type: textarea
+        required: false
+        section: "Decision 3"
+        helpText: "Benefits and advantages of this decision"
+      - key: decision_3_consequences_negative
+        label: "Decision 3 — Negative Consequences / Trade-offs"
+        type: textarea
+        required: false
+        section: "Decision 3"
+        helpText: "Downsides, risks, or trade-offs accepted"
+
       - key: related_adrs
         label: "Related ADRs"
         type: text
         required: false
-        section: "Analysis"
+        section: "Cross-References"
         placeholder: "e.g., ADR-003, ADR-005"
+        helpText: "Other ADRs that are related, superseded, or depend on decisions in this record"
+      - key: implementation_notes
+        label: "Implementation Notes"
+        type: textarea
+        required: false
+        section: "Cross-References"
+        helpText: "Any technical notes, links to PRs, or implementation guidance for the decisions above"
 
   - slug: eval-report
     name: "Agent Evaluation Report"
@@ -198,63 +345,75 @@ templates:
         type: text
         required: true
         section: "Header"
+        helpText: "The agent or system being evaluated"
       - key: eval_date
         label: "Evaluation Date"
         type: date
         required: true
         section: "Header"
+        helpText: "When this evaluation was conducted"
       - key: evaluator
         label: "Evaluator"
         type: text
         required: true
         section: "Header"
+        helpText: "Person or team who performed the evaluation"
       - key: eval_type
         label: "Evaluation Type"
         type: select
         required: true
         section: "Header"
         options: ["Framework Selection", "Architecture Selection", "Agent Performance", "Custom"]
+        helpText: "What kind of evaluation this is. Use the Evaluate module for weighted matrix comparisons."
       - key: executive_summary
         label: "Executive Summary"
         type: textarea
         required: true
         section: "Summary"
+        helpText: "1-2 paragraph high-level summary for stakeholders. Include key finding and recommendation."
       - key: recommendation
         label: "Recommendation"
         type: textarea
         required: true
         section: "Summary"
+        helpText: "Your recommended course of action based on the evaluation results"
       - key: confidence_level
         label: "Confidence Level"
         type: select
         required: true
         section: "Summary"
         options: ["High", "Medium", "Low"]
+        helpText: "How confident you are in the recommendation. Low confidence suggests more testing is needed."
       - key: methodology
         label: "Evaluation Methodology"
         type: textarea
         required: true
         section: "Details"
+        helpText: "Describe how the evaluation was conducted (test scenarios, data sources, environment)"
       - key: criteria_used
         label: "Criteria & Weights"
         type: textarea
         required: true
         section: "Details"
+        helpText: "What criteria were used and their relative importance (e.g., accuracy 30%, latency 25%, cost 20%)"
       - key: results
         label: "Detailed Results"
         type: textarea
         required: true
         section: "Details"
+        helpText: "Quantitative and qualitative results per option. Include scores, latency numbers, error rates."
       - key: risks_tradeoffs
         label: "Risks & Trade-offs"
         type: textarea
         required: true
         section: "Details"
+        helpText: "What risks come with the recommendation? What trade-offs are being accepted?"
       - key: next_steps
         label: "Next Steps"
         type: textarea
         required: true
         section: "Details"
+        helpText: "Concrete actions to take after this evaluation (e.g., prototype build, pilot plan, stakeholder review)"
 
   - slug: pilot-runbook
     name: "Pilot Runbook"
@@ -266,16 +425,19 @@ templates:
         type: text
         required: true
         section: "Overview"
+        helpText: "Name of this pilot deployment (e.g., Customer Support Triage Pilot - APAC)"
       - key: start_date
         label: "Start Date"
         type: date
         required: true
         section: "Overview"
+        helpText: "Planned start date of the pilot"
       - key: end_date
         label: "End Date"
         type: date
         required: true
         section: "Overview"
+        helpText: "Planned end date of the pilot"
       - key: pilot_scope
         label: "Pilot Scope"
         type: textarea
@@ -287,11 +449,13 @@ templates:
         type: textarea
         required: true
         section: "Overview"
+        helpText: "Measurable criteria that define whether the pilot is successful (e.g., >85% accuracy, <3s response time)"
       - key: deployment_steps
         label: "Deployment Steps"
         type: textarea
         required: true
         section: "Operations"
+        helpText: "Step-by-step instructions to deploy the agent into the pilot environment"
       - key: monitoring_plan
         label: "Monitoring Plan"
         type: textarea
@@ -303,26 +467,31 @@ templates:
         type: textarea
         required: true
         section: "Operations"
+        helpText: "How to quickly revert to the previous state if the pilot fails. Include kill switch location."
       - key: escalation_path
         label: "Escalation Path"
         type: textarea
         required: true
         section: "Operations"
+        helpText: "Who to contact for each severity level. Include on-call rotation and contact info."
       - key: feedback_mechanism
         label: "Feedback Collection"
         type: textarea
         required: true
         section: "Evaluation"
+        helpText: "How will pilot users provide feedback? (surveys, interviews, in-app feedback)"
       - key: go_nogo_criteria
         label: "Go/No-Go Decision Criteria"
         type: textarea
         required: true
         section: "Evaluation"
+        helpText: "Specific thresholds that determine whether to proceed to production, extend pilot, or abort"
       - key: stakeholders
         label: "Stakeholders & Sign-off"
         type: textarea
         required: true
         section: "Evaluation"
+        helpText: "Who must sign off before the pilot starts and before moving to production?"
 
   - slug: prod-checklist
     name: "Production Readiness Checklist"
@@ -334,91 +503,109 @@ templates:
         type: text
         required: true
         section: "System"
+        helpText: "Name of the agent system being reviewed for production readiness"
       - key: review_date
         label: "Review Date"
         type: date
         required: true
         section: "System"
+        helpText: "Date of this production readiness review"
       - key: reviewer
         label: "Reviewer"
         type: text
         required: true
         section: "System"
+        helpText: "Person conducting the production readiness review"
       - key: performance_tested
         label: "Performance/Load Testing Done"
         type: checkbox
         required: true
         section: "Technical Readiness"
+        helpText: "Confirm load/stress testing has been completed with acceptable results"
       - key: security_reviewed
         label: "Security Review Completed"
         type: checkbox
         required: true
         section: "Technical Readiness"
+        helpText: "Confirm security review including threat modeling and vulnerability scan"
       - key: monitoring_active
         label: "Monitoring & Alerting Active"
         type: checkbox
         required: true
         section: "Technical Readiness"
+        helpText: "Confirm monitoring dashboards and alerting are configured and tested"
       - key: rollback_tested
         label: "Rollback Procedure Tested"
         type: checkbox
         required: true
         section: "Technical Readiness"
+        helpText: "Confirm rollback has been tested and can be executed within acceptable time"
       - key: guardrails_active
         label: "Input/Output Guardrails Active"
         type: checkbox
         required: true
         section: "Technical Readiness"
+        helpText: "Confirm input validation, output filtering, and content safety filters are live"
       - key: hitl_gates
         label: "HITL Gates Configured"
         type: checkbox
         required: true
         section: "Technical Readiness"
+        helpText: "Confirm Human-in-the-Loop gates are active for high-stakes decisions"
       - key: governance_passed
         label: "Governance Assessment Passed"
         type: checkbox
         required: true
         section: "Governance Readiness"
+        helpText: "Confirm TRiSM governance assessment has been completed with passing score"
       - key: compliance_checked
         label: "Compliance Checklist Completed"
         type: checkbox
         required: true
         section: "Governance Readiness"
+        helpText: "Confirm all applicable compliance requirements (GDPR, SOC2, etc.) are met"
       - key: data_privacy_reviewed
         label: "Data Privacy Impact Assessed"
         type: checkbox
         required: true
         section: "Governance Readiness"
+        helpText: "Confirm data privacy impact assessment has been completed"
       - key: bias_audited
         label: "Bias Audit Completed"
         type: checkbox
         required: true
         section: "Governance Readiness"
+        helpText: "Confirm bias testing has been performed across demographic groups"
       - key: runbook_available
         label: "Operations Runbook Available"
         type: checkbox
         required: true
         section: "Operational Readiness"
+        helpText: "Confirm an operations runbook with troubleshooting guides exists"
       - key: oncall_assigned
         label: "On-call Rotation Assigned"
         type: checkbox
         required: true
         section: "Operational Readiness"
+        helpText: "Confirm on-call engineers are assigned and trained"
       - key: incident_plan
         label: "Incident Response Plan in Place"
         type: checkbox
         required: true
         section: "Operational Readiness"
+        helpText: "Confirm incident response plan with severity definitions and escalation paths"
       - key: stakeholders_signed
         label: "Stakeholder Sign-off Obtained"
         type: checkbox
         required: true
         section: "Operational Readiness"
+        helpText: "Confirm all required stakeholders have approved production deployment"
       - key: notes
         label: "Notes / Blockers"
         type: textarea
         required: false
         section: "Notes"
+        helpText: "Any outstanding issues, blockers, or conditions that must be resolved before go-live"
 
   - slug: incident-plan
     name: "Incident Response Plan"
@@ -430,21 +617,25 @@ templates:
         type: text
         required: true
         section: "Overview"
+        helpText: "The agent system this incident plan covers"
       - key: version
         label: "Plan Version"
         type: text
         required: true
         section: "Overview"
+        helpText: "Version number of this plan (increment on each major revision)"
       - key: last_updated
         label: "Last Updated"
         type: date
         required: true
         section: "Overview"
+        helpText: "When this plan was last reviewed and updated"
       - key: owner
         label: "Plan Owner"
         type: text
         required: true
         section: "Overview"
+        helpText: "The person responsible for maintaining this plan"
       - key: severity_definitions
         label: "Severity Levels & Definitions"
         type: textarea
@@ -462,11 +653,13 @@ templates:
         type: textarea
         required: true
         section: "Response Procedures"
+        helpText: "How incidents are detected: monitoring alerts, user reports, automated checks"
       - key: triage_steps
         label: "Triage Steps"
         type: textarea
         required: true
         section: "Response Procedures"
+        helpText: "Initial assessment steps to classify severity and scope of the incident"
       - key: containment
         label: "Containment Actions"
         type: textarea
@@ -478,21 +671,26 @@ templates:
         type: textarea
         required: true
         section: "Response Procedures"
+        helpText: "Who to notify at each severity level and through which channels"
       - key: recovery_steps
         label: "Recovery Steps"
         type: textarea
         required: true
         section: "Response Procedures"
+        helpText: "Steps to restore normal service after containment"
       - key: post_mortem_template
         label: "Post-Mortem Template"
         type: textarea
         required: false
         section: "Post-Incident"
+        helpText: "Template or checklist for conducting post-incident reviews"
       - key: escalation_contacts
         label: "Escalation Contacts"
         type: textarea
         required: true
         section: "Post-Incident"
+        helpText: "Contact list with names, roles, phone numbers, and escalation order"
+
   - slug: use-case-assessment
     name: "Use Case Assessment"
     description: "Evaluate whether a problem is suited for agentic AI vs simpler automation."
@@ -503,16 +701,19 @@ templates:
         type: text
         required: true
         section: "Overview"
+        helpText: "A descriptive name for the use case being assessed"
       - key: date
         label: "Assessment Date"
         type: date
         required: true
         section: "Overview"
+        helpText: "Date this assessment was performed"
       - key: assessor
         label: "Assessor"
         type: text
         required: true
         section: "Overview"
+        helpText: "Person conducting the assessment"
       - key: current_workflow
         label: "Current Workflow Description"
         type: textarea
@@ -530,38 +731,45 @@ templates:
         type: checkbox
         required: true
         section: "Agent-Fit Criteria"
+        helpText: "Does the task require chaining multiple reasoning steps to reach a conclusion?"
       - key: requires_tool_use
         label: "Requires Tool Use"
         type: checkbox
         required: true
         section: "Agent-Fit Criteria"
+        helpText: "Does the task require calling APIs, querying databases, or using external tools?"
       - key: requires_adaptive_decisions
         label: "Requires Adaptive Decision-Making"
         type: checkbox
         required: true
         section: "Agent-Fit Criteria"
+        helpText: "Does the agent need to adjust its approach based on intermediate results?"
       - key: has_feedback_loop
         label: "Has Reason-Act-Observe Loop"
         type: checkbox
         required: true
         section: "Agent-Fit Criteria"
+        helpText: "Does the task involve a cycle of reasoning, taking action, and observing outcomes?"
       - key: agent_fit_score
         label: "Agent-Fit Score (1-10)"
         type: select
         required: true
         section: "Agent-Fit Criteria"
         options: ["1","2","3","4","5","6","7","8","9","10"]
+        helpText: "Overall agent-fit score. 1-3 = simple automation, 4-6 = borderline, 7-10 = strong agent fit."
       - key: recommendation
         label: "Recommendation"
         type: select
         required: true
         section: "Decision"
         options: ["Proceed with Agent", "Use Simpler Automation", "Needs More Research", "Not Suitable"]
+        helpText: "Your recommendation based on the agent-fit criteria analysis"
       - key: rationale
         label: "Rationale"
         type: textarea
         required: true
         section: "Decision"
+        helpText: "Explain why this recommendation was made, referencing the criteria above"
 
   - slug: stakeholder-analysis
     name: "Stakeholder Analysis"
@@ -573,37 +781,43 @@ templates:
         type: text
         required: true
         section: "Overview"
+        helpText: "The project these stakeholders are associated with"
       - key: date
         label: "Date"
         type: date
         required: true
         section: "Overview"
+        helpText: "Date this analysis was performed"
       - key: business_sponsors
         label: "Business Sponsors"
         type: textarea
         required: true
         section: "Stakeholders"
-        helpText: "Name, role, interest, influence level"
+        helpText: "Name, role, interest, influence level for each business sponsor"
       - key: end_users
         label: "End Users"
         type: textarea
         required: true
         section: "Stakeholders"
+        helpText: "Who will interact with the agent daily? List user groups and their needs."
       - key: security_compliance
         label: "Security & Compliance Teams"
         type: textarea
         required: true
         section: "Stakeholders"
+        helpText: "Security and compliance reviewers. Include their specific concerns."
       - key: infrastructure_owners
         label: "Infrastructure Owners"
         type: textarea
         required: true
         section: "Stakeholders"
+        helpText: "Platform/infra teams responsible for hosting, scaling, and monitoring"
       - key: downstream_systems
         label: "Affected Downstream Systems"
         type: textarea
         required: true
         section: "Stakeholders"
+        helpText: "Systems and teams that depend on or are affected by the agent's output"
       - key: raci_matrix
         label: "RACI Matrix"
         type: textarea
@@ -615,6 +829,7 @@ templates:
         type: textarea
         required: true
         section: "Governance"
+        helpText: "How and how often each stakeholder group will be updated"
 
   - slug: risk-register
     name: "Risk Register"
@@ -626,29 +841,34 @@ templates:
         type: text
         required: true
         section: "Overview"
+        helpText: "The project this risk register belongs to"
       - key: date
         label: "Date"
         type: date
         required: true
         section: "Overview"
+        helpText: "Date this risk register was created or updated"
       - key: risk_classification
         label: "Risk Classification"
         type: select
         required: true
         section: "Overview"
         options: ["Low Risk", "Medium Risk", "High Risk", "Critical Risk"]
+        helpText: "Overall risk classification based on stakes level and error visibility"
       - key: stakes_level
         label: "Stakes Level"
         type: select
         required: true
         section: "Risk Matrix"
         options: ["Low", "High"]
+        helpText: "Low = errors are easily correctable, High = errors have serious consequences"
       - key: error_visibility
         label: "Error Visibility"
         type: select
         required: true
         section: "Risk Matrix"
         options: ["Easy to Detect", "Hard to Detect"]
+        helpText: "How easy is it to detect when the agent makes a mistake?"
       - key: pre_mortem
         label: "Pre-Mortem Exercise"
         type: textarea
@@ -660,21 +880,25 @@ templates:
         type: textarea
         required: true
         section: "Risk Identification"
+        helpText: "Risks from technology choices, model reliability, integration complexity"
       - key: operational_risks
         label: "Operational Risks"
         type: textarea
         required: true
         section: "Risk Identification"
+        helpText: "Risks from team capacity, vendor dependencies, operational complexity"
       - key: compliance_risks
         label: "Compliance & Legal Risks"
         type: textarea
         required: true
         section: "Risk Identification"
+        helpText: "Regulatory, legal, or compliance risks (GDPR, SOC2, industry-specific)"
       - key: mitigations
         label: "Mitigation Strategies"
         type: textarea
         required: true
         section: "Mitigation"
+        helpText: "For each risk, describe the mitigation plan and residual risk"
       - key: kill_criteria
         label: "Kill Criteria"
         type: textarea
@@ -692,11 +916,13 @@ templates:
         type: text
         required: true
         section: "Overview"
+        helpText: "The agent this tool spec is for"
       - key: date
         label: "Date"
         type: date
         required: true
         section: "Overview"
+        helpText: "Date this spec was created"
       - key: tool_inventory
         label: "Tool Inventory"
         type: textarea
@@ -708,7 +934,7 @@ templates:
         type: textarea
         required: false
         section: "Tools"
-        helpText: "MCP servers for standardized tool interfaces"
+        helpText: "MCP servers for standardized tool interfaces (e.g., filesystem, database, web search)"
       - key: input_schemas
         label: "Input Schemas"
         type: textarea
@@ -720,6 +946,7 @@ templates:
         type: textarea
         required: true
         section: "Interface Contracts"
+        helpText: "Expected output format and structure for each tool"
       - key: error_handling
         label: "Error Handling Contracts"
         type: textarea
@@ -731,12 +958,13 @@ templates:
         type: textarea
         required: true
         section: "Security"
-        helpText: "Least-privilege access for each tool"
+        helpText: "Least-privilege access for each tool (read-only vs read-write, scope limits)"
       - key: integration_diagram
         label: "Integration Architecture Notes"
         type: textarea
         required: false
         section: "Security"
+        helpText: "Describe or reference an architecture diagram showing tool connections"
 
   - slug: state-memory-design
     name: "State & Memory Design"
@@ -748,47 +976,51 @@ templates:
         type: text
         required: true
         section: "Overview"
+        helpText: "The agent this state/memory design is for"
       - key: framework
         label: "Framework"
         type: select
         required: true
         section: "Overview"
         options: ["LangGraph", "CrewAI", "AutoGen", "Claude Agent SDK", "Semantic Kernel", "Phidata"]
+        helpText: "The framework determines available state management patterns"
       - key: state_schema
         label: "State Schema Definition"
         type: textarea
         required: true
         section: "State Design"
-        helpText: "Define typed state channels/fields the agent maintains"
+        helpText: "Define typed state channels/fields the agent maintains (e.g., TypedDict, Pydantic model)"
       - key: working_memory
         label: "Working Memory"
         type: textarea
         required: true
         section: "Memory Tiers"
-        helpText: "Current conversation/task context"
+        helpText: "Current conversation/task context — what the agent needs right now"
       - key: short_term_memory
         label: "Short-Term Memory"
         type: textarea
         required: true
         section: "Memory Tiers"
-        helpText: "Session-level context"
+        helpText: "Session-level context that persists within a user session"
       - key: long_term_memory
         label: "Long-Term Memory"
         type: textarea
         required: true
         section: "Memory Tiers"
-        helpText: "Persistent knowledge store"
+        helpText: "Persistent knowledge store (vector DB, knowledge graph, user preferences)"
       - key: persistence_strategy
         label: "Persistence Strategy"
         type: select
         required: true
         section: "Infrastructure"
         options: ["In-Memory (Prototype)", "SQLite", "PostgreSQL", "Redis", "Vector DB", "Custom"]
+        helpText: "How state is persisted between sessions. In-Memory for prototyping only."
       - key: persistence_details
         label: "Persistence Details"
         type: textarea
         required: true
         section: "Infrastructure"
+        helpText: "Connection details, schema, retention policies, backup strategy"
 
   - slug: test-case-dataset
     name: "Test Case Dataset"
@@ -800,17 +1032,20 @@ templates:
         type: text
         required: true
         section: "Overview"
+        helpText: "The agent being tested"
       - key: date
         label: "Date"
         type: date
         required: true
         section: "Overview"
+        helpText: "Date this test dataset was created"
       - key: total_cases
         label: "Total Test Cases"
         type: text
         required: true
         section: "Overview"
         placeholder: "e.g., 75"
+        helpText: "Total number of test cases in this dataset (recommend 50-100 minimum)"
       - key: golden_path
         label: "Golden Path Cases"
         type: textarea
@@ -828,7 +1063,7 @@ templates:
         type: textarea
         required: true
         section: "Test Categories"
-        helpText: "Attempts to break or mislead the agent (min 20%)"
+        helpText: "Attempts to break or mislead the agent (min 20% of total cases)"
       - key: real_world_samples
         label: "Real-World Samples"
         type: textarea
@@ -847,6 +1082,7 @@ templates:
         required: true
         section: "Evaluation"
         placeholder: "e.g., 85% task completion rate"
+        helpText: "The minimum acceptable score to proceed to the next phase"
 
   - slug: prompt-engineering-log
     name: "Prompt Engineering Log"
@@ -858,49 +1094,57 @@ templates:
         type: text
         required: true
         section: "Overview"
+        helpText: "The agent whose prompts are being iterated"
       - key: prompt_version
         label: "Prompt Version"
         type: text
         required: true
         section: "Overview"
         placeholder: "e.g., v3.2"
+        helpText: "Version number for this prompt iteration"
       - key: date
         label: "Date"
         type: date
         required: true
         section: "Overview"
+        helpText: "Date of this prompt iteration"
       - key: system_prompt
         label: "System Prompt"
         type: textarea
         required: true
         section: "Prompt Content"
+        helpText: "The full system prompt text. Include role definition, constraints, and output format."
       - key: user_prompt_template
         label: "User Prompt Template"
         type: textarea
         required: true
         section: "Prompt Content"
+        helpText: "Template for user messages with {placeholders} for dynamic content"
       - key: few_shot_examples
         label: "Few-Shot Examples"
         type: textarea
         required: false
         section: "Prompt Content"
+        helpText: "Example input/output pairs included in the prompt for guidance"
       - key: changes_from_prev
         label: "Changes from Previous Version"
         type: textarea
         required: true
         section: "Iteration"
-        helpText: "What changed and why"
+        helpText: "What changed and why (be specific about added/removed/modified sections)"
       - key: eval_results
         label: "Evaluation Results"
         type: textarea
         required: true
         section: "Iteration"
-        helpText: "Performance metrics compared to previous version"
+        helpText: "Performance metrics compared to previous version (accuracy, latency, cost)"
       - key: failure_modes_addressed
         label: "Failure Modes Addressed"
         type: textarea
         required: false
         section: "Iteration"
+        helpText: "Which failure modes from prior versions does this iteration fix?"
+
   - slug: shadow-mode-report
     name: "Shadow Mode Report"
     description: "Compare agent outputs against current system during shadow deployment."
@@ -911,49 +1155,57 @@ templates:
         type: text
         required: true
         section: "Overview"
+        helpText: "The agent running in shadow mode"
       - key: period
         label: "Shadow Period"
         type: text
         required: true
         section: "Overview"
         placeholder: "e.g., Jan 15-29, 2025"
+        helpText: "The date range of the shadow deployment"
       - key: total_requests
         label: "Total Requests Shadowed"
         type: text
         required: true
         section: "Overview"
+        helpText: "How many requests the agent processed during shadow mode"
       - key: accuracy_comparison
         label: "Accuracy: Agent vs Current System"
         type: textarea
         required: true
         section: "Comparison Results"
+        helpText: "Side-by-side accuracy metrics. Include agree rate, error rate by category."
       - key: latency_comparison
         label: "Latency: Agent vs Current System"
         type: textarea
         required: true
         section: "Comparison Results"
+        helpText: "Response time comparison (p50, p95, p99)"
       - key: cost_comparison
         label: "Cost: Agent vs Current System"
         type: textarea
         required: true
         section: "Comparison Results"
+        helpText: "Cost per request/task comparison including compute and API costs"
       - key: disagreements
         label: "Disagreement Analysis"
         type: textarea
         required: true
         section: "Analysis"
-        helpText: "Cases where agent and current system produced different outputs"
+        helpText: "Cases where agent and current system produced different outputs — who was right?"
       - key: failure_patterns
         label: "Failure Patterns"
         type: textarea
         required: true
         section: "Analysis"
+        helpText: "Recurring patterns in agent failures. Categorize by type."
       - key: recommendation
         label: "Recommendation"
         type: select
         required: true
         section: "Decision"
         options: ["Proceed to Supervised Mode", "Extend Shadow Period", "Redesign Required", "Abort"]
+        helpText: "Your recommendation based on the shadow mode results"
 
   - slug: user-feedback-survey
     name: "User Feedback Survey"
@@ -965,54 +1217,64 @@ templates:
         type: text
         required: true
         section: "Overview"
+        helpText: "The agent that feedback is being collected for"
       - key: respondent
         label: "Respondent Name"
         type: text
         required: true
         section: "Overview"
+        helpText: "Name or ID of the person providing feedback"
       - key: date
         label: "Date"
         type: date
         required: true
         section: "Overview"
+        helpText: "Date this survey was completed"
       - key: overall_satisfaction
         label: "Overall Satisfaction (1-5)"
         type: select
         required: true
         section: "Ratings"
         options: ["1 - Very Poor", "2 - Poor", "3 - Acceptable", "4 - Good", "5 - Excellent"]
+        helpText: "Overall satisfaction with the agent's performance"
       - key: accuracy_rating
         label: "Accuracy Rating (1-5)"
         type: select
         required: true
         section: "Ratings"
         options: ["1 - Very Poor", "2 - Poor", "3 - Acceptable", "4 - Good", "5 - Excellent"]
+        helpText: "How accurate and correct were the agent's responses?"
       - key: speed_rating
         label: "Speed Rating (1-5)"
         type: select
         required: true
         section: "Ratings"
         options: ["1 - Very Poor", "2 - Poor", "3 - Acceptable", "4 - Good", "5 - Excellent"]
+        helpText: "How fast did the agent respond?"
       - key: what_worked
         label: "What Worked Well"
         type: textarea
         required: true
         section: "Qualitative"
+        helpText: "Describe aspects of the agent that met or exceeded expectations"
       - key: what_didnt_work
         label: "What Didn't Work"
         type: textarea
         required: true
         section: "Qualitative"
+        helpText: "Describe issues, errors, or frustrations encountered"
       - key: surprising
         label: "What Was Surprising"
         type: textarea
         required: false
         section: "Qualitative"
+        helpText: "Anything unexpected — positive or negative — about the agent's behavior"
       - key: suggestions
         label: "Improvement Suggestions"
         type: textarea
         required: true
         section: "Qualitative"
+        helpText: "Specific suggestions for improving the agent"
 
   - slug: security-threat-model
     name: "Security Threat Model"
@@ -1024,16 +1286,19 @@ templates:
         type: text
         required: true
         section: "Overview"
+        helpText: "The agent system being threat-modeled"
       - key: date
         label: "Date"
         type: date
         required: true
         section: "Overview"
+        helpText: "Date this threat model was created or updated"
       - key: modeler
         label: "Threat Modeler"
         type: text
         required: true
         section: "Overview"
+        helpText: "Person or team who created this threat model"
       - key: attack_surface
         label: "Attack Surface Inventory"
         type: textarea
@@ -1045,42 +1310,49 @@ templates:
         type: textarea
         required: true
         section: "Threat Analysis"
-        helpText: "Direct and indirect injection vectors"
+        helpText: "Direct and indirect injection vectors — how could an attacker manipulate the agent?"
       - key: data_exfiltration
         label: "Data Exfiltration Risks"
         type: textarea
         required: true
         section: "Threat Analysis"
+        helpText: "How could sensitive data leak through the agent's outputs or tool calls?"
       - key: privilege_escalation
         label: "Privilege Escalation Risks"
         type: textarea
         required: true
         section: "Threat Analysis"
+        helpText: "How could the agent be tricked into performing unauthorized actions?"
       - key: input_validation
         label: "Input Validation Controls"
         type: textarea
         required: true
         section: "Mitigations"
+        helpText: "How inputs are sanitized and validated before reaching the agent"
       - key: output_filtering
         label: "Output Filtering Controls"
         type: textarea
         required: true
         section: "Mitigations"
+        helpText: "How agent outputs are filtered for safety, PII, and harmful content"
       - key: rate_limiting
         label: "Rate Limiting & Abuse Prevention"
         type: textarea
         required: true
         section: "Mitigations"
+        helpText: "Rate limits, cost caps, and abuse detection mechanisms"
       - key: audit_logging
         label: "Audit Logging Strategy"
         type: textarea
         required: true
         section: "Mitigations"
+        helpText: "What is logged, where, and retention policy. Must cover all tool calls and decisions."
       - key: pentest_results
         label: "Penetration Test Results"
         type: textarea
         required: false
         section: "Validation"
+        helpText: "Results from security testing including red-teaming the agent"
 
   - slug: performance-profile
     name: "Performance Profile"
@@ -1092,49 +1364,56 @@ templates:
         type: text
         required: true
         section: "Overview"
+        helpText: "The system being profiled"
       - key: date
         label: "Profile Date"
         type: date
         required: true
         section: "Overview"
+        helpText: "Date the performance profiling was conducted"
       - key: load_test_tool
         label: "Load Test Tool"
         type: select
         required: true
         section: "Overview"
         options: ["k6", "Locust", "Artillery", "JMeter", "Custom"]
+        helpText: "The tool used for load testing"
       - key: baseline_latency
         label: "Baseline Latency (p50/p95/p99)"
         type: textarea
         required: true
         section: "Results"
+        helpText: "Latency percentiles under normal load (e.g., p50=1.2s, p95=3.5s, p99=8.1s)"
       - key: throughput
         label: "Throughput (requests/sec)"
         type: textarea
         required: true
         section: "Results"
+        helpText: "Maximum sustained throughput and at what concurrency level"
       - key: bottlenecks
         label: "Identified Bottlenecks"
         type: textarea
         required: true
         section: "Results"
-        helpText: "Tool calls, model inference, state management, DB queries"
+        helpText: "Tool calls, model inference, state management, DB queries — what's slowest?"
       - key: cost_per_task
         label: "Cost per Task Under Load"
         type: textarea
         required: true
         section: "Results"
+        helpText: "Token cost + compute cost per task at various load levels"
       - key: optimizations
         label: "Optimization Backlog"
         type: textarea
         required: true
         section: "Action Plan"
-        helpText: "Caching, batching, prompt optimization, connection pooling"
+        helpText: "Caching, batching, prompt optimization, connection pooling opportunities"
       - key: scaling_plan
         label: "Scaling Plan"
         type: textarea
         required: true
         section: "Action Plan"
+        helpText: "How the system will scale to handle growth (horizontal, vertical, auto-scaling)"
 
   - slug: slo-definition
     name: "SLO Definition"
@@ -1146,45 +1425,52 @@ templates:
         type: text
         required: true
         section: "Overview"
+        helpText: "The service these SLOs apply to"
       - key: date
         label: "Effective Date"
         type: date
         required: true
         section: "Overview"
+        helpText: "When these SLOs take effect"
       - key: owner
         label: "SLO Owner"
         type: text
         required: true
         section: "Overview"
+        helpText: "Person responsible for tracking and maintaining these SLOs"
       - key: availability_slo
         label: "Availability SLO"
         type: text
         required: true
         section: "SLOs"
         placeholder: "e.g., 99.9% uptime"
+        helpText: "Target uptime percentage (e.g., 99.9% = 8.76 hours downtime/year)"
       - key: latency_slo
         label: "Latency SLO (p95)"
         type: text
         required: true
         section: "SLOs"
         placeholder: "e.g., < 5s p95"
+        helpText: "95th percentile response time target"
       - key: accuracy_slo
         label: "Accuracy SLO"
         type: text
         required: true
         section: "SLOs"
         placeholder: "e.g., > 90% task completion"
+        helpText: "Target accuracy or task completion rate"
       - key: error_budget
         label: "Error Budget"
         type: textarea
         required: true
         section: "SLOs"
-        helpText: "Allowed failure rate before action is required"
+        helpText: "Allowed failure rate before action is required (e.g., 0.1% = 43.8 min/month)"
       - key: measurement_method
         label: "Measurement Method"
         type: textarea
         required: true
         section: "Monitoring"
+        helpText: "How each SLO is measured (data source, calculation, sampling rate)"
       - key: alerting_thresholds
         label: "Alerting Thresholds"
         type: textarea
@@ -1196,7 +1482,7 @@ templates:
         type: textarea
         required: true
         section: "Monitoring"
-        helpText: "Actions when error budget is being consumed too quickly"
+        helpText: "Actions when error budget is being consumed too quickly (1h, 6h, 3d windows)"
 
   - slug: post-mortem
     name: "Post-Mortem Report"
@@ -1209,33 +1495,38 @@ templates:
         required: true
         section: "Header"
         placeholder: "e.g., INC-042"
+        helpText: "Unique incident tracking ID from your incident management system"
       - key: date
         label: "Incident Date"
         type: date
         required: true
         section: "Header"
+        helpText: "When the incident occurred"
       - key: severity
         label: "Severity"
         type: select
         required: true
         section: "Header"
         options: ["SEV1 - Critical", "SEV2 - Major", "SEV3 - Minor", "SEV4 - Informational"]
+        helpText: "Severity level as defined in your incident response plan"
       - key: author
         label: "Post-Mortem Author"
         type: text
         required: true
         section: "Header"
+        helpText: "Person writing this post-mortem report"
       - key: summary
         label: "Incident Summary"
         type: textarea
         required: true
         section: "Timeline"
+        helpText: "2-3 sentence summary of what happened and its impact"
       - key: timeline
         label: "Detailed Timeline"
         type: textarea
         required: true
         section: "Timeline"
-        helpText: "Chronological sequence of events with timestamps"
+        helpText: "Chronological sequence of events with timestamps (detection, triage, mitigation, resolution)"
       - key: impact
         label: "Impact Assessment"
         type: textarea
@@ -1247,21 +1538,25 @@ templates:
         type: textarea
         required: true
         section: "Analysis"
+        helpText: "The underlying cause that led to the incident (use 5-Whys technique)"
       - key: contributing_factors
         label: "Contributing Factors"
         type: textarea
         required: true
         section: "Analysis"
+        helpText: "Secondary factors that contributed to the severity or duration"
       - key: what_went_well
         label: "What Went Well"
         type: textarea
         required: true
         section: "Learnings"
+        helpText: "Things that worked well during the incident response"
       - key: what_went_wrong
         label: "What Went Wrong"
         type: textarea
         required: true
         section: "Learnings"
+        helpText: "Things that failed or could have been better"
       - key: action_items
         label: "Action Items"
         type: textarea
@@ -1273,11 +1568,13 @@ templates:
         type: text
         required: true
         section: "Metrics"
+        helpText: "How long from incident start to detection (e.g., 12 minutes)"
       - key: mttr
         label: "MTTR (Mean Time to Resolve)"
         type: text
         required: true
         section: "Metrics"
+        helpText: "How long from detection to full resolution (e.g., 2 hours 15 minutes)"
 
   - slug: capability-roadmap
     name: "Capability Expansion Roadmap"
@@ -1289,23 +1586,27 @@ templates:
         type: text
         required: true
         section: "Overview"
+        helpText: "The agent whose capabilities are being expanded"
       - key: date
         label: "Roadmap Date"
         type: date
         required: true
         section: "Overview"
+        helpText: "Date this roadmap was created"
       - key: current_autonomy
         label: "Current Autonomy Level"
         type: select
         required: true
         section: "Current State"
         options: ["L0 - Manual", "L1 - Assistive", "L2 - Collaborative", "L3 - Supervised Autonomous", "L4 - Highly Autonomous", "L5 - Fully Autonomous"]
+        helpText: "The agent's current autonomy level in production"
       - key: target_autonomy
         label: "Target Autonomy Level"
         type: select
         required: true
         section: "Current State"
         options: ["L1 - Assistive", "L2 - Collaborative", "L3 - Supervised Autonomous", "L4 - Highly Autonomous", "L5 - Fully Autonomous"]
+        helpText: "The autonomy level you want to reach in the next expansion cycle"
       - key: override_analysis
         label: "Human Override Pattern Analysis"
         type: textarea
@@ -1317,6 +1618,7 @@ templates:
         type: textarea
         required: true
         section: "Expansion Plan"
+        helpText: "New tools, APIs, or MCP servers to add to the agent's capabilities"
       - key: expanded_decisions
         label: "Expanded Decision Boundaries"
         type: textarea
@@ -1334,10 +1636,11 @@ templates:
         type: textarea
         required: true
         section: "Expansion Plan"
+        helpText: "Phased rollout plan with milestones and success criteria"
 
   - slug: user-guide
     name: "Product User Guide"
-    description: "Admin and end-user guide template covering module walkthroughs, RBAC reference, admin setup, and troubleshooting. Available in PDF and PPTX formats."
+    description: "Admin and end-user guide template covering module walkthroughs, RBAC reference, admin setup, and troubleshooting."
     phase_slug: operations
     fields:
       - key: product_name
@@ -1345,28 +1648,33 @@ templates:
         type: text
         required: true
         section: "Header"
+        helpText: "The name of the product or portal this guide covers"
       - key: version
         label: "Guide Version"
         type: text
         required: true
         section: "Header"
         placeholder: "e.g., v1.0"
+        helpText: "Version number of this guide (increment on each major revision)"
       - key: date
         label: "Publication Date"
         type: date
         required: true
         section: "Header"
+        helpText: "Date this guide was published or last updated"
       - key: author
         label: "Author / Owner"
         type: text
         required: true
         section: "Header"
+        helpText: "Person or team responsible for maintaining this guide"
       - key: output_format
         label: "Output Format"
         type: select
         required: true
         section: "Header"
         options: ["PDF", "PPTX", "Both"]
+        helpText: "The format(s) this guide will be published in"
       - key: getting_started
         label: "Getting Started"
         type: textarea
@@ -1414,7 +1722,7 @@ templates:
         type: textarea
         required: true
         section: "Common Workflows"
-        helpText: "Top 5–10 end-to-end workflows with numbered steps"
+        helpText: "Top 5-10 end-to-end workflows with numbered steps"
       - key: troubleshooting
         label: "Troubleshooting & FAQ"
         type: textarea
@@ -1427,4 +1735,4 @@ templates:
         required: false
         section: "Troubleshooting & FAQ"
         placeholder: "e.g., support@company.com or Slack #help-channel"
-
+        helpText: "How users can get help if they encounter issues"

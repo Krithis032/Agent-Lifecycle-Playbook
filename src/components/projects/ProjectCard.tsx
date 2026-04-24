@@ -20,26 +20,62 @@ const statusVariant: Record<string, 'green' | 'amber' | 'accent' | 'default'> = 
   archived: 'default',
 };
 
+const statusTip: Record<string, string> = {
+  active: 'Project is currently being worked on',
+  paused: 'Project is temporarily paused',
+  completed: 'Project has been fully deployed',
+  archived: 'Project is archived and read-only',
+};
+
+const frameworkTip: Record<string, string> = {
+  langgraph: 'LangGraph — Graph-based agent orchestration by LangChain',
+  crewai: 'CrewAI — Role-based multi-agent framework',
+  ag2: 'AG2 (AutoGen) — Microsoft multi-agent conversation framework',
+  claude_sdk: 'Claude Agent SDK — Anthropic native agent toolkit',
+  semantic_kernel: 'Semantic Kernel — Microsoft enterprise AI framework',
+  phidata: 'Phidata — Production-ready AI assistant framework',
+};
+
+const patternTip: Record<string, string> = {
+  single_agent: 'Single Agent — One agent handles all tasks',
+  pipeline: 'Pipeline — Sequential multi-step agent chain',
+  supervisor_workers: 'Supervisor-Workers — Central agent delegates to specialists',
+  swarm: 'Swarm — Collaborative agents coordinate peer-to-peer',
+  hierarchical: 'Hierarchical — Tree-structured agent delegation',
+};
+
 export default function ProjectCard({
   id, name, status, framework, architecturePattern, currentPhase, gateCompletion,
 }: ProjectCardProps) {
   return (
-    <Link href={`/projects/${id}`}>
+    <Link href={`/projects/${id}`} title={`Click to open project: ${name}`}>
       <Card hover>
         <div className="flex items-start justify-between mb-3">
           <h3 className="text-[15px] font-bold tracking-tight text-[var(--text)]">{name}</h3>
-          <Badge variant={statusVariant[status] || 'default'}>{status}</Badge>
+          <span title={statusTip[status] || `Status: ${status}`}>
+            <Badge variant={statusVariant[status] || 'default'}>{status}</Badge>
+          </span>
         </div>
         {currentPhase && (
-          <p className="text-[13px] text-[var(--text-3)] mb-2">
+          <p className="text-[13px] text-[var(--text-3)] mb-2" title={`Current lifecycle phase: ${currentPhase.name}`}>
             {currentPhase.icon} {currentPhase.name}
           </p>
         )}
         <div className="flex flex-wrap gap-1.5 mb-3">
-          {framework && <Badge variant="purple">{framework}</Badge>}
-          {architecturePattern && <Badge variant="cyan">{architecturePattern}</Badge>}
+          {framework && (
+            <span title={frameworkTip[framework] || `Framework: ${framework}`}>
+              <Badge variant="purple">{framework}</Badge>
+            </span>
+          )}
+          {architecturePattern && (
+            <span title={patternTip[architecturePattern] || `Architecture: ${architecturePattern}`}>
+              <Badge variant="cyan">{architecturePattern}</Badge>
+            </span>
+          )}
         </div>
-        <Progress value={gateCompletion} label="Gate Completion" color="var(--green)" size="sm" />
+        <span title={`${gateCompletion}% of lifecycle phase gates completed`}>
+          <Progress value={gateCompletion} label="Gate Completion" color="var(--green)" size="sm" />
+        </span>
       </Card>
     </Link>
   );
