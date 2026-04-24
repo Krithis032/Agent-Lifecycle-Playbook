@@ -52,13 +52,13 @@ const FONT = {
   DIVIDER_LABEL: 10,
 };
 
-// ── Line height multipliers ──
+// ── Line height multipliers (generous for readability) ──
 const LH = {
-  BODY: 4.2,
-  BULLET: 4.2,
-  HEADING: 5.5,
-  TABLE: 4.0,
-  TIGHT: 3.8,
+  BODY: 5.0,
+  BULLET: 5.0,
+  HEADING: 6.0,
+  TABLE: 4.2,
+  TIGHT: 4.0,
 };
 
 // ── Layout constants ──
@@ -169,16 +169,23 @@ function addPageFooter(doc: jsPDF, projectName: string, fontName: string) {
 
 function addSectionHeader(doc: jsPDF, title: string, y: number, fontName: string): number {
   const pageW = doc.internal.pageSize.getWidth();
+  const bannerW = pageW - MARGIN_L - MARGIN_R + 8;
+  const maxTextW = bannerW - 14; // padding inside banner
   // Navy banner with rounded corners
   doc.setFillColor(...NAVY);
-  doc.roundedRect(MARGIN_L - 4, y - 2, pageW - MARGIN_L - MARGIN_R + 8, 14, 2.5, 2.5, 'F');
+  doc.roundedRect(MARGIN_L - 4, y - 2, bannerW, 14, 2.5, 2.5, 'F');
   // Accent left bar
   doc.setFillColor(...ACCENT);
   doc.roundedRect(MARGIN_L - 4, y - 2, 3, 14, 1.5, 1.5, 'F');
   doc.setFontSize(FONT.SECTION_HEADER);
   doc.setFont(fontName, 'bold');
   doc.setTextColor(...WHITE);
-  doc.text(sanitizeForPdf(title.toUpperCase()), MARGIN_L + 4, y + 8);
+  // Truncate title to fit within the banner
+  let displayTitle = sanitizeForPdf(title.toUpperCase());
+  while (doc.getTextWidth(displayTitle) > maxTextW && displayTitle.length > 10) {
+    displayTitle = displayTitle.substring(0, displayTitle.length - 4) + '...';
+  }
+  doc.text(displayTitle, MARGIN_L + 4, y + 8);
   return y + 18;
 }
 
@@ -543,8 +550,10 @@ function renderCheckboxWithRationale(
   doc.setFontSize(FONT.BODY);
   doc.setFont(fontName, 'normal');
   doc.setTextColor(...DARK_TEXT);
-  doc.text(sanitizeForPdf(label), MARGIN_L + 8, y);
-  y += 6;
+  const cbwrLabel = sanitizeForPdf(label);
+  const cbwrLines = doc.splitTextToSize(cbwrLabel, getContentWidth(doc) - 10);
+  y = drawLines(doc, cbwrLines.slice(0, 3), MARGIN_L + 8, y, LH.BODY);
+  y += 1;
 
   if (data.rationale?.trim()) {
     y = checkPageBreak(doc, y, 10, projectName, fontName);
@@ -573,14 +582,19 @@ function renderKeyValueField(
   const contentW = getContentWidth(doc);
   y = checkPageBreak(doc, y, 14, projectName, fontName);
 
-  const cleanLabel = sanitizeForPdf(sanitizeText(label));
+  let cleanLabel = sanitizeForPdf(sanitizeText(label));
 
-  // Label with subtle background pill
+  // Label with subtle background pill — clamp to content width
   doc.setFontSize(FONT.LABEL);
   doc.setFont(fontName, 'bold');
+  const maxLabelW = contentW - 8;
+  // Truncate label if it would overflow
+  while (doc.getTextWidth(cleanLabel) > maxLabelW && cleanLabel.length > 10) {
+    cleanLabel = cleanLabel.substring(0, cleanLabel.length - 4) + '...';
+  }
   const labelW = doc.getTextWidth(cleanLabel);
   doc.setFillColor(...LABEL_BG);
-  doc.roundedRect(CONTENT_START_X, y - 3.5, labelW + 8, 6.5, 1.5, 1.5, 'F');
+  doc.roundedRect(CONTENT_START_X, y - 3.5, Math.min(labelW + 8, contentW), 6.5, 1.5, 1.5, 'F');
   doc.setTextColor(...ACCENT);
   doc.text(cleanLabel, CONTENT_START_X + 4, y);
   y += 6;
@@ -655,9 +669,9 @@ export function generateProjectPdf(
   const descLines = doc.splitTextToSize(projectDescription || 'Project Summary Report', pageW - 56);
   drawLines(doc, descLines.slice(0, 3), 28, descY, 5.5);
 
-  // Meta badges
-  const metaY = 120;
-  doc.setFontSize(FONT.TITLE_PAGE_META);
+  // Meta badges — laid out in wrapping rows within page margins
+  let metaY = 120;
+  doc.setFontSize(FONT.BADGE);
   const metaParts = [
     { label: 'STATUS', value: meta.status.toUpperCase() },
     meta.framework ? { label: 'FRAMEWORK', value: meta.framework } : null,
@@ -665,50 +679,59 @@ export function generateProjectPdf(
     { label: 'GENERATED', value: meta.createdAt },
   ].filter(Boolean) as { label: string; value: string }[];
 
+  const maxMetaX = pageW - MARGIN_R;
   let metaX = 28;
   for (const mp of metaParts) {
     doc.setFont(fontName, 'bold');
     const fullText = `${mp.label}: ${mp.value}`;
     const badgeW = doc.getTextWidth(fullText) + 10;
+    // Wrap to next row if badge would overflow
+    if (metaX + badgeW > maxMetaX && metaX > 28) {
+      metaX = 28;
+      metaY += 12;
+    }
     doc.setFillColor(...TABLE_STRIPE);
-    doc.roundedRect(metaX, metaY, badgeW, 9, 2.5, 2.5, 'F');
+    doc.roundedRect(metaX, metaY, badgeW, 8, 2, 2, 'F');
     doc.setDrawColor(...DIVIDER);
     doc.setLineWidth(0.15);
-    doc.roundedRect(metaX, metaY, badgeW, 9, 2.5, 2.5, 'S');
+    doc.roundedRect(metaX, metaY, badgeW, 8, 2, 2, 'S');
     doc.setTextColor(...ACCENT);
-    doc.text(mp.label + ':', metaX + 4, metaY + 6.2);
+    doc.text(mp.label + ':', metaX + 4, metaY + 5.5);
     doc.setTextColor(...DARK_TEXT);
     doc.setFont(fontName, 'normal');
-    doc.text(mp.value, metaX + 4 + doc.getTextWidth(mp.label + ': '), metaY + 6.2);
-    metaX += badgeW + 5;
+    doc.text(mp.value, metaX + 4 + doc.getTextWidth(mp.label + ': '), metaY + 5.5);
+    metaX += badgeW + 4;
   }
 
-  // Attribution line
+  // Attribution line — positioned below the last meta row
+  const attrY = metaY + 18;
   doc.setFontSize(FONT.TITLE_PAGE_META);
   doc.setTextColor(...MED_TEXT);
   doc.setFont(fontName, 'normal');
-  doc.text('Built by Padmasani Srimadhan', 28, 140);
+  doc.text('Built by Padmasani Srimadhan', 28, attrY);
   doc.setTextColor(...LIGHT_TEXT);
-  doc.text(COPYRIGHT, 28, 147);
+  doc.text(COPYRIGHT, 28, attrY + 7);
 
-  // Accent divider
+  // Accent divider — positioned dynamically below attribution
+  const dividerY = attrY + 14;
   doc.setFillColor(...ACCENT);
-  doc.rect(0, 155, pageW, 1.5, 'F');
+  doc.rect(0, dividerY, pageW, 1.5, 'F');
 
   // ── Table of Contents ──
   if (sections.length > 0) {
+    const tocHeadingY = dividerY + 14;
     doc.setFontSize(FONT.TOC_HEADING);
     doc.setTextColor(...NAVY);
     doc.setFont(fontName, 'bold');
-    doc.text('CONTENTS', 28, 172);
+    doc.text('CONTENTS', 28, tocHeadingY);
 
     // Underline
     doc.setDrawColor(...ACCENT);
     doc.setLineWidth(0.5);
-    doc.line(28, 175, 72, 175);
+    doc.line(28, tocHeadingY + 3, 72, tocHeadingY + 3);
 
     doc.setFontSize(FONT.TOC_ITEM);
-    let tocY = 184;
+    let tocY = tocHeadingY + 12;
     for (let i = 0; i < sections.length; i++) {
       if (tocY > PAGE_BOTTOM) break;
       // Number
@@ -821,8 +844,10 @@ export function generateProjectPdf(
         doc.setTextColor(...DARK_TEXT);
         doc.setFont(fontName, 'normal');
         doc.setFontSize(FONT.BODY);
-        doc.text(sanitizeForPdf(sanitizeText(item.label)), MARGIN_L + 8, y);
-        y += 7;
+        const cbLabel = sanitizeForPdf(sanitizeText(item.label));
+        const cbLines = doc.splitTextToSize(cbLabel, getContentWidth(doc) - 10);
+        y = drawLines(doc, cbLines.slice(0, 3), MARGIN_L + 8, y, LH.BODY);
+        y += 2;
         continue;
       }
 
@@ -830,16 +855,20 @@ export function generateProjectPdf(
       if (item.label.startsWith('\u2500') && !item.value) {
         y = checkPageBreak(doc, y, 12, projectName, fontName);
         y += 4;
-        const dividerLabel = item.label.replace(/\u2500/g, '').trim();
+        const dividerLabel = sanitizeForPdf(item.label.replace(/\u2500/g, '').trim());
+        const maxDivLabelW = pageW - MARGIN_R - 63 - 8;
+        const truncatedDivLabel = truncate(dividerLabel, 60);
         doc.setDrawColor(...ACCENT_LIGHT);
         doc.setLineWidth(0.3);
         doc.line(CONTENT_START_X, y, 60, y);
         doc.setFontSize(FONT.DIVIDER_LABEL);
         doc.setFont(fontName, 'bold');
         doc.setTextColor(...ACCENT);
-        doc.text(sanitizeForPdf(dividerLabel), 63, y + 0.5);
-        const labelEndX = 63 + doc.getTextWidth(dividerLabel) + 4;
-        doc.line(labelEndX, y, pageW - MARGIN_R, y);
+        doc.text(truncatedDivLabel, 63, y + 0.5);
+        const labelEndX = 63 + Math.min(doc.getTextWidth(truncatedDivLabel), maxDivLabelW) + 4;
+        if (labelEndX < pageW - MARGIN_R) {
+          doc.line(labelEndX, y, pageW - MARGIN_R, y);
+        }
         y += 8;
         continue;
       }
