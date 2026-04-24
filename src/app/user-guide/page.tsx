@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import {
   BookMarked, FolderKanban, BookOpen, Sparkles, Shield, Award,
-  BarChart3, FileText, Mic, Home, Layout, Users, Key, Database,
+  BarChart3, FileText, Mic, Home, Users,
   Info, ChevronRight, AlertTriangle, CheckCircle, Lightbulb,
   ArrowRight, Layers, Target, Settings, Search, Upload,
 } from 'lucide-react';
