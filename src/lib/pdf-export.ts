@@ -1,22 +1,73 @@
 import { jsPDF } from 'jspdf';
+import fs from 'fs';
+import path from 'path';
+import { safeParseJSON, sanitizeText, capArray } from './safe-json';
 
 const COPYRIGHT = '\u00a9 2026 Padmasani Srimadhan. All rights reserved.';
 
-// ── Professional Color Palette ──
-const NAVY: [number, number, number] = [10, 22, 40];
-const ACCENT: [number, number, number] = [59, 130, 246];
+// ── Professional Color Palette (refined) ──
+const NAVY: [number, number, number] = [15, 23, 42];
+const ACCENT: [number, number, number] = [37, 99, 235];
+const ACCENT_LIGHT: [number, number, number] = [96, 165, 250];
 const WHITE: [number, number, number] = [255, 255, 255];
-const DARK_TEXT: [number, number, number] = [30, 41, 59];
-const MED_TEXT: [number, number, number] = [71, 85, 105];
+const DARK_TEXT: [number, number, number] = [15, 23, 42];
+const BODY_TEXT: [number, number, number] = [51, 65, 85];
+const MED_TEXT: [number, number, number] = [100, 116, 139];
 const LIGHT_TEXT: [number, number, number] = [148, 163, 184];
 const SUCCESS: [number, number, number] = [22, 163, 74];
 const TABLE_HEADER_BG: [number, number, number] = [30, 41, 59];
 const TABLE_STRIPE: [number, number, number] = [248, 250, 252];
 const TABLE_BORDER: [number, number, number] = [226, 232, 240];
-const DIVIDER: [number, number, number] = [203, 213, 225];
+const DIVIDER: [number, number, number] = [226, 232, 240];
 const LABEL_BG: [number, number, number] = [241, 245, 249];
+const BULLET_COLOR: [number, number, number] = [37, 99, 235];
+const HEADING_RULE: [number, number, number] = [199, 210, 254];
 
-// ── Enhanced interfaces ──
+// ── Typography sizes (all +2pt from original) ──
+const FONT = {
+  TITLE_PAGE_NAME: 30,
+  TITLE_PAGE_DESC: 13,
+  TITLE_PAGE_BRAND: 11,
+  TITLE_PAGE_META: 10,
+  TOC_HEADING: 14,
+  TOC_ITEM: 11,
+  SECTION_HEADER: 13,
+  HEADING_1: 13,
+  HEADING_2: 12,
+  HEADING_3: 11,
+  LABEL: 10,
+  BODY: 10,
+  BODY_BOLD: 10.5,
+  BULLET: 10,
+  TABLE_HEADER: 9,
+  TABLE_BODY: 9,
+  FOOTER: 8,
+  BADGE: 8,
+  EYEBROW: 8,
+  CHECKBOX: 11,
+  CHECKBOX_RATIONALE: 9.5,
+  REPEATABLE_BADGE: 9,
+  REPEATABLE_LABEL: 9.5,
+  REPEATABLE_VALUE: 9.5,
+  DIVIDER_LABEL: 10,
+};
+
+// ── Line height multipliers ──
+const LH = {
+  BODY: 4.2,
+  BULLET: 4.2,
+  HEADING: 5.5,
+  TABLE: 4.0,
+  TIGHT: 3.8,
+};
+
+// ── Layout constants ──
+const MARGIN_L = 22;
+const MARGIN_R = 22;
+const CONTENT_START_X = MARGIN_L;
+const PAGE_BOTTOM = 270;
+
+// ── Interfaces ──
 interface ReportItem {
   label: string;
   value: string;
@@ -30,7 +81,53 @@ interface ReportSection {
   items: ReportItem[];
 }
 
-import { safeParseJSON, sanitizeText, capArray } from './safe-json';
+interface MdBlock {
+  type: 'heading' | 'bold_paragraph' | 'paragraph' | 'bullet' | 'numbered';
+  level?: number;
+  text: string;
+  number?: string;
+}
+
+// ── Font Registration ──
+function registerUrbanistFonts(doc: jsPDF): boolean {
+  try {
+    const fontDir = path.join(process.cwd(), 'public/fonts/urbanist');
+
+    const regularPath = path.join(fontDir, 'Urbanist-Regular.ttf');
+    const boldPath = path.join(fontDir, 'Urbanist-Bold.ttf');
+    const semiBoldPath = path.join(fontDir, 'Urbanist-SemiBold.ttf');
+    const italicPath = path.join(fontDir, 'Urbanist-Italic.ttf');
+
+    if (!fs.existsSync(regularPath) || !fs.existsSync(boldPath)) {
+      return false;
+    }
+
+    const regularBase64 = fs.readFileSync(regularPath).toString('base64');
+    const boldBase64 = fs.readFileSync(boldPath).toString('base64');
+
+    doc.addFileToVFS('Urbanist-Regular.ttf', regularBase64);
+    doc.addFont('Urbanist-Regular.ttf', 'Urbanist', 'normal');
+
+    doc.addFileToVFS('Urbanist-Bold.ttf', boldBase64);
+    doc.addFont('Urbanist-Bold.ttf', 'Urbanist', 'bold');
+
+    if (fs.existsSync(semiBoldPath)) {
+      const semiBoldBase64 = fs.readFileSync(semiBoldPath).toString('base64');
+      doc.addFileToVFS('Urbanist-SemiBold.ttf', semiBoldBase64);
+      doc.addFont('Urbanist-SemiBold.ttf', 'Urbanist', 'normal', 600);
+    }
+
+    if (fs.existsSync(italicPath)) {
+      const italicBase64 = fs.readFileSync(italicPath).toString('base64');
+      doc.addFileToVFS('Urbanist-Italic.ttf', italicBase64);
+      doc.addFont('Urbanist-Italic.ttf', 'Urbanist', 'italic');
+    }
+
+    return true;
+  } catch {
+    return false;
+  }
+}
 
 // ── Helpers ──
 
@@ -39,51 +136,61 @@ function truncate(text: string, maxLen: number): string {
   return text.substring(0, maxLen - 3) + '...';
 }
 
-function addPageFooter(doc: jsPDF, projectName: string) {
-  const pageH = doc.internal.pageSize.getHeight();
-  const pageW = doc.internal.pageSize.getWidth();
-  doc.setDrawColor(...DIVIDER);
-  doc.setLineWidth(0.3);
-  doc.line(20, pageH - 20, pageW - 20, pageH - 20);
-  doc.setFontSize(7);
-  doc.setTextColor(...LIGHT_TEXT);
-  doc.text(COPYRIGHT, 20, pageH - 14);
-  doc.setTextColor(...MED_TEXT);
-  doc.text(truncate(projectName, 50), pageW / 2, pageH - 14, { align: 'center' });
-  doc.setTextColor(...LIGHT_TEXT);
-  doc.text(`Page ${doc.getNumberOfPages()}`, pageW - 25, pageH - 14, { align: 'right' });
-}
-
-function addSectionHeader(doc: jsPDF, title: string, y: number): number {
-  const pageW = doc.internal.pageSize.getWidth();
-  doc.setFillColor(...NAVY);
-  doc.roundedRect(15, y - 1, pageW - 30, 12, 2, 2, 'F');
-  doc.setFontSize(11);
-  doc.setFont('helvetica', 'bold');
-  doc.setTextColor(...WHITE);
-  doc.text(title.toUpperCase(), 22, y + 7);
-  return y + 16;
-}
-
-function checkPageBreak(doc: jsPDF, y: number, needed: number, projectName: string): number {
-  if (y + needed > 265) {
-    addPageFooter(doc, projectName);
-    doc.addPage();
-    return 22;
+/** Render lines one by one to avoid jsPDF's text justification / spacing bugs */
+function drawLines(doc: jsPDF, lines: string[], x: number, startY: number, lineHeight: number): number {
+  let y = startY;
+  for (const line of lines) {
+    doc.text(line, x, y);
+    y += lineHeight;
   }
   return y;
 }
 
-// ── Markdown-aware text rendering ──
-// Parses basic markdown: ## headings, **bold**, - bullet lists, 1. numbered lists
-// and renders them with proper PDF formatting instead of raw symbols.
-
-interface MdBlock {
-  type: 'heading' | 'bold_paragraph' | 'paragraph' | 'bullet' | 'numbered';
-  level?: number; // heading level 1-3
-  text: string;
-  number?: string; // for numbered items like "1."
+function getContentWidth(doc: jsPDF): number {
+  return doc.internal.pageSize.getWidth() - MARGIN_L - MARGIN_R;
 }
+
+function addPageFooter(doc: jsPDF, projectName: string, fontName: string) {
+  const pageH = doc.internal.pageSize.getHeight();
+  const pageW = doc.internal.pageSize.getWidth();
+  doc.setDrawColor(...DIVIDER);
+  doc.setLineWidth(0.3);
+  doc.line(MARGIN_L, pageH - 18, pageW - MARGIN_R, pageH - 18);
+  doc.setFontSize(FONT.FOOTER);
+  doc.setFont(fontName, 'normal');
+  doc.setTextColor(...LIGHT_TEXT);
+  doc.text(COPYRIGHT, MARGIN_L, pageH - 12);
+  doc.setTextColor(...MED_TEXT);
+  doc.text(truncate(projectName, 50), pageW / 2, pageH - 12, { align: 'center' });
+  doc.setTextColor(...LIGHT_TEXT);
+  doc.text(`Page ${doc.getNumberOfPages()}`, pageW - MARGIN_R, pageH - 12, { align: 'right' });
+}
+
+function addSectionHeader(doc: jsPDF, title: string, y: number, fontName: string): number {
+  const pageW = doc.internal.pageSize.getWidth();
+  // Navy banner with rounded corners
+  doc.setFillColor(...NAVY);
+  doc.roundedRect(MARGIN_L - 4, y - 2, pageW - MARGIN_L - MARGIN_R + 8, 14, 2.5, 2.5, 'F');
+  // Accent left bar
+  doc.setFillColor(...ACCENT);
+  doc.roundedRect(MARGIN_L - 4, y - 2, 3, 14, 1.5, 1.5, 'F');
+  doc.setFontSize(FONT.SECTION_HEADER);
+  doc.setFont(fontName, 'bold');
+  doc.setTextColor(...WHITE);
+  doc.text(title.toUpperCase(), MARGIN_L + 4, y + 8);
+  return y + 18;
+}
+
+function checkPageBreak(doc: jsPDF, y: number, needed: number, projectName: string, fontName: string): number {
+  if (y + needed > PAGE_BOTTOM) {
+    addPageFooter(doc, projectName, fontName);
+    doc.addPage();
+    return 24;
+  }
+  return y;
+}
+
+// ── Markdown Parser ──
 
 function parseMarkdown(text: string): MdBlock[] {
   if (!text) return [];
@@ -108,8 +215,8 @@ function parseMarkdown(text: string): MdBlock[] {
       continue;
     }
 
-    // Bullet list: "- text" or "* text"
-    const bulletMatch = line.match(/^[-*]\s+(.+)/);
+    // Bullet list: "- text" or "* text" or "• text"
+    const bulletMatch = line.match(/^[-*\u2022]\s+(.+)/);
     if (bulletMatch) {
       blocks.push({ type: 'bullet', text: stripMarkdownInline(bulletMatch[1]) });
       continue;
@@ -129,24 +236,30 @@ function parseMarkdown(text: string): MdBlock[] {
   return blocks;
 }
 
-// Strip inline markdown symbols: **bold** → bold, *italic* → italic, `code` → code
 function stripMarkdownInline(text: string): string {
   return text
-    .replace(/\*\*(.+?)\*\*/g, '$1')  // **bold**
-    .replace(/\*(.+?)\*/g, '$1')       // *italic*
-    .replace(/`(.+?)`/g, '$1')         // `code`
-    .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1') // [link](url)
-    .replace(/^#+\s*/, '');            // leftover # in headings
+    .replace(/\*\*(.+?)\*\*/g, '$1')
+    .replace(/\*(.+?)\*/g, '$1')
+    .replace(/`(.+?)`/g, '$1')
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+    .replace(/^#+\s*/, '');
 }
 
-// Render parsed markdown blocks into PDF
+function hasMarkdown(text: string): boolean {
+  if (!text) return false;
+  return /(\*\*.+?\*\*|^#{1,3}\s|^[-*\u2022]\s|^\d+[.)]\s)/m.test(text);
+}
+
+// ── Markdown Renderer ──
+
 function renderMarkdownText(
   doc: jsPDF,
   text: string,
   startY: number,
   projectName: string,
-  maxWidth: number = 155,
-  startX: number = 20
+  fontName: string,
+  maxWidth: number,
+  startX: number = CONTENT_START_X
 ): number {
   const blocks = parseMarkdown(text);
   let y = startY;
@@ -154,67 +267,68 @@ function renderMarkdownText(
   for (const block of blocks) {
     switch (block.type) {
       case 'heading': {
-        const fontSize = block.level === 1 ? 11 : block.level === 2 ? 10 : 9;
-        y = checkPageBreak(doc, y, 10, projectName);
-        y += 2;
+        const fontSize = block.level === 1 ? FONT.HEADING_1 : block.level === 2 ? FONT.HEADING_2 : FONT.HEADING_3;
+        y = checkPageBreak(doc, y, 12, projectName, fontName);
+        y += 3;
         doc.setFontSize(fontSize);
-        doc.setFont('helvetica', 'bold');
+        doc.setFont(fontName, 'bold');
         doc.setTextColor(...NAVY);
         const hLines = doc.splitTextToSize(block.text, maxWidth);
-        doc.text(hLines, startX, y);
-        y += hLines.length * (fontSize * 0.45) + 3;
-        // Subtle underline for h1/h2
+        y = drawLines(doc, hLines, startX, y, LH.HEADING);
+        // Subtle accent rule under h1/h2
         if (block.level && block.level <= 2) {
-          doc.setDrawColor(...DIVIDER);
-          doc.setLineWidth(0.2);
+          doc.setDrawColor(...HEADING_RULE);
+          doc.setLineWidth(0.4);
           doc.line(startX, y - 1, startX + Math.min(doc.getTextWidth(block.text), maxWidth), y - 1);
-          y += 1;
+          y += 2;
         }
+        y += 1;
         break;
       }
       case 'bold_paragraph': {
-        y = checkPageBreak(doc, y, 8, projectName);
-        doc.setFontSize(8.5);
-        doc.setFont('helvetica', 'bold');
+        y = checkPageBreak(doc, y, 10, projectName, fontName);
+        doc.setFontSize(FONT.BODY_BOLD);
+        doc.setFont(fontName, 'bold');
         doc.setTextColor(...DARK_TEXT);
         const bLines = doc.splitTextToSize(block.text, maxWidth);
-        doc.text(bLines, startX, y);
-        y += bLines.length * 3.8 + 2;
+        y = drawLines(doc, bLines, startX, y, LH.BODY);
+        y += 1.5;
         break;
       }
       case 'bullet': {
-        y = checkPageBreak(doc, y, 6, projectName);
-        doc.setFontSize(8);
-        doc.setTextColor(...ACCENT);
+        y = checkPageBreak(doc, y, 8, projectName, fontName);
+        doc.setFontSize(FONT.BULLET);
+        doc.setFont(fontName, 'bold');
+        doc.setTextColor(...BULLET_COLOR);
         doc.text('\u2022', startX + 2, y);
-        doc.setFont('helvetica', 'normal');
-        doc.setTextColor(...DARK_TEXT);
-        const bulletLines = doc.splitTextToSize(block.text, maxWidth - 8);
-        doc.text(bulletLines, startX + 7, y);
-        y += bulletLines.length * 3.5 + 1.5;
+        doc.setFont(fontName, 'normal');
+        doc.setTextColor(...BODY_TEXT);
+        const bulletLines = doc.splitTextToSize(block.text, maxWidth - 10);
+        y = drawLines(doc, bulletLines, startX + 8, y, LH.BULLET);
+        y += 1;
         break;
       }
       case 'numbered': {
-        y = checkPageBreak(doc, y, 6, projectName);
-        doc.setFontSize(8);
-        doc.setFont('helvetica', 'bold');
+        y = checkPageBreak(doc, y, 8, projectName, fontName);
+        doc.setFontSize(FONT.BULLET);
+        doc.setFont(fontName, 'bold');
         doc.setTextColor(...ACCENT);
         doc.text(block.number || '', startX + 1, y);
-        doc.setFont('helvetica', 'normal');
-        doc.setTextColor(...DARK_TEXT);
-        const numLines = doc.splitTextToSize(block.text, maxWidth - 10);
-        doc.text(numLines, startX + 9, y);
-        y += numLines.length * 3.5 + 1.5;
+        doc.setFont(fontName, 'normal');
+        doc.setTextColor(...BODY_TEXT);
+        const numLines = doc.splitTextToSize(block.text, maxWidth - 12);
+        y = drawLines(doc, numLines, startX + 10, y, LH.BULLET);
+        y += 1;
         break;
       }
-      default: { // paragraph
-        y = checkPageBreak(doc, y, 6, projectName);
-        doc.setFontSize(8);
-        doc.setFont('helvetica', 'normal');
-        doc.setTextColor(...DARK_TEXT);
+      default: {
+        y = checkPageBreak(doc, y, 8, projectName, fontName);
+        doc.setFontSize(FONT.BODY);
+        doc.setFont(fontName, 'normal');
+        doc.setTextColor(...BODY_TEXT);
         const pLines = doc.splitTextToSize(block.text, maxWidth);
-        doc.text(pLines, startX, y);
-        y += pLines.length * 3.5 + 1.5;
+        y = drawLines(doc, pLines, startX, y, LH.BODY);
+        y += 1.5;
         break;
       }
     }
@@ -223,226 +337,232 @@ function renderMarkdownText(
   return y;
 }
 
-// Check if text contains markdown syntax
-function hasMarkdown(text: string): boolean {
-  if (!text) return false;
-  return /(\*\*.+?\*\*|^#{1,3}\s|^[-*]\s|^\d+[.)]\s)/m.test(text);
-}
-
-
 // ── Table Renderer ──
+
 function renderTable(
   doc: jsPDF,
   rows: Record<string, string>[],
   columns: { key: string; header: string }[],
   startY: number,
-  projectName: string
+  projectName: string,
+  fontName: string
 ): number {
-  const pageW = doc.internal.pageSize.getWidth();
-  const tableW = pageW - 40;
+  const contentW = getContentWidth(doc);
   const colCount = columns.length;
-  const colW = tableW / colCount;
-  const cellPadding = 2;
+  const colW = contentW / colCount;
+  const cellPad = 3;
   let y = startY;
 
   // Header row
-  y = checkPageBreak(doc, y, 10, projectName);
+  y = checkPageBreak(doc, y, 12, projectName, fontName);
   doc.setFillColor(...TABLE_HEADER_BG);
-  doc.roundedRect(20, y, tableW, 8, 1, 1, 'F');
-  doc.setFontSize(7);
-  doc.setFont('helvetica', 'bold');
+  doc.roundedRect(MARGIN_L, y, contentW, 10, 1.5, 1.5, 'F');
+  doc.setFontSize(FONT.TABLE_HEADER);
+  doc.setFont(fontName, 'bold');
   doc.setTextColor(...WHITE);
   for (let i = 0; i < colCount; i++) {
-    const headerText = truncate(columns[i].header, Math.floor(colW / 1.8));
-    doc.text(headerText, 20 + i * colW + cellPadding, y + 5.5);
+    const headerText = truncate(columns[i].header, Math.floor(colW / 2));
+    doc.text(headerText, MARGIN_L + i * colW + cellPad, y + 7);
   }
-  y += 9;
+  y += 11;
 
   // Data rows
-  doc.setFont('helvetica', 'normal');
-  doc.setFontSize(7);
+  doc.setFont(fontName, 'normal');
+  doc.setFontSize(FONT.TABLE_BODY);
   for (let r = 0; r < rows.length; r++) {
     let maxLines = 1;
     const cellTexts: string[][] = [];
     for (let c = 0; c < colCount; c++) {
       const cellVal = stripMarkdownInline(rows[r][columns[c].key] || '');
-      const lines = doc.splitTextToSize(cellVal, colW - cellPadding * 2 - 1);
+      const lines = doc.splitTextToSize(cellVal, colW - cellPad * 2 - 1);
       cellTexts.push(lines);
-      maxLines = Math.max(maxLines, lines.length);
+      maxLines = Math.max(maxLines, Math.min(lines.length, 8));
     }
-    const rowH = Math.max(7, maxLines * 3.5 + 2);
+    const rowH = Math.max(8, maxLines * LH.TABLE + 3);
 
-    y = checkPageBreak(doc, y, rowH + 2, projectName);
+    y = checkPageBreak(doc, y, rowH + 2, projectName, fontName);
 
     if (r % 2 === 0) {
       doc.setFillColor(...TABLE_STRIPE);
-      doc.rect(20, y, tableW, rowH, 'F');
+      doc.rect(MARGIN_L, y, contentW, rowH, 'F');
     }
 
     doc.setDrawColor(...TABLE_BORDER);
-    doc.setLineWidth(0.2);
-    doc.rect(20, y, tableW, rowH);
+    doc.setLineWidth(0.15);
+    doc.rect(MARGIN_L, y, contentW, rowH);
     for (let i = 1; i < colCount; i++) {
-      doc.line(20 + i * colW, y, 20 + i * colW, y + rowH);
+      doc.line(MARGIN_L + i * colW, y, MARGIN_L + i * colW, y + rowH);
     }
 
-    doc.setTextColor(...DARK_TEXT);
+    doc.setTextColor(...BODY_TEXT);
+    doc.setFont(fontName, 'normal');
     for (let c = 0; c < colCount; c++) {
       const lines = cellTexts[c];
-      for (let l = 0; l < Math.min(lines.length, 6); l++) {
-        doc.text(lines[l], 20 + c * colW + cellPadding, y + 3.5 + l * 3.5);
+      for (let l = 0; l < Math.min(lines.length, 8); l++) {
+        doc.text(lines[l], MARGIN_L + c * colW + cellPad, y + 4 + l * LH.TABLE);
       }
     }
     y += rowH;
   }
 
-  return y + 4;
+  return y + 5;
 }
 
-// ── Repeatable Entries Renderer ──
+// ── Repeatable Renderer ──
+
 function renderRepeatable(
   doc: jsPDF,
   entries: Record<string, string>[],
   subFields: { key: string; label: string }[],
   startY: number,
-  projectName: string
+  projectName: string,
+  fontName: string
 ): number {
   let y = startY;
+  const contentW = getContentWidth(doc);
 
   for (let i = 0; i < entries.length; i++) {
     const entry = entries[i];
-    y = checkPageBreak(doc, y, 20, projectName);
+    y = checkPageBreak(doc, y, 22, projectName, fontName);
 
     // Entry number badge
     doc.setFillColor(...ACCENT);
-    doc.roundedRect(22, y, 14, 5, 1.5, 1.5, 'F');
-    doc.setFontSize(7);
-    doc.setFont('helvetica', 'bold');
+    doc.roundedRect(MARGIN_L + 4, y, 16, 6, 2, 2, 'F');
+    doc.setFontSize(FONT.REPEATABLE_BADGE);
+    doc.setFont(fontName, 'bold');
     doc.setTextColor(...WHITE);
-    doc.text(`#${i + 1}`, 25, y + 3.7);
-    y += 8;
+    doc.text(`#${i + 1}`, MARGIN_L + 7, y + 4.5);
+    y += 10;
 
     for (const sf of subFields) {
       const val = entry[sf.key] || '';
       if (!val) continue;
 
-      y = checkPageBreak(doc, y, 10, projectName);
+      y = checkPageBreak(doc, y, 12, projectName, fontName);
 
       // Sub-field label
-      doc.setFontSize(7.5);
-      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(FONT.REPEATABLE_LABEL);
+      doc.setFont(fontName, 'bold');
       doc.setTextColor(...ACCENT);
-      doc.text(sf.label + ':', 28, y);
-      y += 4;
+      doc.text(sf.label + ':', MARGIN_L + 8, y);
+      y += 5;
 
       // Sub-field value with markdown support
       if (hasMarkdown(val)) {
-        y = renderMarkdownText(doc, val, y, projectName, 128, 28);
+        y = renderMarkdownText(doc, val, y, projectName, fontName, contentW - 14, MARGIN_L + 8);
       } else {
-        doc.setFont('helvetica', 'normal');
-        doc.setTextColor(...DARK_TEXT);
-        doc.setFontSize(7.5);
-        const valLines = doc.splitTextToSize(val, 128);
-        doc.text(valLines.slice(0, 8), 28, y);
-        y += Math.max(4, valLines.length * 3.5 + 1);
+        doc.setFont(fontName, 'normal');
+        doc.setTextColor(...BODY_TEXT);
+        doc.setFontSize(FONT.REPEATABLE_VALUE);
+        const valLines = doc.splitTextToSize(val, contentW - 14);
+        y = drawLines(doc, valLines.slice(0, 10), MARGIN_L + 8, y, LH.BODY);
+        y += 1;
       }
     }
 
     if (i < entries.length - 1) {
-      y = checkPageBreak(doc, y, 5, projectName);
+      y = checkPageBreak(doc, y, 6, projectName, fontName);
       doc.setDrawColor(...DIVIDER);
       doc.setLineWidth(0.2);
       doc.setLineDashPattern([2, 2], 0);
-      doc.line(28, y, 170, y);
+      const pageW = doc.internal.pageSize.getWidth();
+      doc.line(MARGIN_L + 8, y, pageW - MARGIN_R, y);
       doc.setLineDashPattern([], 0);
-      y += 4;
+      y += 5;
     }
   }
 
-  return y + 3;
+  return y + 4;
 }
 
-// ── Checkbox with Rationale Renderer ──
+// ── Checkbox Renderers ──
+
 function renderCheckboxWithRationale(
   doc: jsPDF,
   label: string,
   data: { checked: boolean; rationale: string },
   startY: number,
-  projectName: string
+  projectName: string,
+  fontName: string
 ): number {
-  let y = checkPageBreak(doc, startY, 12, projectName);
+  let y = checkPageBreak(doc, startY, 14, projectName, fontName);
 
-  doc.setFontSize(9);
-  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(FONT.CHECKBOX);
+  doc.setFont(fontName, 'bold');
   if (data.checked) {
     doc.setTextColor(...SUCCESS);
-    doc.text('\u2713', 22, y);
+    doc.text('\u2713', MARGIN_L, y);
   } else {
     doc.setTextColor(...LIGHT_TEXT);
-    doc.text('\u2717', 22, y);
+    doc.text('\u2717', MARGIN_L, y);
   }
 
-  doc.setFontSize(8.5);
-  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(FONT.BODY);
+  doc.setFont(fontName, 'normal');
   doc.setTextColor(...DARK_TEXT);
-  doc.text(label, 29, y);
-  y += 5;
+  doc.text(label, MARGIN_L + 8, y);
+  y += 6;
 
   if (data.rationale?.trim()) {
-    y = checkPageBreak(doc, y, 8, projectName);
-    doc.setFontSize(7.5);
+    y = checkPageBreak(doc, y, 10, projectName, fontName);
+    doc.setFontSize(FONT.CHECKBOX_RATIONALE);
     doc.setTextColor(...MED_TEXT);
-    doc.setFont('helvetica', 'italic');
-    const rLines = doc.splitTextToSize(`Rationale: ${data.rationale}`, 140);
-    doc.text(rLines.slice(0, 4), 29, y);
-    doc.setFont('helvetica', 'normal');
-    y += rLines.length * 3.5 + 2;
+    doc.setFont(fontName, 'italic');
+    const rLines = doc.splitTextToSize(`Rationale: ${data.rationale}`, getContentWidth(doc) - 10);
+    y = drawLines(doc, rLines.slice(0, 5), MARGIN_L + 8, y, LH.BODY);
+    doc.setFont(fontName, 'normal');
+    y += 2;
   }
 
   return y + 2;
 }
 
-// ── Render a key-value field with proper label/value layout ──
+// ── Key-Value Field Renderer ──
+
 function renderKeyValueField(
   doc: jsPDF,
   label: string,
   rawValue: string,
   y: number,
   projectName: string,
-  pageW: number
+  fontName: string
 ): number {
-  y = checkPageBreak(doc, y, 12, projectName);
+  const contentW = getContentWidth(doc);
+  y = checkPageBreak(doc, y, 14, projectName, fontName);
 
   const cleanLabel = sanitizeText(label);
-  const contentWidth = pageW - 42;
 
-  // Label with subtle background
+  // Label with subtle background pill
+  doc.setFontSize(FONT.LABEL);
+  doc.setFont(fontName, 'bold');
+  const labelW = doc.getTextWidth(cleanLabel);
   doc.setFillColor(...LABEL_BG);
-  doc.roundedRect(20, y - 3, doc.getTextWidth(cleanLabel) * 1.15 + 6, 5.5, 1, 1, 'F');
-  doc.setFontSize(8);
-  doc.setFont('helvetica', 'bold');
+  doc.roundedRect(CONTENT_START_X, y - 3.5, labelW + 8, 6.5, 1.5, 1.5, 'F');
   doc.setTextColor(...ACCENT);
-  doc.text(cleanLabel, 22, y);
-  y += 5;
+  doc.text(cleanLabel, CONTENT_START_X + 4, y);
+  y += 6;
 
-  // Value — check for markdown content
+  // Value with markdown awareness
   if (hasMarkdown(rawValue)) {
-    y = renderMarkdownText(doc, rawValue, y, projectName, contentWidth, 22);
+    y = renderMarkdownText(doc, rawValue, y, projectName, fontName, contentW - 4, CONTENT_START_X + 2);
   } else {
-    doc.setFont('helvetica', 'normal');
-    doc.setTextColor(...DARK_TEXT);
-    doc.setFontSize(8);
+    doc.setFont(fontName, 'normal');
+    doc.setTextColor(...BODY_TEXT);
+    doc.setFontSize(FONT.BODY);
     const displayVal = rawValue || '\u2014';
-    const valLines = doc.splitTextToSize(displayVal, contentWidth);
-    doc.text(valLines.slice(0, 20), 22, y);
-    y += Math.max(5, Math.min(valLines.length, 20) * 3.5 + 2);
+    const valLines = doc.splitTextToSize(displayVal, contentW - 4);
+    y = drawLines(doc, valLines.slice(0, 25), CONTENT_START_X + 2, y, LH.BODY);
+    y += 1;
   }
 
-  return y + 1;
+  return y + 2;
 }
 
 
-// ── Main PDF Generator ──
+// ════════════════════════════════════════════════
+// MAIN PDF GENERATOR
+// ════════════════════════════════════════════════
+
 export function generateProjectPdf(
   projectName: string,
   projectDescription: string,
@@ -452,46 +572,49 @@ export function generateProjectPdf(
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
   const pageW = doc.internal.pageSize.getWidth();
 
+  // Register Urbanist font, fall back to helvetica if unavailable
+  const hasUrbanist = registerUrbanistFonts(doc);
+  const fontName = hasUrbanist ? 'Urbanist' : 'helvetica';
+
   // ────────────────────────────────────────────
-  // TITLE PAGE
+  // COVER PAGE
   // ────────────────────────────────────────────
 
-  // Full-width navy hero
+  // Full-width navy hero area
   doc.setFillColor(...NAVY);
-  doc.rect(0, 0, pageW, 105, 'F');
+  doc.rect(0, 0, pageW, 110, 'F');
 
-  // Accent bar at very top
+  // Top accent stripe
   doc.setFillColor(...ACCENT);
-  doc.rect(0, 0, pageW, 3, 'F');
+  doc.rect(0, 0, pageW, 3.5, 'F');
 
-  // Branding
-  doc.setFontSize(9);
-  doc.setTextColor(...ACCENT);
-  doc.setFont('helvetica', 'bold');
-  doc.text('AGENT DEPLOYMENT PLAYBOOK', 25, 25);
+  // Branding eyebrow
+  doc.setFontSize(FONT.TITLE_PAGE_BRAND);
+  doc.setTextColor(...ACCENT_LIGHT);
+  doc.setFont(fontName, 'bold');
+  doc.text('AGENT DEPLOYMENT PLAYBOOK', 28, 28);
   doc.setDrawColor(...ACCENT);
-  doc.setLineWidth(0.5);
-  doc.line(25, 28, 90, 28);
+  doc.setLineWidth(0.6);
+  doc.line(28, 32, 100, 32);
 
-  // Project Name (large)
-  doc.setFontSize(28);
+  // Project name (large, white)
+  doc.setFontSize(FONT.TITLE_PAGE_NAME);
   doc.setTextColor(...WHITE);
-  doc.setFont('helvetica', 'bold');
-  const titleLines = doc.splitTextToSize(projectName, pageW - 50);
-  doc.text(titleLines, 25, 45);
+  doc.setFont(fontName, 'bold');
+  const titleLines = doc.splitTextToSize(projectName, pageW - 56);
+  drawLines(doc, titleLines, 28, 48, 13);
 
-  // Description
-  const descY = 45 + titleLines.length * 12;
-  doc.setFontSize(11);
+  // Description (lighter, below title)
+  const descY = 48 + titleLines.length * 13 + 4;
+  doc.setFontSize(FONT.TITLE_PAGE_DESC);
   doc.setTextColor(...LIGHT_TEXT);
-  doc.setFont('helvetica', 'normal');
-  const descLines = doc.splitTextToSize(projectDescription || 'Project Summary Report', pageW - 50);
-  doc.text(descLines.slice(0, 3), 25, descY);
+  doc.setFont(fontName, 'normal');
+  const descLines = doc.splitTextToSize(projectDescription || 'Project Summary Report', pageW - 56);
+  drawLines(doc, descLines.slice(0, 3), 28, descY, 5.5);
 
-  // Meta info badges
-  const metaY = 115;
-  doc.setFontSize(8);
-  doc.setFont('helvetica', 'normal');
+  // Meta badges
+  const metaY = 120;
+  doc.setFontSize(FONT.TITLE_PAGE_META);
   const metaParts = [
     { label: 'STATUS', value: meta.status.toUpperCase() },
     meta.framework ? { label: 'FRAMEWORK', value: meta.framework } : null,
@@ -499,69 +622,83 @@ export function generateProjectPdf(
     { label: 'GENERATED', value: meta.createdAt },
   ].filter(Boolean) as { label: string; value: string }[];
 
-  let metaX = 25;
+  let metaX = 28;
   for (const mp of metaParts) {
+    doc.setFont(fontName, 'bold');
+    const fullText = `${mp.label}: ${mp.value}`;
+    const badgeW = doc.getTextWidth(fullText) + 10;
     doc.setFillColor(...TABLE_STRIPE);
-    const badgeW = Math.max(doc.getTextWidth(`${mp.label}: ${mp.value}`) + 8, 30);
-    doc.roundedRect(metaX, metaY, badgeW, 8, 2, 2, 'F');
+    doc.roundedRect(metaX, metaY, badgeW, 9, 2.5, 2.5, 'F');
+    doc.setDrawColor(...DIVIDER);
+    doc.setLineWidth(0.15);
+    doc.roundedRect(metaX, metaY, badgeW, 9, 2.5, 2.5, 'S');
     doc.setTextColor(...ACCENT);
-    doc.setFont('helvetica', 'bold');
-    doc.text(mp.label + ':', metaX + 3, metaY + 5.5);
+    doc.text(mp.label + ':', metaX + 4, metaY + 6.2);
     doc.setTextColor(...DARK_TEXT);
-    doc.setFont('helvetica', 'normal');
-    doc.text(mp.value, metaX + 3 + doc.getTextWidth(mp.label + ': '), metaY + 5.5);
-    metaX += badgeW + 4;
+    doc.setFont(fontName, 'normal');
+    doc.text(mp.value, metaX + 4 + doc.getTextWidth(mp.label + ': '), metaY + 6.2);
+    metaX += badgeW + 5;
   }
 
-  // Built by line
-  doc.setFontSize(8);
+  // Attribution line
+  doc.setFontSize(FONT.TITLE_PAGE_META);
+  doc.setTextColor(...MED_TEXT);
+  doc.setFont(fontName, 'normal');
+  doc.text('Built by Padmasani Srimadhan', 28, 140);
   doc.setTextColor(...LIGHT_TEXT);
-  doc.text('Built by Padmasani Srimadhan', 25, 135);
-  doc.text(COPYRIGHT, 25, 141);
+  doc.text(COPYRIGHT, 28, 147);
 
-  // Decorative accent line
+  // Accent divider
   doc.setFillColor(...ACCENT);
-  doc.rect(0, 148, pageW, 1, 'F');
+  doc.rect(0, 155, pageW, 1.5, 'F');
 
-  // Table of Contents
+  // ── Table of Contents ──
   if (sections.length > 0) {
-    doc.setFontSize(12);
+    doc.setFontSize(FONT.TOC_HEADING);
     doc.setTextColor(...NAVY);
-    doc.setFont('helvetica', 'bold');
-    doc.text('CONTENTS', 25, 162);
+    doc.setFont(fontName, 'bold');
+    doc.text('CONTENTS', 28, 172);
 
-    doc.setFontSize(9);
-    doc.setFont('helvetica', 'normal');
-    let tocY = 172;
+    // Underline
+    doc.setDrawColor(...ACCENT);
+    doc.setLineWidth(0.5);
+    doc.line(28, 175, 72, 175);
+
+    doc.setFontSize(FONT.TOC_ITEM);
+    let tocY = 184;
     for (let i = 0; i < sections.length; i++) {
-      if (tocY > 275) break;
+      if (tocY > PAGE_BOTTOM) break;
+      // Number
+      doc.setFont(fontName, 'bold');
       doc.setTextColor(...ACCENT);
-      doc.text(`${(i + 1).toString().padStart(2, '0')}`, 25, tocY);
+      doc.text(`${(i + 1).toString().padStart(2, '0')}`, 28, tocY);
+      // Title
+      doc.setFont(fontName, 'normal');
       doc.setTextColor(...DARK_TEXT);
-      const tocTitle = truncate(sections[i].title, 70);
-      doc.text(tocTitle, 35, tocY);
-      // Dotted leader line
+      const tocTitle = truncate(sections[i].title, 65);
+      doc.text(tocTitle, 40, tocY);
+      // Dotted leader
       doc.setDrawColor(...DIVIDER);
       doc.setLineWidth(0.15);
-      doc.setLineDashPattern([1, 1.5], 0);
+      doc.setLineDashPattern([1, 2], 0);
       const titleW = doc.getTextWidth(tocTitle);
-      if (35 + titleW + 5 < pageW - 30) {
-        doc.line(35 + titleW + 2, tocY, pageW - 30, tocY);
+      if (40 + titleW + 6 < pageW - 30) {
+        doc.line(40 + titleW + 3, tocY, pageW - 30, tocY);
       }
       doc.setLineDashPattern([], 0);
-      tocY += 7;
+      tocY += 8;
     }
   }
 
-  addPageFooter(doc, projectName);
+  addPageFooter(doc, projectName, fontName);
 
   // ────────────────────────────────────────────
   // CONTENT PAGES
   // ────────────────────────────────────────────
   for (const section of sections) {
     doc.addPage();
-    let y = addSectionHeader(doc, section.title, 12);
-    y += 2;
+    let y = addSectionHeader(doc, section.title, 14, fontName);
+    y += 3;
 
     for (const item of section.items) {
       const rawValue = sanitizeText(item.value || '');
@@ -569,45 +706,45 @@ export function generateProjectPdf(
 
       // ── TABLE DATA ──
       if (item.type === 'table' && item.columns && Array.isArray(parsed)) {
-        y = checkPageBreak(doc, y, 15, projectName);
-        doc.setFontSize(9);
-        doc.setFont('helvetica', 'bold');
+        y = checkPageBreak(doc, y, 18, projectName, fontName);
+        doc.setFontSize(FONT.LABEL);
+        doc.setFont(fontName, 'bold');
         doc.setTextColor(...ACCENT);
-        doc.text(sanitizeText(item.label), 20, y);
-        y += 5;
-        y = renderTable(doc, capArray(parsed as Record<string, string>[]), item.columns, y, projectName);
+        doc.text(sanitizeText(item.label), CONTENT_START_X, y);
+        y += 6;
+        y = renderTable(doc, capArray(parsed as Record<string, string>[]), item.columns, y, projectName, fontName);
         continue;
       }
 
       // ── TABLE DATA (auto-detected) ──
       if (!item.type && Array.isArray(parsed) && parsed.length > 0 && typeof parsed[0] === 'object') {
-        y = checkPageBreak(doc, y, 15, projectName);
-        doc.setFontSize(9);
-        doc.setFont('helvetica', 'bold');
+        y = checkPageBreak(doc, y, 18, projectName, fontName);
+        doc.setFontSize(FONT.LABEL);
+        doc.setFont(fontName, 'bold');
         doc.setTextColor(...ACCENT);
-        doc.text(sanitizeText(item.label), 20, y);
-        y += 5;
+        doc.text(sanitizeText(item.label), CONTENT_START_X, y);
+        y += 6;
         const autoColumns = Object.keys(parsed[0] as Record<string, unknown>).map(k => ({
           key: k,
           header: k.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()),
         }));
-        y = renderTable(doc, capArray(parsed as Record<string, string>[]), autoColumns, y, projectName);
+        y = renderTable(doc, capArray(parsed as Record<string, string>[]), autoColumns, y, projectName, fontName);
         continue;
       }
 
       // ── REPEATABLE DATA ──
       if (item.type === 'repeatable' && item.subFields && Array.isArray(parsed)) {
-        y = checkPageBreak(doc, y, 15, projectName);
-        doc.setFontSize(9);
-        doc.setFont('helvetica', 'bold');
+        y = checkPageBreak(doc, y, 18, projectName, fontName);
+        doc.setFontSize(FONT.LABEL);
+        doc.setFont(fontName, 'bold');
         doc.setTextColor(...ACCENT);
-        doc.text(sanitizeText(item.label), 20, y);
-        y += 5;
-        y = renderRepeatable(doc, capArray(parsed as Record<string, string>[]), item.subFields, y, projectName);
+        doc.text(sanitizeText(item.label), CONTENT_START_X, y);
+        y += 6;
+        y = renderRepeatable(doc, capArray(parsed as Record<string, string>[]), item.subFields, y, projectName, fontName);
         continue;
       }
 
-      // ── REPEATABLE DATA (auto-detected) ──
+      // ── REPEATABLE DATA (auto-detected duplicate guard) ──
       if (!item.type && Array.isArray(parsed) && parsed.length > 0 && typeof parsed[0] === 'object') {
         continue;
       }
@@ -621,52 +758,54 @@ export function generateProjectPdf(
         } else {
           cbData = { checked: rawValue === 'true', rationale: '' };
         }
-        y = renderCheckboxWithRationale(doc, sanitizeText(item.label), cbData, y, projectName);
+        y = renderCheckboxWithRationale(doc, sanitizeText(item.label), cbData, y, projectName, fontName);
         continue;
       }
 
       // ── SIMPLE CHECKBOX ──
       if (item.type === 'checkbox') {
-        y = checkPageBreak(doc, y, 8, projectName);
-        doc.setFontSize(9);
+        y = checkPageBreak(doc, y, 10, projectName, fontName);
+        doc.setFontSize(FONT.CHECKBOX);
         if (rawValue === 'true') {
           doc.setTextColor(...SUCCESS);
-          doc.setFont('helvetica', 'bold');
-          doc.text('\u2713', 22, y);
+          doc.setFont(fontName, 'bold');
+          doc.text('\u2713', MARGIN_L, y);
         } else {
           doc.setTextColor(...LIGHT_TEXT);
-          doc.setFont('helvetica', 'normal');
-          doc.text('\u2717', 22, y);
+          doc.setFont(fontName, 'normal');
+          doc.text('\u2717', MARGIN_L, y);
         }
         doc.setTextColor(...DARK_TEXT);
-        doc.setFont('helvetica', 'normal');
-        doc.text(sanitizeText(item.label), 29, y);
-        y += 6;
+        doc.setFont(fontName, 'normal');
+        doc.setFontSize(FONT.BODY);
+        doc.text(sanitizeText(item.label), MARGIN_L + 8, y);
+        y += 7;
         continue;
       }
 
       // ── SECTION DIVIDER ──
       if (item.label.startsWith('\u2500') && !item.value) {
-        y = checkPageBreak(doc, y, 10, projectName);
-        y += 3;
-        doc.setDrawColor(...ACCENT);
+        y = checkPageBreak(doc, y, 12, projectName, fontName);
+        y += 4;
+        const dividerLabel = item.label.replace(/\u2500/g, '').trim();
+        doc.setDrawColor(...ACCENT_LIGHT);
         doc.setLineWidth(0.3);
-        doc.line(20, y, 60, y);
-        doc.setFontSize(8);
-        doc.setFont('helvetica', 'bold');
+        doc.line(CONTENT_START_X, y, 60, y);
+        doc.setFontSize(FONT.DIVIDER_LABEL);
+        doc.setFont(fontName, 'bold');
         doc.setTextColor(...ACCENT);
-        doc.text(item.label.replace(/\u2500/g, '').trim(), 63, y + 0.5);
-        const labelEndX = 63 + doc.getTextWidth(item.label.replace(/\u2500/g, '').trim()) + 3;
-        doc.line(labelEndX, y, pageW - 20, y);
-        y += 7;
+        doc.text(dividerLabel, 63, y + 0.5);
+        const labelEndX = 63 + doc.getTextWidth(dividerLabel) + 4;
+        doc.line(labelEndX, y, pageW - MARGIN_R, y);
+        y += 8;
         continue;
       }
 
-      // ── STANDARD KEY-VALUE FIELD (with markdown support) ──
-      y = renderKeyValueField(doc, item.label, rawValue, y, projectName, pageW);
+      // ── STANDARD KEY-VALUE FIELD ──
+      y = renderKeyValueField(doc, item.label, rawValue, y, projectName, fontName);
     }
 
-    addPageFooter(doc, projectName);
+    addPageFooter(doc, projectName, fontName);
   }
 
   const arrayBuffer = doc.output('arraybuffer');
