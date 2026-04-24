@@ -3,39 +3,7 @@
 import { useState } from 'react';
 import { ChevronDown, ChevronRight } from 'lucide-react';
 import FieldRenderer from './FieldRenderer';
-
-interface SubFieldDef {
-  key: string;
-  label: string;
-  type: string;
-  placeholder?: string;
-  required?: boolean;
-  helpText?: string;
-  options?: string[];
-}
-
-interface TableColumnDef {
-  key: string;
-  header: string;
-  type: 'text' | 'select' | 'number';
-  width?: string;
-  options?: string[];
-  helpText?: string;
-}
-
-interface FieldDef {
-  key: string;
-  label: string;
-  type: string;
-  placeholder?: string;
-  required?: boolean;
-  helpText?: string;
-  options?: string[];
-  section?: string;
-  subFields?: SubFieldDef[];
-  columns?: TableColumnDef[];
-  defaultRows?: number;
-}
+import type { FieldDef } from '@/types/project';
 
 interface SectionGroupProps {
   sectionName: string;

@@ -3,15 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import Tooltip from '@/components/ui/Tooltip';
 import { Plus, Trash2, HelpCircle, Copy, ChevronUp, ChevronDown } from 'lucide-react';
-
-export interface TableColumnDef {
-  key: string;
-  header: string;
-  type: 'text' | 'select' | 'number';
-  width?: string;
-  options?: string[];
-  helpText?: string;
-}
+import type { TableColumnDef } from '@/types/project';
 
 interface EditableTableProps {
   columns: TableColumnDef[];

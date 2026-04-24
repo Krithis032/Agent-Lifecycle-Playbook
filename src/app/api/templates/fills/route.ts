@@ -11,8 +11,14 @@ export async function GET() {
 
   try {
     const fills = await prisma.templateFill.findMany({
-      take: 200,
-      include: {
+      take: 100,
+      select: {
+        id: true,
+        templateId: true,
+        projectId: true,
+        title: true,
+        createdAt: true,
+        updatedAt: true,
         template: { select: { slug: true, name: true } },
         project: { select: { id: true, name: true } },
       },

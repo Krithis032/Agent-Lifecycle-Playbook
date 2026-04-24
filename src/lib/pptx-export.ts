@@ -25,10 +25,7 @@ interface ReportSection {
   items: ReportItem[];
 }
 
-// ── Helpers ──
-function tryParseJSON(str: string): unknown {
-  try { return JSON.parse(str); } catch { return null; }
-}
+import { safeParseJSON, sanitizeText, capArray } from './safe-json';
 
 function truncate(text: string, max: number): string {
   if (!text || text.length <= max) return text || '';
@@ -327,7 +324,8 @@ export async function generateProjectPptx(
     const simpleItems: ReportItem[] = [];
 
     for (const item of section.items) {
-      const parsed = item.value ? tryParseJSON(item.value) : null;
+      const safeValue = sanitizeText(item.value || '');
+      const parsed = safeValue ? safeParseJSON(safeValue) : null;
 
       if (item.type === 'table' && Array.isArray(parsed) && parsed.length > 0) {
         tableItems.push(item);
@@ -339,12 +337,13 @@ export async function generateProjectPptx(
         let cbData: { checked: boolean; rationale: string };
         if (parsed && typeof parsed === 'object' && 'checked' in (parsed as Record<string, unknown>)) {
           cbData = parsed as { checked: boolean; rationale: string };
+          cbData.rationale = sanitizeText(cbData.rationale || '');
         } else {
-          cbData = { checked: item.value === 'true', rationale: '' };
+          cbData = { checked: safeValue === 'true', rationale: '' };
         }
-        checkboxItems.push({ label: item.label, ...cbData });
+        checkboxItems.push({ label: sanitizeText(item.label), ...cbData });
       } else if (item.type === 'checkbox') {
-        checkboxItems.push({ label: item.label, checked: item.value === 'true', rationale: '' });
+        checkboxItems.push({ label: sanitizeText(item.label), checked: safeValue === 'true', rationale: '' });
       } else {
         simpleItems.push(item);
       }
@@ -395,22 +394,26 @@ export async function generateProjectPptx(
 
     // Table slides
     for (const tableItem of tableItems) {
-      const parsed = tryParseJSON(tableItem.value) as Record<string, string>[];
-      const cols = tableItem.columns || Object.keys(parsed[0]).map(k => ({
+      const parsed = safeParseJSON(sanitizeText(tableItem.value || ''));
+      if (!Array.isArray(parsed) || parsed.length === 0) continue;
+      const rows = capArray(parsed as Record<string, string>[]);
+      const cols = tableItem.columns || Object.keys(rows[0]).map(k => ({
         key: k,
         header: k.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()),
       }));
-      addTableSlide(pptx, `${section.title} \u2014 ${tableItem.label}`, parsed, cols, projectName);
+      addTableSlide(pptx, `${section.title} \u2014 ${sanitizeText(tableItem.label)}`, rows, cols, projectName);
     }
 
     // Repeatable slides
     for (const repItem of repeatableItems) {
-      const parsed = tryParseJSON(repItem.value) as Record<string, string>[];
-      const subs = repItem.subFields || Object.keys(parsed[0]).map(k => ({
+      const parsed = safeParseJSON(sanitizeText(repItem.value || ''));
+      if (!Array.isArray(parsed) || parsed.length === 0) continue;
+      const entries = capArray(parsed as Record<string, string>[]);
+      const subs = repItem.subFields || Object.keys(entries[0]).map(k => ({
         key: k,
         label: k.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()),
       }));
-      addRepeatableSlide(pptx, `${section.title} \u2014 ${repItem.label}`, parsed, subs, projectName);
+      addRepeatableSlide(pptx, `${section.title} \u2014 ${sanitizeText(repItem.label)}`, entries, subs, projectName);
     }
 
     // Checkbox slide

@@ -7,38 +7,7 @@ import RepeatableField from './RepeatableField';
 import CheckboxWithRationale from './CheckboxWithRationale';
 import Tooltip from '@/components/ui/Tooltip';
 import { HelpCircle } from 'lucide-react';
-
-interface SubFieldDef {
-  key: string;
-  label: string;
-  type: string;
-  placeholder?: string;
-  required?: boolean;
-  helpText?: string;
-  options?: string[];
-}
-
-interface TableColumnDef {
-  key: string;
-  header: string;
-  type: 'text' | 'select' | 'number';
-  width?: string;
-  options?: string[];
-  helpText?: string;
-}
-
-interface FieldDef {
-  key: string;
-  label: string;
-  type: string;
-  placeholder?: string;
-  required?: boolean;
-  helpText?: string;
-  options?: string[];
-  subFields?: SubFieldDef[];
-  columns?: TableColumnDef[];
-  defaultRows?: number;
-}
+import type { FieldDef } from '@/types/project';
 
 interface FieldRendererProps {
   field: FieldDef;

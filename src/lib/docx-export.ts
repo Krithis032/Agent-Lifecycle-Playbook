@@ -30,10 +30,7 @@ interface DocxSection {
   fields: DocxField[];
 }
 
-// ── Helpers ──
-function tryParseJSON(str: string): unknown {
-  try { return JSON.parse(str); } catch { return null; }
-}
+import { safeParseJSON, sanitizeText, capArray } from './safe-json';
 
 function cellBorders(color = BORDER_COLOR) {
   const border = { style: BorderStyle.SINGLE, size: 1, color };
@@ -257,8 +254,9 @@ export async function generateDocx(
     }));
 
     for (const field of section.fields) {
-      const rawValue = field.value || '';
-      const parsed = rawValue ? tryParseJSON(rawValue) : null;
+      const rawValue = sanitizeText(field.value || '');
+      const parsed = rawValue ? safeParseJSON(rawValue) : null;
+      const safeLabel = sanitizeText(field.label);
 
       // ── TABLE ──
       if (field.type === 'table' && Array.isArray(parsed) && parsed.length > 0) {
@@ -266,12 +264,11 @@ export async function generateDocx(
           key: k,
           header: k.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()),
         }));
-        // Field label
         children.push(new Paragraph({
-          children: [new TextRun({ text: field.label, bold: true, size: 22, font: 'Calibri', color: ACCENT })],
+          children: [new TextRun({ text: safeLabel, bold: true, size: 22, font: 'Calibri', color: ACCENT })],
           spacing: { before: 200, after: 80 },
         }));
-        children.push(buildWordTable(parsed as Record<string, string>[], cols));
+        children.push(buildWordTable(capArray(parsed as Record<string, string>[]), cols));
         children.push(new Paragraph({ spacing: { after: 200 } }));
         continue;
       }
@@ -283,10 +280,10 @@ export async function generateDocx(
           label: k.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()),
         }));
         children.push(new Paragraph({
-          children: [new TextRun({ text: field.label, bold: true, size: 22, font: 'Calibri', color: ACCENT })],
+          children: [new TextRun({ text: safeLabel, bold: true, size: 22, font: 'Calibri', color: ACCENT })],
           spacing: { before: 200, after: 80 },
         }));
-        children.push(...buildRepeatableSection(parsed as Record<string, string>[], subs));
+        children.push(...buildRepeatableSection(capArray(parsed as Record<string, string>[]), subs));
         children.push(new Paragraph({ spacing: { after: 200 } }));
         continue;
       }
@@ -296,10 +293,11 @@ export async function generateDocx(
         let cbData: { checked: boolean; rationale: string };
         if (parsed && typeof parsed === 'object' && 'checked' in (parsed as Record<string, unknown>)) {
           cbData = parsed as { checked: boolean; rationale: string };
+          cbData.rationale = sanitizeText(cbData.rationale || '');
         } else {
           cbData = { checked: rawValue === 'true', rationale: '' };
         }
-        children.push(...buildCheckboxWithRationale(field.label, cbData));
+        children.push(...buildCheckboxWithRationale(safeLabel, cbData));
         continue;
       }
 
@@ -313,7 +311,7 @@ export async function generateDocx(
               font: 'Calibri',
               color: rawValue === 'true' ? SUCCESS : MUTED,
             }),
-            new TextRun({ text: field.label, size: 20, font: 'Calibri', color: DARK }),
+            new TextRun({ text: safeLabel, size: 20, font: 'Calibri', color: DARK }),
           ],
           spacing: { after: 80 },
         }));
@@ -327,17 +325,17 @@ export async function generateDocx(
           header: k.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()),
         }));
         children.push(new Paragraph({
-          children: [new TextRun({ text: field.label, bold: true, size: 22, font: 'Calibri', color: ACCENT })],
+          children: [new TextRun({ text: safeLabel, bold: true, size: 22, font: 'Calibri', color: ACCENT })],
           spacing: { before: 200, after: 80 },
         }));
-        children.push(buildWordTable(parsed as Record<string, string>[], autoColumns));
+        children.push(buildWordTable(capArray(parsed as Record<string, string>[]), autoColumns));
         children.push(new Paragraph({ spacing: { after: 200 } }));
         continue;
       }
 
       // ── STANDARD FIELD ──
       children.push(new Paragraph({
-        children: [new TextRun({ text: field.label, bold: true, size: 22, font: 'Calibri', color: MED })],
+        children: [new TextRun({ text: safeLabel, bold: true, size: 22, font: 'Calibri', color: MED })],
         spacing: { before: 200, after: 60 },
       }));
 

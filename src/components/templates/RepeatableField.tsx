@@ -3,16 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import Tooltip from '@/components/ui/Tooltip';
 import { Plus, Trash2, HelpCircle, Copy, ChevronDown, ChevronUp, ChevronRight } from 'lucide-react';
-
-interface SubFieldDef {
-  key: string;
-  label: string;
-  type: string;
-  placeholder?: string;
-  required?: boolean;
-  helpText?: string;
-  options?: string[];
-}
+import type { SubFieldDef } from '@/types/project';
 
 interface RepeatableFieldProps {
   label: string;

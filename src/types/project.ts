@@ -140,6 +140,32 @@ export interface TableColumnDef {
   helpText?: string;
 }
 
+/** Sub-field definition used inside repeatable groups (simpler than TemplateField for component props). */
+export interface SubFieldDef {
+  key: string;
+  label: string;
+  type: string;
+  placeholder?: string;
+  required?: boolean;
+  helpText?: string;
+  options?: string[];
+}
+
+/** Field definition used by form components (mirrors TemplateField with component-friendly types). */
+export interface FieldDef {
+  key: string;
+  label: string;
+  type: string;
+  placeholder?: string;
+  required?: boolean;
+  helpText?: string;
+  options?: string[];
+  section?: string;
+  subFields?: SubFieldDef[];
+  columns?: TableColumnDef[];
+  defaultRows?: number;
+}
+
 export interface CreateProjectInput {
   name: string;
   description?: string;

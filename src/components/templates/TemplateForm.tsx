@@ -5,39 +5,7 @@ import { useRouter } from 'next/navigation';
 import SectionGroup from './SectionGroup';
 import { Save, Loader2, CloudOff, CheckCircle } from 'lucide-react';
 import Tooltip from '@/components/ui/Tooltip';
-
-interface SubFieldDef {
-  key: string;
-  label: string;
-  type: string;
-  placeholder?: string;
-  required?: boolean;
-  helpText?: string;
-  options?: string[];
-}
-
-interface TableColumnDef {
-  key: string;
-  header: string;
-  type: 'text' | 'select' | 'number';
-  width?: string;
-  options?: string[];
-  helpText?: string;
-}
-
-interface FieldDef {
-  key: string;
-  label: string;
-  type: string;
-  placeholder?: string;
-  required?: boolean;
-  helpText?: string;
-  options?: string[];
-  section?: string;
-  subFields?: SubFieldDef[];
-  columns?: TableColumnDef[];
-  defaultRows?: number;
-}
+import type { FieldDef } from '@/types/project';
 
 interface TemplateFormProps {
   templateSlug: string;
@@ -48,10 +16,41 @@ interface TemplateFormProps {
   fillId?: number;
 }
 
+const DRAFT_PREFIX = 'adp-draft-';
+const DRAFT_MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
+
 function getDraftKey(templateSlug: string, fillId?: number) {
   return fillId
-    ? `adp-draft-${templateSlug}-${fillId}`
-    : `adp-draft-${templateSlug}-new`;
+    ? `${DRAFT_PREFIX}${templateSlug}-${fillId}`
+    : `${DRAFT_PREFIX}${templateSlug}-new`;
+}
+
+/** Remove drafts older than 7 days to prevent localStorage bloat. */
+function cleanupStaleDrafts() {
+  try {
+    const now = Date.now();
+    const keysToRemove: string[] = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (!key?.startsWith(DRAFT_PREFIX)) continue;
+      try {
+        const raw = localStorage.getItem(key);
+        if (!raw) continue;
+        const draft = JSON.parse(raw);
+        if (draft.savedAt && now - new Date(draft.savedAt).getTime() > DRAFT_MAX_AGE_MS) {
+          keysToRemove.push(key);
+        }
+      } catch {
+        // Corrupted draft — remove it
+        keysToRemove.push(key);
+      }
+    }
+    for (const key of keysToRemove) {
+      localStorage.removeItem(key);
+    }
+  } catch {
+    // localStorage unavailable
+  }
 }
 
 export default function TemplateForm({
@@ -93,8 +92,9 @@ export default function TemplateForm({
   const [hasDraft, setHasDraft] = useState(false);
   const autoSaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Check if a draft exists on mount
+  // Check if a draft exists on mount + cleanup stale drafts
   useEffect(() => {
+    cleanupStaleDrafts();
     const draft = loadDraft();
     if (draft) {
       setHasDraft(true);
@@ -181,11 +181,16 @@ export default function TemplateForm({
     setError('');
     try {
       if (fillId) {
-        await fetch(`/api/templates/fills/${fillId}`, {
+        const res = await fetch(`/api/templates/fills/${fillId}`, {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ title, fieldValues: values }),
         });
+        if (!res.ok) {
+          const data = await res.json().catch(() => ({ error: 'Update failed' }));
+          setError(data.error || 'Update failed');
+          return;
+        }
         clearDraft();
         router.push(`/templates/${templateSlug}/${fillId}`);
       } else {
@@ -194,7 +199,7 @@ export default function TemplateForm({
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ title, fieldValues: values }),
         });
-        const data = await res.json();
+        const data = await res.json().catch(() => ({ error: 'Save failed' }));
         if (res.ok) {
           clearDraft();
           router.push(`/templates/${templateSlug}/${data.id}`);
@@ -202,9 +207,8 @@ export default function TemplateForm({
           setError(data.error || 'Save failed');
         }
       }
-    } catch (e) {
-      console.error(e);
-      setError('Network error');
+    } catch {
+      setError('Network error — check your connection and try again');
     } finally {
       setSaving(false);
     }

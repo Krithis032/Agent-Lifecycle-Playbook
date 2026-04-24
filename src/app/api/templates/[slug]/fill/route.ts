@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { requireAuth } from '@/lib/auth';
 import { logError } from '@/lib/logger';
+import { validateFieldValuesSize } from '@/lib/safe-json';
 
 export async function POST(
   req: NextRequest,
@@ -21,6 +22,14 @@ export async function POST(
 
     if (!title?.trim()) {
       return NextResponse.json({ error: 'Title is required' }, { status: 400 });
+    }
+
+    // Validate fieldValues size before saving
+    if (fieldValues && typeof fieldValues === 'object') {
+      const sizeCheck = validateFieldValuesSize(fieldValues);
+      if (!sizeCheck.valid) {
+        return NextResponse.json({ error: sizeCheck.error }, { status: 400 });
+      }
     }
 
     const fill = await prisma.templateFill.create({

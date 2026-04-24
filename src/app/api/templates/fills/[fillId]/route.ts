@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { requireAuth } from '@/lib/auth';
 import prisma from '@/lib/prisma';
 import { logError } from '@/lib/logger';
+import { validateFieldValuesSize } from '@/lib/safe-json';
 
 export const dynamic = 'force-dynamic';
 
@@ -43,6 +44,15 @@ export async function PATCH(
     if (isNaN(id)) return NextResponse.json({ error: 'Invalid ID' }, { status: 400 });
 
     const body = await req.json();
+
+    // Validate fieldValues size before saving
+    if (body.fieldValues && typeof body.fieldValues === 'object') {
+      const sizeCheck = validateFieldValuesSize(body.fieldValues);
+      if (!sizeCheck.valid) {
+        return NextResponse.json({ error: sizeCheck.error }, { status: 400 });
+      }
+    }
+
     const fill = await prisma.templateFill.update({
       where: { id },
       data: {

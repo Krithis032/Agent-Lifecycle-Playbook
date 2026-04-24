@@ -29,10 +29,9 @@ interface ReportSection {
   items: ReportItem[];
 }
 
+import { safeParseJSON, sanitizeText, capArray } from './safe-json';
+
 // ── Helpers ──
-function tryParseJSON(str: string): unknown {
-  try { return JSON.parse(str); } catch { return null; }
-}
 
 function truncate(text: string, maxLen: number): string {
   if (!text || text.length <= maxLen) return text || '';
@@ -376,19 +375,18 @@ export function generateProjectPdf(
     y += 2;
 
     for (const item of section.items) {
-      const rawValue = item.value || '';
-      const parsed = rawValue ? tryParseJSON(rawValue) : null;
+      const rawValue = sanitizeText(item.value || '');
+      const parsed = rawValue ? safeParseJSON(rawValue) : null;
 
       // ── TABLE DATA ──
       if (item.type === 'table' && item.columns && Array.isArray(parsed)) {
         y = checkPageBreak(doc, y, 15, projectName);
-        // Label
         doc.setFontSize(9);
         doc.setFont('helvetica', 'bold');
         doc.setTextColor(...ACCENT);
-        doc.text(item.label, 20, y);
+        doc.text(sanitizeText(item.label), 20, y);
         y += 5;
-        y = renderTable(doc, parsed as Record<string, string>[], item.columns, y, projectName);
+        y = renderTable(doc, capArray(parsed as Record<string, string>[]), item.columns, y, projectName);
         continue;
       }
 
@@ -398,13 +396,13 @@ export function generateProjectPdf(
         doc.setFontSize(9);
         doc.setFont('helvetica', 'bold');
         doc.setTextColor(...ACCENT);
-        doc.text(item.label, 20, y);
+        doc.text(sanitizeText(item.label), 20, y);
         y += 5;
         const autoColumns = Object.keys(parsed[0] as Record<string, unknown>).map(k => ({
           key: k,
           header: k.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()),
         }));
-        y = renderTable(doc, parsed as Record<string, string>[], autoColumns, y, projectName);
+        y = renderTable(doc, capArray(parsed as Record<string, string>[]), autoColumns, y, projectName);
         continue;
       }
 
@@ -414,9 +412,9 @@ export function generateProjectPdf(
         doc.setFontSize(9);
         doc.setFont('helvetica', 'bold');
         doc.setTextColor(...ACCENT);
-        doc.text(item.label, 20, y);
+        doc.text(sanitizeText(item.label), 20, y);
         y += 5;
-        y = renderRepeatable(doc, parsed as Record<string, string>[], item.subFields, y, projectName);
+        y = renderRepeatable(doc, capArray(parsed as Record<string, string>[]), item.subFields, y, projectName);
         continue;
       }
 
@@ -431,10 +429,11 @@ export function generateProjectPdf(
         let cbData: { checked: boolean; rationale: string };
         if (parsed && typeof parsed === 'object' && 'checked' in (parsed as Record<string, unknown>)) {
           cbData = parsed as { checked: boolean; rationale: string };
+          cbData.rationale = sanitizeText(cbData.rationale || '');
         } else {
           cbData = { checked: rawValue === 'true', rationale: '' };
         }
-        y = renderCheckboxWithRationale(doc, item.label, cbData, y, projectName);
+        y = renderCheckboxWithRationale(doc, sanitizeText(item.label), cbData, y, projectName);
         continue;
       }
 
@@ -453,7 +452,7 @@ export function generateProjectPdf(
         }
         doc.setTextColor(...DARK_TEXT);
         doc.setFont('helvetica', 'normal');
-        doc.text(item.label, 29, y);
+        doc.text(sanitizeText(item.label), 29, y);
         y += 6;
         continue;
       }
@@ -480,7 +479,7 @@ export function generateProjectPdf(
       doc.setFontSize(8.5);
       doc.setFont('helvetica', 'bold');
       doc.setTextColor(...ACCENT);
-      doc.text(item.label, 20, y);
+      doc.text(sanitizeText(item.label), 20, y);
 
       doc.setFont('helvetica', 'normal');
       doc.setTextColor(...DARK_TEXT);
