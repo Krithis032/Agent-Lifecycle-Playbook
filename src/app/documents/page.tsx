@@ -46,7 +46,7 @@ function getFileIcon(mimeType: string) {
 }
 
 function getFileColor(mimeType: string): string {
-  if (mimeType.startsWith('image/')) return 'text-[#a78bfa] bg-[rgba(139,92,246,0.1)]';
+  if (mimeType.startsWith('image/')) return 'text-[#7c3aed] bg-[rgba(139,92,246,0.1)]';
   if (mimeType.includes('spreadsheet') || mimeType.includes('excel') || mimeType === 'text/csv') return 'text-[var(--success)] bg-[var(--success-soft)]';
   if (mimeType.includes('presentation') || mimeType.includes('powerpoint')) return 'text-[var(--warning)] bg-[var(--warning-soft)]';
   if (mimeType === 'application/pdf') return 'text-[var(--error)] bg-[var(--error-soft)]';

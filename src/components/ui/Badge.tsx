@@ -9,8 +9,8 @@ const variantStyles: Record<BadgeVariant, string> = {
   error: 'bg-[var(--error-soft)] text-[var(--error)] border-[rgba(224,85,85,0.15)]',
   amber: 'bg-[var(--warning-soft)] text-[var(--warning)] border-[rgba(212,168,83,0.15)]',
   warning: 'bg-[var(--warning-soft)] text-[var(--warning)] border-[rgba(212,168,83,0.15)]',
-  purple: 'bg-[rgba(139,92,246,0.1)] text-[#a78bfa] border-[rgba(139,92,246,0.15)]',
-  cyan: 'bg-[rgba(34,211,238,0.08)] text-[#67e8f9] border-[rgba(34,211,238,0.12)]',
+  purple: 'bg-[rgba(139,92,246,0.08)] text-[#7c3aed] border-[rgba(139,92,246,0.15)]',
+  cyan: 'bg-[rgba(6,182,212,0.08)] text-[#0891b2] border-[rgba(6,182,212,0.15)]',
   info: 'bg-[var(--info-soft)] text-[var(--info)] border-[rgba(91,155,213,0.15)]',
 };
 

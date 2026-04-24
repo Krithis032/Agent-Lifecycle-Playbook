@@ -9,7 +9,7 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const variantStyles: Record<Variant, string> = {
-  primary: 'bg-[var(--accent)] text-[var(--bg)] hover:bg-[var(--accent-hover)] shadow-[0_1px_8px_rgba(212,168,83,0.15)]',
+  primary: 'bg-[var(--accent)] text-white hover:bg-[var(--accent-hover)] shadow-[0_1px_8px_rgba(196,154,60,0.2)]',
   secondary: 'bg-[var(--surface-hover)] text-[var(--text-2)] border border-[var(--border)] hover:border-[var(--border-hover)] hover:text-[var(--text)]',
   ghost: 'bg-transparent text-[var(--text-3)] hover:bg-[var(--surface-hover)] hover:text-[var(--text-2)]',
   danger: 'bg-[var(--error-soft)] text-[var(--error)] hover:bg-[rgba(224,85,85,0.2)] border border-[rgba(224,85,85,0.15)]',

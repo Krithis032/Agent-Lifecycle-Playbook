@@ -41,6 +41,17 @@ function createEmptyRow(columns: TableColumnDef[]): RowData {
   return row;
 }
 
+/** Determine minimum width for a column based on its type and header length */
+function getColumnMinWidth(col: TableColumnDef): string {
+  if (col.width) return col.width;
+  if (col.type === 'number') return '90px';
+  if (col.type === 'select') return '140px';
+  // Text columns: wider to accommodate longer entries
+  const headerLen = col.header.length;
+  if (headerLen > 15) return '200px';
+  return '160px';
+}
+
 export default function EditableTable({
   columns,
   value,
@@ -104,6 +115,12 @@ export default function EditableTable({
     emitChange(newRows);
   };
 
+  // Calculate total minimum width for the table
+  const totalMinWidth = columns.reduce((sum, col) => {
+    const w = parseInt(getColumnMinWidth(col));
+    return sum + (isNaN(w) ? 160 : w);
+  }, 40 + 100); // 40 for # col, 100 for actions col
+
   return (
     <div className="space-y-2">
       {/* Header */}
@@ -125,15 +142,15 @@ export default function EditableTable({
       {/* Table */}
       <div className="border border-[var(--border)] rounded-lg overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full text-sm">
+          <table className="text-sm" style={{ minWidth: `${totalMinWidth}px`, width: '100%' }}>
             <thead>
               <tr className="bg-[var(--surface)]">
-                <th className="px-2 py-2 text-[10px] font-bold uppercase tracking-wider text-[var(--text-4)] text-center border-b border-[var(--border)] w-8">#</th>
+                <th className="px-2 py-2.5 text-[10px] font-bold uppercase tracking-wider text-[var(--text-4)] text-center border-b border-[var(--border)]" style={{ width: '40px', minWidth: '40px' }}>#</th>
                 {columns.map(col => (
                   <th
                     key={col.key}
-                    className="px-2 py-2 text-[10px] font-bold uppercase tracking-wider text-[var(--text-4)] text-left border-b border-[var(--border)]"
-                    style={col.width ? { width: col.width } : undefined}
+                    className="px-2 py-2.5 text-[10px] font-bold uppercase tracking-wider text-[var(--text-4)] text-left border-b border-[var(--border)]"
+                    style={{ minWidth: getColumnMinWidth(col), width: col.width || undefined }}
                   >
                     <div className="flex items-center gap-1">
                       {col.header}
@@ -145,23 +162,23 @@ export default function EditableTable({
                     </div>
                   </th>
                 ))}
-                <th className="px-2 py-2 text-[10px] font-bold uppercase tracking-wider text-[var(--text-4)] text-center border-b border-[var(--border)] w-24">Actions</th>
+                <th className="px-2 py-2.5 text-[10px] font-bold uppercase tracking-wider text-[var(--text-4)] text-center border-b border-[var(--border)]" style={{ width: '100px', minWidth: '100px' }}>Actions</th>
               </tr>
             </thead>
             <tbody>
               {rows.map((row, rowIndex) => (
                 <tr key={rowIndex} className="border-b border-[var(--border)] last:border-b-0 hover:bg-[var(--surface-hover)] transition-colors">
-                  <td className="px-2 py-1.5 text-center text-xs text-[var(--text-4)] font-mono">{rowIndex + 1}</td>
+                  <td className="px-2 py-2 text-center text-xs text-[var(--text-4)] font-mono">{rowIndex + 1}</td>
                   {columns.map(col => (
-                    <td key={col.key} className="px-1.5 py-1.5">
+                    <td key={col.key} className="px-1.5 py-1.5" style={{ minWidth: getColumnMinWidth(col) }}>
                       {col.type === 'select' ? (
                         <select
                           value={row[col.key] || ''}
                           onChange={e => updateCell(rowIndex, col.key, e.target.value)}
-                          className="w-full px-2 py-1.5 text-xs border border-[var(--border)] rounded bg-[var(--bg)] text-[var(--text)] focus:border-[var(--accent)] focus:outline-none transition-all"
+                          className="w-full px-2.5 py-2 text-[12px] border border-[var(--border)] rounded bg-[var(--bg)] text-[var(--text)] focus:border-[var(--accent)] focus:outline-none transition-all"
                           title={col.helpText || `Select ${col.header}`}
                         >
-                          <option value="">-</option>
+                          <option value="">Select {col.header}</option>
                           {col.options?.map(opt => <option key={opt} value={opt}>{opt}</option>)}
                         </select>
                       ) : col.type === 'number' ? (
@@ -169,7 +186,7 @@ export default function EditableTable({
                           type="number"
                           value={row[col.key] || ''}
                           onChange={e => updateCell(rowIndex, col.key, e.target.value)}
-                          className="w-full px-2 py-1.5 text-xs border border-[var(--border)] rounded bg-[var(--bg)] text-[var(--text)] focus:border-[var(--accent)] focus:outline-none transition-all"
+                          className="w-full px-2.5 py-2 text-[12px] border border-[var(--border)] rounded bg-[var(--bg)] text-[var(--text)] focus:border-[var(--accent)] focus:outline-none transition-all"
                           title={col.helpText || `Enter ${col.header}`}
                           min="0"
                         />
@@ -178,9 +195,9 @@ export default function EditableTable({
                           type="text"
                           value={row[col.key] || ''}
                           onChange={e => updateCell(rowIndex, col.key, e.target.value)}
-                          className="w-full px-2 py-1.5 text-xs border border-[var(--border)] rounded bg-[var(--bg)] text-[var(--text)] focus:border-[var(--accent)] focus:outline-none transition-all"
+                          className="w-full px-2.5 py-2 text-[12px] border border-[var(--border)] rounded bg-[var(--bg)] text-[var(--text)] focus:border-[var(--accent)] focus:outline-none transition-all"
                           placeholder={col.header}
-                          title={col.helpText || `Enter ${col.header}`}
+                          title={row[col.key] || col.helpText || `Enter ${col.header}`}
                         />
                       )}
                     </td>
@@ -235,7 +252,7 @@ export default function EditableTable({
         </div>
 
         {/* Add Row Button */}
-        <div className="px-3 py-2 bg-[var(--surface)] border-t border-[var(--border)]">
+        <div className="px-3 py-2.5 bg-[var(--surface)] border-t border-[var(--border)]">
           <button
             onClick={addRow}
             className="flex items-center gap-1.5 text-xs font-medium text-[var(--accent)] hover:text-[var(--accent-hover)] transition-colors"

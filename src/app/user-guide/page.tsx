@@ -60,8 +60,8 @@ function SubSection({ title, children }: { title: string; children: React.ReactN
 function Tip({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex items-start gap-2.5 px-3 py-2.5 rounded-[var(--radius-sm)] bg-[rgba(34,211,238,0.08)] border border-[var(--border-subtle)] mb-4">
-      <Lightbulb size={14} className="text-[#67e8f9] mt-0.5 shrink-0" />
-      <p className="text-[12px] text-[#67e8f9] leading-relaxed">{children}</p>
+      <Lightbulb size={14} className="text-[#0891b2] mt-0.5 shrink-0" />
+      <p className="text-[12px] text-[#0891b2] leading-relaxed">{children}</p>
     </div>
   );
 }

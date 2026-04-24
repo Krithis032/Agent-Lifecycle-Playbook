@@ -41,7 +41,7 @@ export default function AIAssistButton({
     <button
       onClick={handleAssist}
       disabled={loading}
-      className="inline-flex items-center gap-1 px-2 py-1 text-[11px] font-semibold text-[#a78bfa] bg-[rgba(139,92,246,0.1)] rounded-md hover:bg-[rgba(139,92,246,0.15)] transition-colors disabled:opacity-50"
+      className="inline-flex items-center gap-1 px-2 py-1 text-[11px] font-semibold text-[#7c3aed] bg-[rgba(139,92,246,0.1)] rounded-md hover:bg-[rgba(139,92,246,0.15)] transition-colors disabled:opacity-50"
       title="AI Assist — generate draft content"
     >
       {loading ? <Loader2 size={12} className="animate-spin" /> : <Sparkles size={12} />}

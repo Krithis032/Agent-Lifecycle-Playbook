@@ -18,7 +18,7 @@ const phaseLabels: Record<string, { label: string; icon: string }> = {
 
 const ownerColors: Record<string, string> = {
   CAIO: 'bg-[var(--info-soft)] text-[var(--info)]',
-  CTO: 'bg-[rgba(139,92,246,0.1)] text-[#a78bfa]',
+  CTO: 'bg-[rgba(139,92,246,0.1)] text-[#7c3aed]',
   CDO: 'bg-[rgba(99,102,241,0.1)] text-[#818cf8]',
   Legal: 'bg-[var(--warning-soft)] text-[var(--warning)]',
   HR: 'bg-[rgba(236,72,153,0.1)] text-[#f472b6]',

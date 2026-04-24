@@ -56,7 +56,7 @@ export default async function TemplatesPage() {
           </div>
         </Card>
         <Card className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-[rgba(139,92,246,0.1)] flex items-center justify-center" style={{ color: '#a78bfa' }}>
+          <div className="w-10 h-10 rounded-full bg-[rgba(139,92,246,0.1)] flex items-center justify-center" style={{ color: '#7c3aed' }}>
             <Clock size={20} />
           </div>
           <div>

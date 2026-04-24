@@ -83,7 +83,7 @@ export default async function EvaluatePage() {
           </div>
         </Link>
         <Link href="/evaluate/new?type=model_tier" className="flex items-center gap-3 p-4 rounded-xl border border-[var(--border)] bg-[var(--surface-active)] hover:border-[var(--accent)] transition-all">
-          <Sparkles size={18} style={{ color: '#a78bfa' }} />
+          <Sparkles size={18} style={{ color: '#7c3aed' }} />
           <div>
             <div className="text-sm font-semibold text-[var(--text)]">Use Preset</div>
             <div className="text-xs text-[var(--text-4)]">Customer Support, Code Gen, Research...</div>

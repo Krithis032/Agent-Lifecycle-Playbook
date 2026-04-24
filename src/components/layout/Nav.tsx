@@ -36,12 +36,12 @@ export default function Nav() {
   };
 
   return (
-    <aside className="fixed top-0 left-0 h-screen w-[220px] bg-[var(--surface)] border-r border-[var(--border)] flex flex-col z-50 font-sans">
+    <aside className="nav-dark fixed top-0 left-0 h-screen w-[220px] bg-[var(--surface)] border-r border-[var(--border)] flex flex-col z-50 font-sans">
       {/* Logo */}
       <div className="px-5 h-[56px] flex items-center shrink-0 border-b border-[var(--border)]">
         <Link href="/" className="flex items-center gap-2.5">
           <div className="w-7 h-7 rounded-lg bg-[var(--accent)] flex items-center justify-center animate-pulse-glow">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--bg)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M12 2L2 7l10 5 10-5-10-5z" />
               <path d="M2 17l10 5 10-5" />
               <path d="M2 12l10 5 10-5" />

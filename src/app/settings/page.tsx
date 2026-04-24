@@ -42,7 +42,7 @@ function Tab({ label, icon: Icon, active, onClick }: {
 /* ─── Badge ─── */
 function RoleBadge({ role }: { role: string }) {
   const styles: Record<string, string> = {
-    admin: 'bg-[rgba(139,92,246,0.1)] text-[#a78bfa]',
+    admin: 'bg-[rgba(139,92,246,0.1)] text-[#7c3aed]',
     user: 'bg-[var(--accent-soft)] text-[var(--accent)]',
     viewer: 'bg-[var(--surface)] text-[var(--text-3)]',
   };
@@ -94,7 +94,7 @@ function SystemTab() {
       {/* API Status */}
       <div className="bg-[var(--surface)] border border-[var(--border)] rounded-[var(--radius-sm)] p-6">
         <div className="flex items-center gap-3 mb-4">
-          <div className="w-10 h-10 rounded-full bg-[rgba(139,92,246,0.1)] text-[#a78bfa] flex items-center justify-center">
+          <div className="w-10 h-10 rounded-full bg-[rgba(139,92,246,0.1)] text-[#7c3aed] flex items-center justify-center">
             <Key size={20} />
           </div>
           <h2 className="text-[15px] font-semibold text-[var(--text)]">API Configuration</h2>

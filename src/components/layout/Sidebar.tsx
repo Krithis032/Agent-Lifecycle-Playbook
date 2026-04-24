@@ -33,7 +33,7 @@ export default function Sidebar() {
     <aside className="hidden md:flex flex-col w-[220px] min-h-screen border-r border-[var(--border)] bg-[var(--surface)] p-4 gap-0.5">
       <div className="flex items-center gap-2.5 px-3 py-4 mb-3">
         <div className="w-7 h-7 rounded-lg bg-[var(--accent)] flex items-center justify-center animate-pulse-glow">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--bg)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
             <path d="M12 2L2 7l10 5 10-5-10-5z" />
             <path d="M2 17l10 5 10-5" />
             <path d="M2 12l10 5 10-5" />

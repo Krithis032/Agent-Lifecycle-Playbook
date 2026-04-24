@@ -50,10 +50,10 @@ export default async function HomePage() {
 
   const metrics = [
     { label: 'Active Projects', value: activeCount, icon: FolderKanban, color: 'var(--accent)', bg: 'var(--accent-soft)', href: '/projects', tip: 'Agent projects currently in progress. Click to view all projects.' },
-    { label: 'Evaluations', value: evalCount, icon: BarChart3, color: '#a78bfa', bg: 'rgba(139,92,246,0.1)', href: '/evaluate', tip: 'Weighted decision-matrix evaluations for comparing frameworks, architectures, or agent performance.' },
+    { label: 'Evaluations', value: evalCount, icon: BarChart3, color: '#7c3aed', bg: 'rgba(139,92,246,0.1)', href: '/evaluate', tip: 'Weighted decision-matrix evaluations for comparing frameworks, architectures, or agent performance.' },
     { label: 'Governance', value: assessmentCount, icon: Shield, color: 'var(--success)', bg: 'var(--success-soft)', href: '/governance', tip: 'TRiSM governance assessments measuring trust across 7 layers, 10 Wharton domains, and compliance frameworks.' },
-    { label: 'CAIO Assessments', value: caioCount, icon: Award, color: '#d4a853', bg: 'rgba(212,168,83,0.1)', href: '/caio', tip: 'AI maturity assessments across 12 domains using the CAIO framework (5 maturity levels).' },
-    { label: 'Documents', value: fillCount, icon: FileText, color: '#67e8f9', bg: 'rgba(34,211,238,0.08)', href: '/templates', tip: 'Filled lifecycle phase documents (charters, ADRs, runbooks, checklists, etc.).' },
+    { label: 'CAIO Assessments', value: caioCount, icon: Award, color: '#b8860b', bg: 'rgba(212,168,83,0.1)', href: '/caio', tip: 'AI maturity assessments across 12 domains using the CAIO framework (5 maturity levels).' },
+    { label: 'Documents', value: fillCount, icon: FileText, color: '#0891b2', bg: 'rgba(34,211,238,0.08)', href: '/templates', tip: 'Filled lifecycle phase documents (charters, ADRs, runbooks, checklists, etc.).' },
     { label: 'KB Concepts', value: conceptCount, icon: BookOpen, color: 'var(--text-3)', bg: 'var(--surface-hover)', href: '/advisor', tip: 'Knowledge base concepts across 5 tiers: Core, RAG/MCP, IBM, LinkedIn, and Strategy.' },
     { label: 'Open Risks', value: openRisks, icon: AlertTriangle, color: 'var(--error)', bg: 'var(--error-soft)', href: '/governance', tip: 'Risk items flagged during governance assessments that remain open and unmitigated.' },
   ];
@@ -77,7 +77,7 @@ export default async function HomePage() {
           <h1 className="text-2xl font-bold tracking-tight text-[var(--text)]">Command Center</h1>
           <p className="text-[13px] text-[var(--text-3)] mt-1">1,468 concepts across 5 KB tiers, 9 modules, real-time overview.</p>
         </div>
-        <Link href="/projects/new" className="bg-[var(--accent)] text-[var(--bg)] px-4 py-2.5 rounded-[var(--radius-sm)] text-[13px] font-semibold hover:bg-[var(--accent-hover)] transition-all flex items-center gap-2 shadow-[0_1px_8px_rgba(212,168,83,0.15)]">
+        <Link href="/projects/new" className="bg-[var(--accent)] text-white px-4 py-2.5 rounded-[var(--radius-sm)] text-[13px] font-semibold hover:bg-[var(--accent-hover)] transition-all flex items-center gap-2 shadow-[0_1px_8px_rgba(196,154,60,0.2)]">
           <Plus size={15} /> New Deployment
         </Link>
       </div>
@@ -174,7 +174,7 @@ export default async function HomePage() {
         <Card padding="none" className="overflow-hidden">
           <div className="px-5 py-4 border-b border-[var(--border)] flex justify-between items-center">
             <h2 className="text-[13px] font-semibold text-[var(--text)] flex items-center gap-2">
-              <BarChart3 size={14} className="text-[#a78bfa]" /> Recent Evaluations
+              <BarChart3 size={14} className="text-[#7c3aed]" /> Recent Evaluations
             </h2>
             <Link href="/evaluate" className="text-[12px] font-medium text-[var(--accent)] hover:text-[var(--accent-hover)] transition-colors">View All</Link>
           </div>
@@ -198,7 +198,7 @@ export default async function HomePage() {
         <Card padding="none" className="overflow-hidden">
           <div className="px-5 py-4 border-b border-[var(--border)] flex justify-between items-center">
             <h2 className="text-[13px] font-semibold text-[var(--text)] flex items-center gap-2">
-              <FileText size={14} className="text-[#67e8f9]" /> Recent Documents
+              <FileText size={14} className="text-[#0891b2]" /> Recent Documents
             </h2>
             <Link href="/templates" className="text-[12px] font-medium text-[var(--accent)] hover:text-[var(--accent-hover)] transition-colors">View All</Link>
           </div>

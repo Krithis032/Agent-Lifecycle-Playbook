@@ -41,7 +41,7 @@ export default async function CaioDashboard() {
       {/* Summary */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-5">
         <Card className="flex items-center gap-4">
-          <div className="w-12 h-12 rounded-full bg-[rgba(139,92,246,0.1)] text-[#a78bfa] flex items-center justify-center">
+          <div className="w-12 h-12 rounded-full bg-[rgba(139,92,246,0.1)] text-[#7c3aed] flex items-center justify-center">
             <Award size={24} strokeWidth={1.5} />
           </div>
           <div>

@@ -49,7 +49,7 @@ function LoginForm() {
         {/* Header */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-[var(--accent)] mb-5 animate-pulse-glow">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--bg)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M12 2L2 7l10 5 10-5-10-5z" />
               <path d="M2 17l10 5 10-5" />
               <path d="M2 12l10 5 10-5" />
@@ -116,7 +116,7 @@ function LoginForm() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full px-4 py-2.5 rounded-[var(--radius-sm)] text-[13px] font-semibold text-[var(--bg)] bg-[var(--accent)] hover:bg-[var(--accent-hover)] disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-[0_1px_8px_rgba(212,168,83,0.15)]"
+              className="w-full px-4 py-2.5 rounded-[var(--radius-sm)] text-[13px] font-semibold text-white bg-[var(--accent)] hover:bg-[var(--accent-hover)] disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-[0_1px_8px_rgba(196,154,60,0.2)]"
             >
               {loading ? 'Signing in...' : 'Sign In'}
             </button>
