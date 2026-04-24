@@ -9,7 +9,7 @@ import Badge from '@/components/ui/Badge';
 import Progress from '@/components/ui/Progress';
 import GateTracker from '@/components/projects/GateTracker';
 import TemplateFillForm from '@/components/projects/TemplateFillForm';
-import { ChevronRight, CheckCircle2, Circle, PlayCircle, Clock, FileText, Shield, Lightbulb, Code, Download } from 'lucide-react';
+import { ChevronRight, CheckCircle2, Circle, PlayCircle, Clock, FileText, Shield, Lightbulb, Code } from 'lucide-react';
 import type { PlaybookStepData, TemplateData } from '@/types/project';
 
 const statusBadge: Record<string, 'default' | 'accent' | 'green' | 'amber'> = {
@@ -130,15 +130,9 @@ export default function ProjectDetailPage({ params }: { params: { id: string } }
           <a
             href={`/api/projects/${projectId}/export/pdf`}
             target="_blank"
-            className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-[12px] font-semibold bg-[var(--surface)] text-[var(--text-2)] hover:bg-[var(--accent-soft)] hover:text-[var(--accent)] transition-colors"
-          >
-            <FileText size={14} /> PDF Report
-          </a>
-          <a
-            href={`/api/projects/${projectId}/export/pptx`}
             className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-[12px] font-semibold bg-[var(--accent)] text-white hover:opacity-90 transition-opacity"
           >
-            <Download size={14} /> PPTX Report
+            <FileText size={14} /> PDF Report
           </a>
         </div>
       </div>

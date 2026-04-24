@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { generateProjectPdf } from '@/lib/pdf-export';
-import { generateProjectPptx } from '@/lib/pptx-export';
 import { requireAuth } from '@/lib/auth';
 import { logError } from '@/lib/logger';
 
@@ -16,7 +15,7 @@ export async function GET(
 
   const { id, format } = await params;
   const projectId = parseInt(id, 10);
-  if (isNaN(projectId) || !['pdf', 'pptx'].includes(format)) {
+  if (isNaN(projectId) || format !== 'pdf') {
     return NextResponse.json({ error: 'Invalid params' }, { status: 400 });
   }
 
@@ -37,7 +36,6 @@ export async function GET(
       templateFills: {
         include: { template: { select: { name: true, fields: true } } },
         orderBy: { updatedAt: 'desc' },
-        take: 10,
       },
       governance: {
         take: 5,
@@ -65,7 +63,9 @@ export async function GET(
   // ── Build Report Sections ──
   const sections = [];
 
-  // 1. Executive Summary
+  // ────────────────────────────────────────────
+  // 1. EXECUTIVE SUMMARY WITH COMPREHENSIVE FINDINGS
+  // ────────────────────────────────────────────
   const completedPhases = project.phaseProgress.filter((pp) => pp.status === 'completed').length;
   const totalPhases = project.phaseProgress.length;
   const completedSteps = project.stepProgress.filter((sp) => sp.status === 'completed').length;
@@ -74,6 +74,9 @@ export async function GET(
   const totalGates = project.gateChecks.length;
   const latestGov = project.governance[0];
   const latestCaio = project.caioAssessments[0];
+  const inProgressSteps = project.stepProgress.filter((sp) => sp.status === 'in_progress').length;
+  const totalFills = project.templateFills.length;
+  const openRisks = project.governance.reduce((sum, g) => sum + g.riskItems.filter(r => r.status === 'open').length, 0);
 
   sections.push({
     title: 'Executive Summary',
@@ -82,16 +85,25 @@ export async function GET(
       { label: 'Description', value: project.description || '\u2014' },
       { label: 'Status', value: project.status.toUpperCase() },
       { label: 'Current Phase', value: project.currentPhase?.name || '\u2014' },
-      { label: 'Phase Completion', value: `${completedPhases} of ${totalPhases} phases completed` },
-      { label: 'Step Completion', value: `${completedSteps} of ${totalSteps} steps completed (${totalSteps > 0 ? Math.round(completedSteps / totalSteps * 100) : 0}%)` },
-      { label: 'Gate Readiness', value: `${gatesPassed} of ${totalGates} gate checks passed (${totalGates > 0 ? Math.round(gatesPassed / totalGates * 100) : 0}%)` },
-      { label: 'Risk Classification', value: latestGov?.riskClassification?.toUpperCase() || latestCaio?.riskClassification?.toUpperCase() || 'Not assessed' },
       { label: 'Framework', value: project.framework || '\u2014' },
       { label: 'Architecture', value: project.architecturePattern?.replace(/_/g, ' ') || '\u2014' },
+      { label: '\u2500 Progress Overview \u2500', value: '' },
+      { label: 'Phase Completion', value: `${completedPhases} of ${totalPhases} phases completed (${totalPhases > 0 ? Math.round(completedPhases / totalPhases * 100) : 0}%)` },
+      { label: 'Step Completion', value: `${completedSteps} of ${totalSteps} steps completed (${totalSteps > 0 ? Math.round(completedSteps / totalSteps * 100) : 0}%)` },
+      { label: 'Steps In Progress', value: `${inProgressSteps} step${inProgressSteps !== 1 ? 's' : ''} currently in progress` },
+      { label: 'Gate Readiness', value: `${gatesPassed} of ${totalGates} gate checks passed (${totalGates > 0 ? Math.round(gatesPassed / totalGates * 100) : 0}%)` },
+      { label: '\u2500 Assessment Summary \u2500', value: '' },
+      { label: 'Risk Classification', value: latestGov?.riskClassification?.toUpperCase() || latestCaio?.riskClassification?.toUpperCase() || 'Not assessed' },
+      { label: 'Governance Score', value: latestGov?.overallScore ? `${latestGov.overallScore}/100` : 'Not assessed' },
+      { label: 'CAIO Maturity', value: latestCaio?.maturityLabel ? `Level ${latestCaio.maturityLevel}: ${latestCaio.maturityLabel}` : 'Not assessed' },
+      { label: 'Open Risks', value: `${openRisks} open risk${openRisks !== 1 ? 's' : ''} identified` },
+      { label: 'Documents Created', value: `${totalFills} template document${totalFills !== 1 ? 's' : ''} completed` },
     ],
   });
 
-  // 2. Phase-by-Phase Outcomes
+  // ────────────────────────────────────────────
+  // 2. PHASE-BY-PHASE OUTCOMES
+  // ────────────────────────────────────────────
   sections.push({
     title: 'Phase Progress & Outcomes',
     items: project.phaseProgress.map((pp) => {
@@ -109,7 +121,9 @@ export async function GET(
     }),
   });
 
-  // 3. Step-Level Findings (completed steps with notes/deliverables)
+  // ────────────────────────────────────────────
+  // 3. STEP-LEVEL FINDINGS (completed steps with notes/deliverables)
+  // ────────────────────────────────────────────
   const stepsWithNotes = project.stepProgress.filter((sp) => sp.notes || sp.deliverableData);
   if (stepsWithNotes.length > 0) {
     sections.push({
@@ -120,6 +134,12 @@ export async function GET(
         let val = `Status: ${sp.status.replace(/_/g, ' ').toUpperCase()}`;
         if (filledCount > 0) val += ` \u00b7 ${filledCount} deliverables recorded`;
         if (sp.notes) val += `\n${sp.notes}`;
+        if (deliverables) {
+          const deliverableEntries = Object.entries(deliverables).filter(([, v]) => v?.trim());
+          for (const [, v] of deliverableEntries) {
+            val += `\n  \u2022 ${v}`;
+          }
+        }
         return {
           label: `Step ${sp.step.stepNum}: ${sp.step.title}`,
           value: val,
@@ -128,7 +148,62 @@ export async function GET(
     });
   }
 
-  // 4. Governance Assessment Findings
+  // ────────────────────────────────────────────
+  // 4. ALL TEMPLATE FILL DATA (FULL FORM CONTENT)
+  // ────────────────────────────────────────────
+  if (project.templateFills.length > 0) {
+    for (const tf of project.templateFills) {
+      const values = tf.fieldValues as Record<string, string>;
+      const fields = tf.template.fields as {
+        key: string;
+        label: string;
+        type?: string;
+        section?: string;
+        columns?: { key: string; header: string }[];
+        subFields?: { key: string; label: string }[];
+      }[];
+
+      // Include ALL fields, showing filled values and marking empty ones
+      const filledFields = fields
+        .filter((f) => {
+          const v = values[f.key];
+          if (!v) return false;
+          // For tables/repeatables, check if there's actual content
+          if (f.type === 'table' || f.type === 'repeatable') {
+            try {
+              const parsed = JSON.parse(v);
+              if (Array.isArray(parsed) && parsed.length > 0) {
+                return parsed.some((row: Record<string, string>) =>
+                  Object.values(row).some(val => val?.toString().trim())
+                );
+              }
+              return false;
+            } catch { return !!v.trim(); }
+          }
+          // For checkboxes, always show
+          if (f.type === 'checkbox' || f.type === 'checkbox_with_rationale') return true;
+          return v.trim().length > 0;
+        })
+        .map((f) => ({
+          label: f.label,
+          value: values[f.key],
+          type: f.type,
+          columns: f.columns,
+          subFields: f.subFields,
+        }));
+
+      if (filledFields.length > 0) {
+        sections.push({
+          title: `${tf.template.name}: ${tf.title}`,
+          items: filledFields,
+        });
+      }
+    }
+  }
+
+  // ────────────────────────────────────────────
+  // 5. GOVERNANCE ASSESSMENT FINDINGS
+  // ────────────────────────────────────────────
   if (project.governance.length > 0) {
     for (const gov of project.governance.slice(0, 2)) {
       const items = [
@@ -172,7 +247,9 @@ export async function GET(
     }
   }
 
-  // 5. CAIO Maturity Assessment
+  // ────────────────────────────────────────────
+  // 6. CAIO MATURITY ASSESSMENT
+  // ────────────────────────────────────────────
   if (project.caioAssessments.length > 0) {
     for (const caio of project.caioAssessments.slice(0, 2)) {
       const items = [
@@ -228,7 +305,9 @@ export async function GET(
     }
   }
 
-  // 6. Evaluation Results
+  // ────────────────────────────────────────────
+  // 7. EVALUATION RESULTS
+  // ────────────────────────────────────────────
   if (project.evaluations.length > 0) {
     for (const ev of project.evaluations.slice(0, 3)) {
       const options = ev.options as { id: string; name: string }[];
@@ -267,37 +346,6 @@ export async function GET(
     }
   }
 
-  // 7. Documents & Templates (content from filled templates)
-  if (project.templateFills.length > 0) {
-    for (const tf of project.templateFills.slice(0, 5)) {
-      const values = tf.fieldValues as Record<string, string>;
-      const fields = tf.template.fields as {
-        key: string;
-        label: string;
-        type?: string;
-        section?: string;
-        columns?: { key: string; header: string }[];
-        subFields?: { key: string; label: string }[];
-      }[];
-      const filledFields = fields
-        .filter((f) => values[f.key])
-        .map((f) => ({
-          label: f.label,
-          value: values[f.key],
-          type: f.type,
-          columns: f.columns,
-          subFields: f.subFields,
-        }));
-
-      if (filledFields.length > 0) {
-        sections.push({
-          title: `Document \u2014 ${tf.template.name}: ${tf.title}`,
-          items: filledFields,
-        });
-      }
-    }
-  }
-
   const meta = {
     status: project.status,
     framework: project.framework || undefined,
@@ -306,23 +354,13 @@ export async function GET(
   };
 
   try {
-    if (format === 'pdf') {
-      const buffer = generateProjectPdf(project.name, project.description || '', sections, meta);
-      return new NextResponse(new Uint8Array(buffer), {
-        headers: {
-          'Content-Type': 'application/pdf',
-          'Content-Disposition': `inline; filename="${project.name.replace(/[^a-zA-Z0-9 ]/g, '')}_Report.pdf"`,
-        },
-      });
-    } else {
-      const buffer = await generateProjectPptx(project.name, project.description || '', sections, meta);
-      return new NextResponse(new Uint8Array(buffer), {
-        headers: {
-          'Content-Type': 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
-          'Content-Disposition': `attachment; filename="${project.name.replace(/[^a-zA-Z0-9 ]/g, '')}_Report.pptx"`,
-        },
-      });
-    }
+    const buffer = generateProjectPdf(project.name, project.description || '', sections, meta);
+    return new NextResponse(new Uint8Array(buffer), {
+      headers: {
+        'Content-Type': 'application/pdf',
+        'Content-Disposition': `inline; filename="${project.name.replace(/[^a-zA-Z0-9 ]/g, '')}_Report.pdf"`,
+      },
+    });
   } catch (err) {
     logError('GET /api/projects/export', err);
     return NextResponse.json({ error: 'Export failed' }, { status: 500 });

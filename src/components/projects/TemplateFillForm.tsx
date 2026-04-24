@@ -84,16 +84,21 @@ export default function TemplateFillForm({ template, projectId, existingFill, on
   const handleSave = async () => {
     setSaving(true);
     try {
-      await fetch(`/api/templates/${template.id}/fills`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          projectId,
-          title,
-          fieldValues,
-          fillId: existingFill?.id,
-        }),
-      });
+      if (existingFill?.id) {
+        // Update existing fill
+        await fetch(`/api/templates/fills/${existingFill.id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ title, fieldValues, projectId }),
+        });
+      } else {
+        // Create new fill using template slug
+        await fetch(`/api/templates/${template.slug}/fill`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ projectId, title, fieldValues }),
+        });
+      }
       clearDraft();
       setSaved(true);
       setTimeout(() => setSaved(false), 2000);

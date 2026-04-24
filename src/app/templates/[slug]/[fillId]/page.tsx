@@ -3,6 +3,7 @@ import prisma from '@/lib/prisma';
 import { notFound } from 'next/navigation';
 import Card from '@/components/ui/Card';
 import Badge from '@/components/ui/Badge';
+import DeleteFillButton from '@/components/templates/DeleteFillButton';
 import { ArrowLeft, Download, CheckCircle, Pencil, FileText } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
@@ -46,18 +47,19 @@ export default async function FillViewPage({ params }: { params: Promise<{ slug:
     <div className="flex flex-col gap-6">
       <div className="flex items-start justify-between">
         <div>
-          <Link href="/templates" className="text-[13px] text-[var(--accent)] hover:underline flex items-center gap-1 mb-3">
-            <ArrowLeft size={14} /> Back to Templates
+          <Link href={`/templates/${slug}/fills`} className="text-[13px] text-[var(--accent)] hover:underline flex items-center gap-1 mb-3">
+            <ArrowLeft size={14} /> Back to Fill History
           </Link>
           <h1 className="text-2xl font-semibold tracking-tight text-[var(--text)]">{fill.title}</h1>
           <div className="flex items-center gap-3 mt-2 text-sm text-[var(--text-3)]">
             <Badge variant="accent">{fill.template.name}</Badge>
+            {fill.project && <Badge variant="purple">{fill.project.name}</Badge>}
             <span>{new Date(fill.updatedAt).toLocaleDateString()}</span>
           </div>
         </div>
         <div className="flex gap-2">
           <Link
-            href={`/templates/${slug}`}
+            href={`/templates/${slug}?edit=${fillId}`}
             className="px-3 py-2 text-sm font-medium border border-[var(--border)] rounded-lg hover:border-[var(--accent)] flex items-center gap-1.5 text-[var(--text-2)]"
           >
             <Pencil size={14} /> Edit
@@ -71,17 +73,12 @@ export default async function FillViewPage({ params }: { params: Promise<{ slug:
             <FileText size={14} /> PDF
           </a>
           <a
-            href={`/api/templates/fills/${fillId}/export/pptx`}
-            className="px-3 py-2 text-sm font-medium border border-[var(--border)] rounded-lg hover:border-[var(--accent)] flex items-center gap-1.5 text-[var(--text-2)]"
-          >
-            <Download size={14} /> PPTX
-          </a>
-          <a
             href={`/api/templates/fills/${fillId}/export/docx`}
             className="px-3 py-2 text-sm font-semibold bg-[var(--accent)] text-white rounded-lg hover:opacity-90 flex items-center gap-1.5"
           >
             <Download size={14} /> DOCX
           </a>
+          <DeleteFillButton fillId={fillId} templateSlug={slug} />
         </div>
       </div>
 

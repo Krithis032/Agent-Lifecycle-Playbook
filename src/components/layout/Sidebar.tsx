@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
   Home, BookOpen, BookMarked, FolderKanban, BrainCircuit, Shield,
-  Award, BarChart3, FileText, MessageSquare
+  Award, BarChart3, FileText, MessageSquare, FolderOpen
 } from 'lucide-react';
 
 const sidebarItems = [
@@ -16,6 +16,7 @@ const sidebarItems = [
   { label: 'CAIO', href: '/caio', icon: Award },
   { label: 'Evaluate', href: '/evaluate', icon: BarChart3 },
   { label: 'Templates', href: '/templates', icon: FileText },
+  { label: 'My Documents', href: '/my-documents', icon: FolderOpen },
   { label: 'User Guide', href: '/user-guide', icon: BookMarked },
   { label: 'Interview', href: '/interview', icon: MessageSquare },
 ];
