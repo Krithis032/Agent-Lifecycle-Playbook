@@ -34,8 +34,8 @@ export async function GET(
         include: { gateCheck: { select: { gateTitle: true } } },
       },
       templateFills: {
-        include: { template: { select: { name: true, fields: true } } },
-        orderBy: { updatedAt: 'desc' },
+        include: { template: { select: { id: true, name: true, fields: true } } },
+        orderBy: { template: { id: 'asc' } },
       },
       governance: {
         take: 5,
