@@ -49,22 +49,46 @@ export interface ParsedPhase {
   };
 }
 
+export interface ParsedTemplateColumn {
+  key: string;
+  header: string;
+  type: string;
+  width?: string;
+  options?: string[];
+  helpText?: string;
+}
+
+export interface ParsedTemplateSubField {
+  key: string;
+  label: string;
+  type: string;
+  placeholder?: string;
+  required?: boolean;
+  helpText?: string;
+  options?: string[];
+}
+
+export interface ParsedTemplateField {
+  key: string;
+  label: string;
+  type: string;
+  placeholder?: string;
+  required?: boolean;
+  section?: string;
+  helpText?: string;
+  options?: string[];
+  defaultValue?: string;
+  columns?: ParsedTemplateColumn[];
+  subFields?: ParsedTemplateSubField[];
+  defaultRows?: number;
+}
+
 export interface ParsedTemplate {
   slug: string;
   name: string;
   description: string;
   phaseSlug?: string;
-  fields: {
-    key: string;
-    label: string;
-    type: string;
-    placeholder?: string;
-    required?: boolean;
-    section?: string;
-    helpText?: string;
-    options?: string[];
-    defaultValue?: string;
-  }[];
+  fields: ParsedTemplateField[];
 }
 
 function formatDomainName(key: string): string {
@@ -490,17 +514,51 @@ export function parseTemplatesYaml(filePath: string): ParsedTemplate[] {
     description: String(t.description || ''),
     phaseSlug: t.phase_slug ? String(t.phase_slug) : undefined,
     fields: Array.isArray(t.fields)
-      ? t.fields.map((f: Record<string, unknown>) => ({
-          key: String(f.key),
-          label: String(f.label),
-          type: String(f.type || 'text'),
-          placeholder: f.placeholder ? String(f.placeholder) : undefined,
-          required: Boolean(f.required),
-          section: f.section ? String(f.section) : undefined,
-          helpText: f.helpText ? String(f.helpText) : undefined,
-          options: Array.isArray(f.options) ? f.options.map(String) : undefined,
-          defaultValue: f.defaultValue ? String(f.defaultValue) : undefined,
-        }))
+      ? t.fields.map((f: Record<string, unknown>) => {
+          const field: ParsedTemplateField = {
+            key: String(f.key),
+            label: String(f.label),
+            type: String(f.type || 'text'),
+            placeholder: f.placeholder ? String(f.placeholder) : undefined,
+            required: Boolean(f.required),
+            section: f.section ? String(f.section) : undefined,
+            helpText: f.helpText ? String(f.helpText) : undefined,
+            options: Array.isArray(f.options) ? f.options.map(String) : undefined,
+            defaultValue: f.defaultValue ? String(f.defaultValue) : undefined,
+          };
+
+          // Table columns
+          if (Array.isArray(f.columns)) {
+            field.columns = f.columns.map((c: Record<string, unknown>) => ({
+              key: String(c.key),
+              header: String(c.header),
+              type: String(c.type || 'text'),
+              width: c.width ? String(c.width) : undefined,
+              options: Array.isArray(c.options) ? c.options.map(String) : undefined,
+              helpText: c.helpText ? String(c.helpText) : undefined,
+            }));
+          }
+
+          // Repeatable sub-fields
+          if (Array.isArray(f.subFields)) {
+            field.subFields = f.subFields.map((sf: Record<string, unknown>) => ({
+              key: String(sf.key),
+              label: String(sf.label),
+              type: String(sf.type || 'text'),
+              placeholder: sf.placeholder ? String(sf.placeholder) : undefined,
+              required: sf.required ? Boolean(sf.required) : undefined,
+              helpText: sf.helpText ? String(sf.helpText) : undefined,
+              options: Array.isArray(sf.options) ? sf.options.map(String) : undefined,
+            }));
+          }
+
+          // Default rows for tables
+          if (f.defaultRows !== undefined) {
+            field.defaultRows = Number(f.defaultRows);
+          }
+
+          return field;
+        })
       : [],
   }));
 }
