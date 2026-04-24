@@ -107,14 +107,14 @@ export default function ProjectDetailPage({ params }: { params: { id: string } }
   };
 
   return (
-    <div>
+    <div className="animate-fade-in">
       {/* Header */}
       <div className="flex items-start justify-between mb-6">
         <div>
           <Link href="/projects" className="text-[12px] font-semibold text-[var(--text-4)] hover:text-[var(--accent)] transition-colors mb-2 block">
             &larr; All Projects
           </Link>
-          <h1 className="text-3xl font-extrabold tracking-tight text-[var(--text)]">
+          <h1 className="text-3xl font-bold tracking-tight text-[var(--text)]">
             {project.name}
           </h1>
           {project.description && (
@@ -130,7 +130,7 @@ export default function ProjectDetailPage({ params }: { params: { id: string } }
           <a
             href={`/api/projects/${projectId}/export/pdf`}
             target="_blank"
-            className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-[12px] font-semibold bg-[var(--accent)] text-white hover:opacity-90 transition-opacity"
+            className="flex items-center gap-1.5 px-3 py-2 rounded-[var(--radius-sm)] text-[12px] font-semibold bg-[var(--accent)] text-white hover:opacity-90 transition-opacity"
           >
             <FileText size={14} /> PDF Report
           </a>
@@ -147,12 +147,12 @@ export default function ProjectDetailPage({ params }: { params: { id: string } }
               <div key={pp.phaseId} className="flex items-center">
                 <button
                   onClick={() => { setActivePhaseId(pp.phaseId); setActiveStepId(null); }}
-                  className={`flex items-center gap-1.5 px-2 py-1.5 rounded-lg text-[11px] font-semibold transition-all whitespace-nowrap ${
+                  className={`flex items-center gap-1.5 px-2 py-1.5 rounded-[var(--radius-sm)] text-[11px] font-semibold transition-all whitespace-nowrap ${
                     isActive
                       ? 'bg-[var(--accent-soft)] text-[var(--accent)] ring-1 ring-[var(--accent)]'
                       : pp.status === 'completed'
                       ? 'text-[var(--success)]'
-                      : 'text-[var(--text-3)] hover:bg-[var(--surface)]'
+                      : 'text-[var(--text-3)] hover:bg-[var(--surface-hover)]'
                   }`}
                 >
                   {pp.status === 'completed' ? (
@@ -208,10 +208,10 @@ export default function ProjectDetailPage({ params }: { params: { id: string } }
                   <button
                     key={step.id}
                     onClick={() => setActiveStepId(step.id)}
-                    className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left transition-all ${
+                    className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-[var(--radius-sm)] text-left transition-all ${
                       isSelected
                         ? 'bg-[var(--accent-soft)] ring-1 ring-[var(--accent)]'
-                        : 'hover:bg-[var(--surface)]'
+                        : 'hover:bg-[var(--surface-hover)]'
                     }`}
                   >
                     {stepStatus === 'completed' ? (
@@ -239,13 +239,13 @@ export default function ProjectDetailPage({ params }: { params: { id: string } }
             {/* Phase Templates */}
             {phaseTemplates.length > 0 && (
               <div className="mt-4">
-                <h3 className="text-[11px] font-extrabold uppercase tracking-widest text-[var(--text-4)] mb-2">Templates</h3>
+                <h3 className="text-[11px] font-bold uppercase tracking-widest text-[var(--text-4)] mb-2">Templates</h3>
                 <div className="space-y-1.5">
                   {phaseTemplates.map((t) => (
                     <button
                       key={t.id}
                       onClick={() => setShowTemplate(t)}
-                      className="w-full flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-[var(--surface)] transition-all text-left"
+                      className="w-full flex items-center gap-2 px-3 py-2 rounded-[var(--radius-sm)] hover:bg-[var(--surface-hover)] transition-all text-left"
                     >
                       <FileText size={14} className="text-[var(--purple)] shrink-0" />
                       <span className="text-[12px] font-semibold text-[var(--text-2)]">{t.name}</span>
@@ -364,7 +364,7 @@ function StepDetail({
       {/* Step Header */}
       <div className="flex items-start justify-between mb-4">
         <div>
-          <h2 className="text-xl font-extrabold tracking-tight text-[var(--text)]">
+          <h2 className="text-xl font-bold tracking-tight text-[var(--text)]">
             Step {step.stepNum}: {step.title}
           </h2>
           <Badge variant={statusBadge[status] || 'default'} className="mt-2">
@@ -401,7 +401,7 @@ function StepDetail({
           <div className="flex items-start gap-2">
             <Lightbulb size={16} className="text-[var(--amber)] mt-0.5 shrink-0" />
             <div>
-              <h4 className="text-[11px] font-extrabold uppercase tracking-widest text-[var(--amber)] mb-1">Pro Tip</h4>
+              <h4 className="text-[11px] font-bold uppercase tracking-widest text-[var(--amber)] mb-1">Pro Tip</h4>
               <p className="text-[13px] text-[var(--text-2)]">{step.proTip}</p>
             </div>
           </div>
@@ -413,9 +413,9 @@ function StepDetail({
         <Card className="mb-4">
           <div className="flex items-center gap-2 mb-2">
             <Code size={14} className="text-[var(--purple)]" />
-            <h4 className="text-[11px] font-extrabold uppercase tracking-widest text-[var(--text-4)]">Code Example</h4>
+            <h4 className="text-[11px] font-bold uppercase tracking-widest text-[var(--text-4)]">Code Example</h4>
           </div>
-          <pre className="bg-[var(--surface)] rounded-lg p-4 overflow-x-auto text-[12px] font-mono text-[var(--text-2)]">
+          <pre className="bg-[var(--surface)] rounded-[var(--radius-sm)] p-4 overflow-x-auto text-[12px] font-mono text-[var(--text-2)]">
             {step.codeExample}
           </pre>
         </Card>
@@ -424,7 +424,7 @@ function StepDetail({
       {/* Deliverables Checklist */}
       {deliverables.length > 0 && (
         <Card className="mb-4">
-          <h4 className="text-[11px] font-extrabold uppercase tracking-widest text-[var(--text-4)] mb-3">
+          <h4 className="text-[11px] font-bold uppercase tracking-widest text-[var(--text-4)] mb-3">
             Deliverables ({Object.keys(deliverableData).filter((k) => deliverableData[k]).length}/{deliverables.length})
           </h4>
           <div className="space-y-3">
@@ -442,7 +442,7 @@ function StepDetail({
                     {d}
                   </label>
                   <textarea
-                    className="w-full px-3 py-2 border border-[var(--border)] rounded-lg text-[12px] bg-[var(--bg)] text-[var(--text)] focus:border-[var(--accent)] focus:outline-none resize-none"
+                    className="w-full px-3 py-2 border border-[var(--border)] rounded-[var(--radius-sm)] text-[12px] bg-[var(--bg)] text-[var(--text)] focus:border-[var(--accent)] focus:outline-none resize-none"
                     rows={2}
                     placeholder={`Notes or link for: ${d}`}
                     value={value}
@@ -458,7 +458,7 @@ function StepDetail({
       {/* Tools */}
       {tools.length > 0 && (
         <Card className="mb-4">
-          <h4 className="text-[11px] font-extrabold uppercase tracking-widest text-[var(--text-4)] mb-2">Tools & Resources</h4>
+          <h4 className="text-[11px] font-bold uppercase tracking-widest text-[var(--text-4)] mb-2">Tools & Resources</h4>
           <div className="flex flex-wrap gap-2">
             {tools.map((t, i) => (
               <Badge key={i} variant="cyan">{t}</Badge>
@@ -469,9 +469,9 @@ function StepDetail({
 
       {/* Notes */}
       <Card>
-        <h4 className="text-[11px] font-extrabold uppercase tracking-widest text-[var(--text-4)] mb-2">Your Notes</h4>
+        <h4 className="text-[11px] font-bold uppercase tracking-widest text-[var(--text-4)] mb-2">Your Notes</h4>
         <textarea
-          className="w-full px-3 py-2 border border-[var(--border)] rounded-lg text-[13px] bg-[var(--bg)] text-[var(--text)] focus:border-[var(--accent)] focus:outline-none resize-y"
+          className="w-full px-3 py-2 border border-[var(--border)] rounded-[var(--radius-sm)] text-[13px] bg-[var(--bg)] text-[var(--text)] focus:border-[var(--accent)] focus:outline-none resize-y"
           rows={4}
           placeholder="Add notes, observations, decisions..."
           value={localNotes}

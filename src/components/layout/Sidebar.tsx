@@ -30,10 +30,16 @@ export default function Sidebar() {
   };
 
   return (
-    <aside className="hidden md:flex flex-col w-[220px] min-h-screen border-r border-[var(--border)] bg-[var(--canvas)] p-4 gap-1">
-      <div className="flex items-center gap-2.5 px-3 py-4 mb-2">
-        <div className="w-2 h-2 rounded-full bg-[var(--coral)] animate-pulse" />
-        <span className="text-[15px] font-bold text-[var(--accent)] tracking-tight">
+    <aside className="hidden md:flex flex-col w-[220px] min-h-screen border-r border-[var(--border)] bg-[var(--surface)] p-4 gap-0.5">
+      <div className="flex items-center gap-2.5 px-3 py-4 mb-3">
+        <div className="w-7 h-7 rounded-lg bg-[var(--accent)] flex items-center justify-center animate-pulse-glow">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--bg)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M12 2L2 7l10 5 10-5-10-5z" />
+            <path d="M2 17l10 5 10-5" />
+            <path d="M2 12l10 5 10-5" />
+          </svg>
+        </div>
+        <span className="text-[14px] font-bold text-[var(--text)] tracking-tight">
           Agent Deployment Playbook
         </span>
       </div>
@@ -44,13 +50,13 @@ export default function Sidebar() {
           <Link
             key={item.href}
             href={item.href}
-            className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-[13px] font-semibold transition-all duration-200 ${
+            className={`flex items-center gap-2.5 px-3 py-[8px] rounded-[var(--radius-sm)] text-[13px] font-medium transition-all duration-200 group ${
               active
                 ? 'text-[var(--accent)] bg-[var(--accent-soft)]'
-                : 'text-[var(--text-3)] hover:text-[var(--text)] hover:bg-[var(--surface)]'
+                : 'text-[var(--text-3)] hover:text-[var(--text-2)] hover:bg-[var(--surface-hover)]'
             }`}
           >
-            <Icon size={16} />
+            <Icon size={16} className={`shrink-0 transition-colors ${active ? 'text-[var(--accent)]' : 'text-[var(--text-4)] group-hover:text-[var(--text-3)]'}`} />
             {item.label}
           </Link>
         );

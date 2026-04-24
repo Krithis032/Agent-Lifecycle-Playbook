@@ -29,7 +29,7 @@ export default async function EvaluatePage() {
   }, {} as Record<string, number>);
 
   return (
-    <div className="flex flex-col gap-8">
+    <div className="flex flex-col gap-8 animate-fade-in">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -38,7 +38,7 @@ export default async function EvaluatePage() {
         </div>
         <Link
           href="/evaluate/new"
-          className="bg-[var(--accent)] text-white px-4 py-2 rounded-[6px] text-sm font-medium hover:bg-blue-700 transition-colors flex items-center gap-2"
+          className="bg-[var(--accent)] text-white px-4 py-2 rounded-[var(--radius-sm)] text-sm font-medium hover:bg-[var(--accent-hover)] transition-colors flex items-center gap-2"
         >
           <Plus size={16} /> New Evaluation
         </Link>
@@ -68,22 +68,22 @@ export default async function EvaluatePage() {
 
       {/* Quick actions */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-        <Link href="/evaluate/new?type=framework" className="flex items-center gap-3 p-4 rounded-xl border border-[var(--border)] bg-[var(--surface-active)] hover:border-[var(--accent)] hover:shadow-sm transition-all">
+        <Link href="/evaluate/new?type=framework" className="flex items-center gap-3 p-4 rounded-xl border border-[var(--border)] bg-[var(--surface-active)] hover:border-[var(--accent)] transition-all">
           <Layers size={18} className="text-[var(--accent)]" />
           <div>
             <div className="text-sm font-semibold text-[var(--text)]">Compare Frameworks</div>
             <div className="text-xs text-[var(--text-4)]">LangGraph vs CrewAI vs Claude SDK...</div>
           </div>
         </Link>
-        <Link href="/evaluate/new?type=architecture" className="flex items-center gap-3 p-4 rounded-xl border border-[var(--border)] bg-[var(--surface-active)] hover:border-[var(--accent)] hover:shadow-sm transition-all">
+        <Link href="/evaluate/new?type=architecture" className="flex items-center gap-3 p-4 rounded-xl border border-[var(--border)] bg-[var(--surface-active)] hover:border-[var(--accent)] transition-all">
           <Cpu size={18} className="text-[var(--success)]" />
           <div>
             <div className="text-sm font-semibold text-[var(--text)]">Architecture Selection</div>
             <div className="text-xs text-[var(--text-4)]">Single Agent vs Pipeline vs Supervisor...</div>
           </div>
         </Link>
-        <Link href="/evaluate/new?type=model_tier" className="flex items-center gap-3 p-4 rounded-xl border border-[var(--border)] bg-[var(--surface-active)] hover:border-[var(--accent)] hover:shadow-sm transition-all">
-          <Sparkles size={18} className="text-purple-600" />
+        <Link href="/evaluate/new?type=model_tier" className="flex items-center gap-3 p-4 rounded-xl border border-[var(--border)] bg-[var(--surface-active)] hover:border-[var(--accent)] transition-all">
+          <Sparkles size={18} style={{ color: '#a78bfa' }} />
           <div>
             <div className="text-sm font-semibold text-[var(--text)]">Use Preset</div>
             <div className="text-xs text-[var(--text-4)]">Customer Support, Code Gen, Research...</div>
@@ -112,7 +112,7 @@ export default async function EvaluatePage() {
               {evaluations.map(e => {
                 const tb = typeBadge(e.evalType);
                 return (
-                  <tr key={e.id} className="hover:bg-[var(--surface)] transition-colors">
+                  <tr key={e.id} className="hover:bg-[var(--surface-hover)] transition-colors">
                     <td className="px-6 py-4 font-medium text-[var(--text)]">{e.title}</td>
                     <td className="px-6 py-4"><Badge variant={tb.variant}>{tb.label}</Badge></td>
                     <td className="px-6 py-4 text-[var(--text-2)]">{e.recommendation || '—'}</td>
@@ -132,7 +132,7 @@ export default async function EvaluatePage() {
                     <BarChart3 size={32} className="mx-auto mb-3 text-[var(--text-4)]" />
                     <p className="font-medium">No evaluations yet</p>
                     <p className="text-[13px] text-[var(--text-4)] mt-1">Create your first evaluation to compare frameworks, architectures, or custom options.</p>
-                    <Link href="/evaluate/new" className="inline-flex items-center gap-2 mt-4 px-4 py-2 bg-[var(--accent)] text-white text-sm font-medium rounded-lg hover:opacity-90">
+                    <Link href="/evaluate/new" className="inline-flex items-center gap-2 mt-4 px-4 py-2 bg-[var(--accent)] text-white text-sm font-medium rounded-[var(--radius-sm)] hover:opacity-90">
                       <Plus size={14} /> New Evaluation
                     </Link>
                   </td>

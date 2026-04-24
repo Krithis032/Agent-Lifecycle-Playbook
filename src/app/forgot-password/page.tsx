@@ -35,7 +35,7 @@ export default function ForgotPasswordPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[var(--bg)]">
+    <div className="min-h-screen flex items-center justify-center bg-[var(--bg)] animate-fade-in">
       <div className="w-full max-w-[400px] mx-auto px-4">
         {/* Header */}
         <div className="text-center mb-8">
@@ -45,7 +45,7 @@ export default function ForgotPasswordPage() {
               <path d="M7 11V7a5 5 0 0 1 10 0v4" />
             </svg>
           </div>
-          <h1 className="text-2xl font-extrabold tracking-tight text-[var(--text)]">
+          <h1 className="text-2xl font-bold tracking-tight text-[var(--text)]">
             Forgot Password
           </h1>
           <p className="text-[13px] text-[var(--text-3)] mt-1">
@@ -56,11 +56,11 @@ export default function ForgotPasswordPage() {
         </div>
 
         {/* Card */}
-        <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-8 shadow-sm">
+        <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-8">
           {sent ? (
             <div className="text-center space-y-4">
-              <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-green-50 border border-green-200 mb-2">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-[var(--success-soft)] border border-[rgba(34,197,94,0.15)] mb-2">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--success)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <polyline points="20 6 9 17 4 12" />
                 </svg>
               </div>
@@ -80,7 +80,7 @@ export default function ForgotPasswordPage() {
           ) : (
             <form onSubmit={handleSubmit} className="space-y-4">
               {error && (
-                <div className="px-3 py-2 rounded-lg bg-red-50 border border-red-200 text-red-700 text-[13px] font-medium">
+                <div className="px-3 py-2 rounded-[var(--radius-sm)] bg-[var(--error-soft)] border border-[rgba(224,85,85,0.15)] text-[var(--error)] text-[13px] font-medium">
                   {error}
                 </div>
               )}

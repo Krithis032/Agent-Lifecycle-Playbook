@@ -34,19 +34,19 @@ export default function Modal({ open, onClose, title, children, maxWidth = '560p
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
-      <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" onClick={onClose} />
+      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
       <div
-        className="relative bg-[var(--bg)] border border-[var(--border)] rounded-[14px] shadow-[var(--shadow-float)] w-[90vw] max-h-[85vh] overflow-y-auto animate-in fade-in zoom-in-95"
+        className="relative bg-[var(--surface)] border border-[var(--border)] rounded-[var(--radius-lg)] shadow-[var(--shadow-float)] w-[90vw] max-h-[85vh] overflow-y-auto animate-scale-in"
         style={{ maxWidth }}
       >
         <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--border)]">
-          <h3 className="text-lg font-bold tracking-tight text-[var(--text)]">{title}</h3>
+          <h3 className="text-[15px] font-bold tracking-tight text-[var(--text)]">{title}</h3>
           <button
             onClick={onClose}
-            className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-[var(--surface)] text-[var(--text-3)] transition-colors"
+            className="w-8 h-8 flex items-center justify-center rounded-[var(--radius-sm)] hover:bg-[var(--surface-hover)] text-[var(--text-4)] hover:text-[var(--text-3)] transition-all"
             aria-label="Close"
           >
-            <X size={18} />
+            <X size={16} />
           </button>
         </div>
         <div className="p-6">{children}</div>

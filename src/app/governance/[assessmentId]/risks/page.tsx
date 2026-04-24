@@ -64,7 +64,7 @@ export default function RiskRegisterPage({ params }: { params: { assessmentId: s
   if (loading) return <p className="text-[var(--text-3)] py-12 text-center">Loading risks...</p>;
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-6 animate-fade-in">
       <div>
         <Link href={`/governance/${params.assessmentId}`} className="text-[12px] font-semibold text-[var(--text-4)] hover:text-[var(--accent)] transition-colors mb-2 block">
           <ChevronLeft size={14} className="inline" /> Back to Assessment
@@ -80,13 +80,13 @@ export default function RiskRegisterPage({ params }: { params: { assessmentId: s
       {/* Filters */}
       <div className="flex items-center gap-3">
         <Filter size={14} className="text-[var(--text-4)]" />
-        <select value={filter.category} onChange={e => setFilter(f => ({ ...f, category: e.target.value }))} className="px-2 py-1 border border-[var(--border)] rounded text-[12px] bg-white">
+        <select value={filter.category} onChange={e => setFilter(f => ({ ...f, category: e.target.value }))} className="px-2 py-1 border border-[var(--border)] rounded text-[12px] bg-[var(--surface)]">
           <option value="">All Categories</option>
           {['data', 'model', 'security', 'compliance', 'operational', 'ethical'].map(c => (
             <option key={c} value={c}>{c}</option>
           ))}
         </select>
-        <select value={filter.severity} onChange={e => setFilter(f => ({ ...f, severity: e.target.value }))} className="px-2 py-1 border border-[var(--border)] rounded text-[12px] bg-white">
+        <select value={filter.severity} onChange={e => setFilter(f => ({ ...f, severity: e.target.value }))} className="px-2 py-1 border border-[var(--border)] rounded text-[12px] bg-[var(--surface)]">
           <option value="">All Severities</option>
           {['low', 'medium', 'high', 'critical'].map(s => (
             <option key={s} value={s}>{s}</option>
@@ -100,19 +100,19 @@ export default function RiskRegisterPage({ params }: { params: { assessmentId: s
         <Card>
           <h3 className="text-[14px] font-semibold mb-3">New Risk Item</h3>
           <div className="grid grid-cols-2 gap-3 mb-3">
-            <select value={newRisk.category} onChange={e => setNewRisk(p => ({ ...p, category: e.target.value }))} className="px-3 py-2 border border-[var(--border)] rounded-md text-[13px] bg-white">
+            <select value={newRisk.category} onChange={e => setNewRisk(p => ({ ...p, category: e.target.value }))} className="px-3 py-2 border border-[var(--border)] rounded-md text-[13px] bg-[var(--surface)]">
               {['data', 'model', 'security', 'compliance', 'operational', 'ethical'].map(c => (
                 <option key={c} value={c}>{c}</option>
               ))}
             </select>
-            <select value={newRisk.severity} onChange={e => setNewRisk(p => ({ ...p, severity: e.target.value }))} className="px-3 py-2 border border-[var(--border)] rounded-md text-[13px] bg-white">
+            <select value={newRisk.severity} onChange={e => setNewRisk(p => ({ ...p, severity: e.target.value }))} className="px-3 py-2 border border-[var(--border)] rounded-md text-[13px] bg-[var(--surface)]">
               {['low', 'medium', 'high', 'critical'].map(s => (
                 <option key={s} value={s}>{s}</option>
               ))}
             </select>
           </div>
-          <input type="text" placeholder="Risk title..." value={newRisk.title} onChange={e => setNewRisk(p => ({ ...p, title: e.target.value }))} className="w-full px-3 py-2 border border-[var(--border)] rounded-md text-[13px] bg-white mb-2" />
-          <textarea rows={2} placeholder="Description..." value={newRisk.description} onChange={e => setNewRisk(p => ({ ...p, description: e.target.value }))} className="w-full px-3 py-2 border border-[var(--border)] rounded-md text-[13px] bg-white resize-none mb-2" />
+          <input type="text" placeholder="Risk title..." value={newRisk.title} onChange={e => setNewRisk(p => ({ ...p, title: e.target.value }))} className="w-full px-3 py-2 border border-[var(--border)] rounded-md text-[13px] bg-[var(--surface)] mb-2" />
+          <textarea rows={2} placeholder="Description..." value={newRisk.description} onChange={e => setNewRisk(p => ({ ...p, description: e.target.value }))} className="w-full px-3 py-2 border border-[var(--border)] rounded-md text-[13px] bg-[var(--surface)] resize-none mb-2" />
           <div className="flex gap-2">
             <Button size="sm" onClick={handleAddRisk}>Save Risk</Button>
             <Button size="sm" variant="ghost" onClick={() => setShowAdd(false)}>Cancel</Button>

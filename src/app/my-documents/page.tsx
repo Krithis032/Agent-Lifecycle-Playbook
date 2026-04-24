@@ -31,7 +31,7 @@ export default async function MyDocumentsPage() {
   const projectCount = new Set(fills.filter(f => f.project).map(f => f.project!.id)).size;
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-6 animate-fade-in">
       <div>
         <h1 className="text-2xl font-semibold tracking-tight text-[var(--text)]">My Documents</h1>
         <p className="text-sm text-[var(--text-3)] mt-1">All filled templates and documents across your projects.</p>

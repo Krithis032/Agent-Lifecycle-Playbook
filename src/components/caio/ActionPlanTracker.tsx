@@ -17,12 +17,12 @@ const phaseLabels: Record<string, { label: string; icon: string }> = {
 };
 
 const ownerColors: Record<string, string> = {
-  CAIO: 'bg-blue-50 text-blue-700',
-  CTO: 'bg-purple-50 text-purple-700',
-  CDO: 'bg-indigo-50 text-indigo-700',
-  Legal: 'bg-amber-50 text-amber-700',
-  HR: 'bg-pink-50 text-pink-700',
-  PM: 'bg-teal-50 text-teal-700',
+  CAIO: 'bg-[var(--info-soft)] text-[var(--info)]',
+  CTO: 'bg-[rgba(139,92,246,0.1)] text-[#a78bfa]',
+  CDO: 'bg-[rgba(99,102,241,0.1)] text-[#818cf8]',
+  Legal: 'bg-[var(--warning-soft)] text-[var(--warning)]',
+  HR: 'bg-[rgba(236,72,153,0.1)] text-[#f472b6]',
+  PM: 'bg-[rgba(20,184,166,0.1)] text-[#5eead4]',
 };
 
 export default function ActionPlanTracker({ actions, onStatusChange, onOwnerChange }: ActionPlanTrackerProps) {
@@ -75,7 +75,7 @@ export default function ActionPlanTracker({ actions, onStatusChange, onOwnerChan
             </h3>
             <div className="space-y-2">
               {items.map((action) => (
-                <div key={action.id} className={`border border-[var(--border)] rounded-lg p-4 bg-white ${updating === action.id ? 'opacity-50' : ''}`}>
+                <div key={action.id} className={`border border-[var(--border)] rounded-lg p-4 bg-[var(--surface)] ${updating === action.id ? 'opacity-50' : ''}`}>
                   <div className="flex items-start justify-between mb-2">
                     <p className="text-[13px] text-[var(--text)] flex-1">{action.action}</p>
                     <div className="flex gap-1.5 shrink-0 ml-2">
@@ -94,7 +94,7 @@ export default function ActionPlanTracker({ actions, onStatusChange, onOwnerChan
                       <select
                         value={action.status}
                         onChange={(e) => handleStatus(action.id, e.target.value)}
-                        className="text-[12px] px-2 py-1 border border-[var(--border)] rounded bg-white focus:outline-none focus:border-[var(--accent)]"
+                        className="text-[12px] px-2 py-1 border border-[var(--border)] rounded bg-[var(--bg)] focus:outline-none focus:border-[var(--accent)]"
                       >
                         <option value="pending">Pending</option>
                         <option value="in_progress">In Progress</option>
@@ -109,7 +109,7 @@ export default function ActionPlanTracker({ actions, onStatusChange, onOwnerChan
                       <select
                         value={action.owner || ''}
                         onChange={(e) => handleOwner(action.id, e.target.value)}
-                        className="text-[12px] px-2 py-1 border border-[var(--border)] rounded bg-white focus:outline-none focus:border-[var(--accent)]"
+                        className="text-[12px] px-2 py-1 border border-[var(--border)] rounded bg-[var(--bg)] focus:outline-none focus:border-[var(--accent)]"
                       >
                         <option value="">Assign Owner</option>
                         {['CAIO', 'CTO', 'CDO', 'Legal', 'HR', 'PM'].map(o => (

@@ -23,7 +23,7 @@ export default function PhaseCard({
         <div className="flex items-start justify-between mb-3">
           <span className="text-2xl">{icon}</span>
           <span
-            className="text-[9px] font-extrabold tracking-[2.5px] uppercase"
+            className="text-[9px] font-bold tracking-[2.5px] uppercase"
             style={{ color }}
           >
             Phase {phaseNum}

@@ -34,7 +34,7 @@ export default function FindingsPanel({ findings }: FindingsPanelProps) {
             </h3>
             <div className="space-y-2">
               {items.map((f) => (
-                <div key={f.id} className="border border-[var(--border)] rounded-lg p-4 bg-white">
+                <div key={f.id} className="border border-[var(--border)] rounded-lg p-4 bg-[var(--surface)]">
                   <div className="flex items-start justify-between mb-2">
                     <h4 className="text-[13px] font-semibold text-[var(--text)]">{f.title}</h4>
                     <Badge variant={config.variant}>{severity}</Badge>

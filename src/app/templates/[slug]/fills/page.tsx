@@ -28,7 +28,7 @@ export default async function FillHistoryPage({ params }: { params: { slug: stri
   }));
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="animate-fade-in flex flex-col gap-6">
       <div className="flex items-start justify-between">
         <div>
           <Link href="/templates" className="text-[13px] text-[var(--accent)] hover:underline flex items-center gap-1 mb-3">
@@ -41,7 +41,7 @@ export default async function FillHistoryPage({ params }: { params: { slug: stri
         </div>
         <Link
           href={`/templates/${params.slug}`}
-          className="bg-[var(--accent)] text-white px-4 py-2 rounded-lg text-sm font-semibold hover:opacity-90 flex items-center gap-2"
+          className="bg-[var(--accent)] text-white px-4 py-2 rounded-[var(--radius-sm)] text-sm font-semibold hover:opacity-90 flex items-center gap-2"
         >
           <Plus size={14} /> New Fill
         </Link>

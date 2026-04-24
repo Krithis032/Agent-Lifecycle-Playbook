@@ -35,7 +35,7 @@ export default function MaturityGauge({ level, label }: MaturityGaugeProps) {
   };
 
   return (
-    <div className="bg-white rounded-lg border border-[var(--border)] p-6 text-center">
+    <div className="bg-[var(--surface)] rounded-lg border border-[var(--border)] p-6 text-center">
       <h3 className="text-[15px] font-semibold mb-2 text-[var(--text)]">Maturity Level</h3>
       <div className="relative inline-block">
         <svg width="200" height="140" viewBox="0 0 200 140">

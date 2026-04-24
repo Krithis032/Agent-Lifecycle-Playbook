@@ -37,7 +37,7 @@ export default function CaioDetailPage({ params }: { params: { id: string } }) {
   }));
 
   return (
-    <div className="flex flex-col gap-8">
+    <div className="flex flex-col gap-8 animate-fade-in">
       {/* Header */}
       <div>
         <Link href="/caio" className="text-[12px] font-semibold text-[var(--text-4)] hover:text-[var(--accent)] transition-colors mb-2 block">
@@ -45,7 +45,7 @@ export default function CaioDetailPage({ params }: { params: { id: string } }) {
         </Link>
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-semibold tracking-tight text-[var(--text)] flex items-center gap-2">
+            <h1 className="text-2xl font-bold tracking-tight text-[var(--text)] flex items-center gap-2">
               <Award size={24} className="text-[var(--accent)]" />
               {assessment.initiativeName}
             </h1>
@@ -93,14 +93,14 @@ export default function CaioDetailPage({ params }: { params: { id: string } }) {
       {/* Executive Summary */}
       {assessment.executiveSummary && (
         <Card>
-          <h3 className="text-[15px] font-semibold mb-3 text-[var(--text)]">Executive Summary</h3>
+          <h3 className="text-[15px] font-bold mb-3 text-[var(--text)]">Executive Summary</h3>
           <p className="text-[13px] text-[var(--text-2)] leading-relaxed whitespace-pre-wrap">{assessment.executiveSummary}</p>
         </Card>
       )}
 
       {/* Domain Score Cards */}
       <div>
-        <h2 className="text-lg font-semibold text-[var(--text)] mb-4">Domain Scores ({domainScores.length})</h2>
+        <h2 className="text-lg font-bold text-[var(--text)] mb-4">Domain Scores ({domainScores.length})</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
           {domainScores.map(d => {
             const domainDef = CAIO_DOMAINS.find(cd => cd.key === d.domainKey);
@@ -121,14 +121,14 @@ export default function CaioDetailPage({ params }: { params: { id: string } }) {
 
       {/* Findings */}
       <div>
-        <h2 className="text-lg font-semibold text-[var(--text)] mb-4">Findings ({findings.length})</h2>
+        <h2 className="text-lg font-bold text-[var(--text)] mb-4">Findings ({findings.length})</h2>
         <FindingsPanel findings={findings} />
       </div>
 
       {/* Action Items */}
       <div>
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold text-[var(--text)]">Action Plan ({actionItems.length})</h2>
+          <h2 className="text-lg font-bold text-[var(--text)]">Action Plan ({actionItems.length})</h2>
           <Link href={`/caio/${params.id}/actions`} className="text-[13px] font-medium text-[var(--accent)] hover:underline flex items-center gap-1">
             Manage Actions <ArrowRight size={14} />
           </Link>

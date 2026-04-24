@@ -55,7 +55,7 @@ export default function TrustLayerForm({ scores, onChange }: TrustLayerFormProps
       {TRUST_LAYERS.map((layer, i) => {
         const score = scores[i];
         return (
-          <div key={layer.slug} className="border border-[var(--border)] rounded-lg p-5 bg-white">
+          <div key={layer.slug} className="border border-[var(--border)] rounded-lg p-5 bg-[var(--surface)]">
             <div className="flex items-start justify-between mb-3">
               <div>
                 <h3 className="text-[14px] font-semibold text-[var(--text)]">
@@ -111,7 +111,7 @@ export default function TrustLayerForm({ scores, onChange }: TrustLayerFormProps
                 rows={2}
                 value={score.evidence}
                 onChange={(e) => updateScore(i, 'evidence', e.target.value)}
-                className="w-full px-3 py-2 border border-[var(--border)] rounded-md text-[13px] bg-white focus:border-[var(--accent)] focus:outline-none resize-none"
+                className="w-full px-3 py-2 border border-[var(--border)] rounded-md text-[13px] bg-[var(--bg)] focus:border-[var(--accent)] focus:outline-none resize-none"
                 placeholder="Describe evidence supporting this score..."
               />
             </div>
@@ -125,7 +125,7 @@ export default function TrustLayerForm({ scores, onChange }: TrustLayerFormProps
                     type="text"
                     value={gap}
                     onChange={(e) => updateGap(i, gi, e.target.value)}
-                    className="flex-1 px-3 py-1.5 border border-[var(--border)] rounded-md text-[13px] bg-white focus:border-[var(--accent)] focus:outline-none"
+                    className="flex-1 px-3 py-1.5 border border-[var(--border)] rounded-md text-[13px] bg-[var(--bg)] focus:border-[var(--accent)] focus:outline-none"
                     placeholder="Describe gap..."
                   />
                   <button

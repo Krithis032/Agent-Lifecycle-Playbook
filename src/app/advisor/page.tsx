@@ -2,9 +2,9 @@ import ChatInterface from '@/components/advisor/ChatInterface';
 
 export default function AdvisorPage() {
   return (
-    <div>
+    <div className="animate-fade-in">
       <div className="eyebrow mb-4">Knowledge Base</div>
-      <h1 className="text-3xl font-extrabold tracking-tight mb-2 text-[var(--text)]">
+      <h1 className="text-3xl font-bold tracking-tight mb-2 text-[var(--text)]">
         KB <span className="text-[var(--accent)] font-light italic">Advisor</span>
       </h1>
       <p className="text-[15px] text-[var(--text-3)] max-w-[640px] mb-4">

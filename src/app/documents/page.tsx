@@ -46,11 +46,11 @@ function getFileIcon(mimeType: string) {
 }
 
 function getFileColor(mimeType: string): string {
-  if (mimeType.startsWith('image/')) return 'text-purple-500 bg-purple-50';
-  if (mimeType.includes('spreadsheet') || mimeType.includes('excel') || mimeType === 'text/csv') return 'text-green-600 bg-green-50';
-  if (mimeType.includes('presentation') || mimeType.includes('powerpoint')) return 'text-orange-500 bg-orange-50';
-  if (mimeType === 'application/pdf') return 'text-red-500 bg-red-50';
-  if (mimeType.includes('word')) return 'text-blue-500 bg-blue-50';
+  if (mimeType.startsWith('image/')) return 'text-[#a78bfa] bg-[rgba(139,92,246,0.1)]';
+  if (mimeType.includes('spreadsheet') || mimeType.includes('excel') || mimeType === 'text/csv') return 'text-[var(--success)] bg-[var(--success-soft)]';
+  if (mimeType.includes('presentation') || mimeType.includes('powerpoint')) return 'text-[var(--warning)] bg-[var(--warning-soft)]';
+  if (mimeType === 'application/pdf') return 'text-[var(--error)] bg-[var(--error-soft)]';
+  if (mimeType.includes('word')) return 'text-[var(--info)] bg-[var(--info-soft)]';
   return 'text-[var(--text-3)] bg-[var(--surface)]';
 }
 
@@ -159,7 +159,7 @@ export default function DocumentsPage() {
 
   return (
     <div
-      className="flex flex-col gap-6"
+      className="flex flex-col gap-6 animate-fade-in"
       onDragOver={(e) => { e.preventDefault(); setDragActive(true); }}
       onDragLeave={() => setDragActive(false)}
       onDrop={handleDrop}
@@ -167,12 +167,12 @@ export default function DocumentsPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-[var(--text)]">Documents</h1>
+          <h1 className="text-2xl font-bold tracking-tight text-[var(--text)]">Documents</h1>
           <p className="text-sm text-[var(--text-3)] mt-1">Upload and manage project documents.</p>
         </div>
         <button
           onClick={() => setShowUpload(true)}
-          className="flex items-center gap-2 px-4 py-2 bg-[var(--accent)] text-white text-[13px] font-semibold rounded-lg hover:opacity-90 transition-opacity"
+          className="flex items-center gap-2 px-4 py-2 bg-[var(--accent)] text-white text-[13px] font-bold rounded-[var(--radius-sm)] hover:bg-[var(--accent-hover)] transition-colors"
         >
           <Upload size={15} />
           Upload Document
@@ -182,9 +182,9 @@ export default function DocumentsPage() {
       {/* Drag overlay */}
       {dragActive && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-[var(--accent)]/10 backdrop-blur-sm pointer-events-none">
-          <div className="bg-white border-2 border-dashed border-[var(--accent)] rounded-2xl p-12 text-center shadow-xl">
+          <div className="bg-[var(--surface)] border-2 border-dashed border-[var(--accent)] rounded-2xl p-12 text-center">
             <Upload size={48} className="text-[var(--accent)] mx-auto mb-4" />
-            <p className="text-lg font-semibold text-[var(--text)]">Drop file to upload</p>
+            <p className="text-lg font-bold text-[var(--text)]">Drop file to upload</p>
           </div>
         </div>
       )}
@@ -192,9 +192,9 @@ export default function DocumentsPage() {
       {/* Upload Modal */}
       {showUpload && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-[480px] mx-4">
+          <div className="bg-[var(--surface)] rounded-2xl w-full max-w-[480px] mx-4">
             <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--border)]">
-              <h2 className="text-[16px] font-semibold text-[var(--text)]">Upload Document</h2>
+              <h2 className="text-[16px] font-bold text-[var(--text)]">Upload Document</h2>
               <button
                 onClick={() => { setShowUpload(false); setUploadFile(null); setUploadTitle(''); setUploadCategory(''); }}
                 className="text-[var(--text-4)] hover:text-[var(--text)] transition-colors"
@@ -205,12 +205,12 @@ export default function DocumentsPage() {
             <form onSubmit={handleUpload} className="p-6 space-y-4">
               {/* File picker */}
               <div>
-                <label className="block text-[12px] font-semibold text-[var(--text-3)] mb-1.5">File</label>
+                <label className="block text-[12px] font-bold text-[var(--text-3)] mb-1.5">File</label>
                 {uploadFile ? (
-                  <div className="flex items-center gap-3 px-3 py-2.5 bg-[var(--surface)] border border-[var(--border)] rounded-xl">
+                  <div className="flex items-center gap-3 px-3 py-2.5 bg-[var(--bg)] border border-[var(--border)] rounded-xl">
                     <FileText size={16} className="text-[var(--accent)] shrink-0" />
                     <div className="flex-1 min-w-0">
-                      <div className="text-[13px] font-medium text-[var(--text)] truncate">{uploadFile.name}</div>
+                      <div className="text-[13px] font-bold text-[var(--text)] truncate">{uploadFile.name}</div>
                       <div className="text-[11px] text-[var(--text-4)]">{formatFileSize(uploadFile.size)}</div>
                     </div>
                     <button type="button" onClick={() => setUploadFile(null)} className="text-[var(--text-4)] hover:text-[var(--error)]">
@@ -224,7 +224,7 @@ export default function DocumentsPage() {
                     className="w-full px-3 py-6 border-2 border-dashed border-[var(--border)] rounded-xl text-center hover:border-[var(--accent)] hover:bg-[var(--accent-glow)] transition-all"
                   >
                     <Upload size={20} className="text-[var(--text-4)] mx-auto mb-2" />
-                    <div className="text-[13px] font-medium text-[var(--text-3)]">Click to select a file</div>
+                    <div className="text-[13px] font-bold text-[var(--text-3)]">Click to select a file</div>
                     <div className="text-[11px] text-[var(--text-4)] mt-1">PDF, DOCX, XLSX, PPTX, images, CSV, TXT (max 20MB)</div>
                   </button>
                 )}
@@ -239,7 +239,7 @@ export default function DocumentsPage() {
 
               {/* Title */}
               <div>
-                <label className="block text-[12px] font-semibold text-[var(--text-3)] mb-1.5">Title</label>
+                <label className="block text-[12px] font-bold text-[var(--text-3)] mb-1.5">Title</label>
                 <input
                   type="text"
                   value={uploadTitle}
@@ -252,7 +252,7 @@ export default function DocumentsPage() {
 
               {/* Category */}
               <div>
-                <label className="block text-[12px] font-semibold text-[var(--text-3)] mb-1.5">Category</label>
+                <label className="block text-[12px] font-bold text-[var(--text-3)] mb-1.5">Category</label>
                 <select
                   value={uploadCategory}
                   onChange={(e) => setUploadCategory(e.target.value)}
@@ -270,14 +270,14 @@ export default function DocumentsPage() {
                 <button
                   type="button"
                   onClick={() => { setShowUpload(false); setUploadFile(null); setUploadTitle(''); setUploadCategory(''); }}
-                  className="flex-1 px-4 py-2.5 border border-[var(--border)] rounded-xl text-[13px] font-semibold text-[var(--text-2)] hover:bg-[var(--surface)] transition-colors"
+                  className="flex-1 px-4 py-2.5 border border-[var(--border)] rounded-xl text-[13px] font-bold text-[var(--text-2)] hover:bg-[var(--surface-hover)] transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={uploading || !uploadFile || !uploadTitle.trim()}
-                  className="flex-1 px-4 py-2.5 bg-[var(--accent)] text-white rounded-xl text-[13px] font-semibold hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-opacity"
+                  className="flex-1 px-4 py-2.5 bg-[var(--accent)] text-white rounded-xl text-[13px] font-bold hover:bg-[var(--accent-hover)] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
                   {uploading ? 'Uploading...' : 'Upload'}
                 </button>
@@ -296,7 +296,7 @@ export default function DocumentsPage() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search documents..."
-            className="w-full pl-9 pr-3 py-2 border border-[var(--border)] rounded-lg text-[13px] bg-[var(--bg)] text-[var(--text)] placeholder:text-[var(--text-4)] focus:border-[var(--accent)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-soft)] transition-all"
+            className="w-full pl-9 pr-3 py-2 border border-[var(--border)] rounded-[var(--radius-sm)] text-[13px] bg-[var(--bg)] text-[var(--text)] placeholder:text-[var(--text-4)] focus:border-[var(--accent)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-soft)] transition-all"
           />
         </div>
         <div className="relative">
@@ -304,7 +304,7 @@ export default function DocumentsPage() {
           <select
             value={categoryFilter}
             onChange={(e) => setCategoryFilter(e.target.value)}
-            className="pl-8 pr-8 py-2 border border-[var(--border)] rounded-lg text-[13px] bg-[var(--bg)] text-[var(--text)] focus:border-[var(--accent)] focus:outline-none appearance-none"
+            className="pl-8 pr-8 py-2 border border-[var(--border)] rounded-[var(--radius-sm)] text-[13px] bg-[var(--bg)] text-[var(--text)] focus:border-[var(--accent)] focus:outline-none appearance-none"
           >
             {CATEGORIES.map((c) => (
               <option key={c} value={c}>{c}</option>
@@ -315,21 +315,21 @@ export default function DocumentsPage() {
 
       {/* Stats */}
       <div className="grid grid-cols-3 gap-4">
-        <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-4">
+        <div className="bg-[var(--surface)] border border-[var(--border)] rounded-[var(--radius-sm)] p-4">
           <div className="text-2xl font-bold text-[var(--text)]">{documents.length}</div>
-          <div className="text-[11px] font-semibold text-[var(--text-3)]">Total Documents</div>
+          <div className="text-[11px] font-bold text-[var(--text-3)]">Total Documents</div>
         </div>
-        <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-4">
+        <div className="bg-[var(--surface)] border border-[var(--border)] rounded-[var(--radius-sm)] p-4">
           <div className="text-2xl font-bold text-[var(--text)]">
             {formatFileSize(documents.reduce((s, d) => s + d.fileSize, 0))}
           </div>
-          <div className="text-[11px] font-semibold text-[var(--text-3)]">Total Size</div>
+          <div className="text-[11px] font-bold text-[var(--text-3)]">Total Size</div>
         </div>
-        <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-4">
+        <div className="bg-[var(--surface)] border border-[var(--border)] rounded-[var(--radius-sm)] p-4">
           <div className="text-2xl font-bold text-[var(--text)]">
             {new Set(documents.map((d) => d.category).filter(Boolean)).size}
           </div>
-          <div className="text-[11px] font-semibold text-[var(--text-3)]">Categories</div>
+          <div className="text-[11px] font-bold text-[var(--text-3)]">Categories</div>
         </div>
       </div>
 
@@ -339,7 +339,7 @@ export default function DocumentsPage() {
       ) : filtered.length === 0 ? (
         <div className="text-center py-16">
           <FileText size={40} className="text-[var(--text-4)] mx-auto mb-3" />
-          <p className="text-[var(--text-3)] font-medium">
+          <p className="text-[var(--text-3)] font-bold">
             {documents.length === 0 ? 'No documents yet' : 'No documents match your search'}
           </p>
           <p className="text-[var(--text-4)] text-[13px] mt-1">
@@ -347,7 +347,7 @@ export default function DocumentsPage() {
           </p>
         </div>
       ) : (
-        <div className="border border-[var(--border)] rounded-xl overflow-hidden">
+        <div className="border border-[var(--border)] rounded-[var(--radius-sm)] overflow-hidden">
           <table className="w-full">
             <thead>
               <tr className="bg-[var(--surface)] border-b border-[var(--border)]">
@@ -366,18 +366,18 @@ export default function DocumentsPage() {
                   <tr key={doc.id} className="border-b border-[var(--border)] last:border-0 hover:bg-[var(--surface-hover)] transition-colors">
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-3">
-                        <div className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 ${colorClass}`}>
+                        <div className={`w-9 h-9 rounded-[var(--radius-sm)] flex items-center justify-center shrink-0 ${colorClass}`}>
                           <Icon size={16} />
                         </div>
                         <div className="min-w-0">
-                          <div className="text-[13px] font-semibold text-[var(--text)] truncate">{doc.title}</div>
+                          <div className="text-[13px] font-bold text-[var(--text)] truncate">{doc.title}</div>
                           <div className="text-[11px] text-[var(--text-4)] truncate">{doc.filename}</div>
                         </div>
                       </div>
                     </td>
                     <td className="px-4 py-3">
                       {doc.category && (
-                        <span className="px-2 py-0.5 bg-[var(--accent-soft)] text-[var(--accent)] rounded text-[11px] font-semibold">
+                        <span className="px-2 py-0.5 bg-[var(--accent-soft)] text-[var(--accent)] rounded-[var(--radius-sm)] text-[11px] font-bold">
                           {doc.category}
                         </span>
                       )}
@@ -396,14 +396,14 @@ export default function DocumentsPage() {
                         <a
                           href={doc.filePath}
                           download={doc.filename}
-                          className="p-1.5 rounded-lg text-[var(--text-4)] hover:text-[var(--accent)] hover:bg-[var(--accent-soft)] transition-all"
+                          className="p-1.5 rounded-[var(--radius-sm)] text-[var(--text-4)] hover:text-[var(--accent)] hover:bg-[var(--accent-soft)] transition-all"
                           title="Download"
                         >
                           <Download size={14} />
                         </a>
                         <button
                           onClick={() => handleDelete(doc.id)}
-                          className="p-1.5 rounded-lg text-[var(--text-4)] hover:text-[var(--error)] hover:bg-[var(--error-soft)] transition-all"
+                          className="p-1.5 rounded-[var(--radius-sm)] text-[var(--text-4)] hover:text-[var(--error)] hover:bg-[var(--error-soft)] transition-all"
                           title="Delete"
                         >
                           <Trash2 size={14} />

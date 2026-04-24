@@ -51,7 +51,7 @@ export default function CaioActionsPage({ params }: { params: { id: string } }) 
   if (loading) return <p className="text-[var(--text-3)] py-12 text-center">Loading actions...</p>;
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-6 animate-fade-in">
       <div>
         <Link href={`/caio/${params.id}`} className="text-[12px] font-semibold text-[var(--text-4)] hover:text-[var(--accent)] transition-colors mb-2 block">
           <ChevronLeft size={14} className="inline" /> Back to Assessment
@@ -63,13 +63,13 @@ export default function CaioActionsPage({ params }: { params: { id: string } }) 
       {/* Filters */}
       <div className="flex items-center gap-3">
         <Filter size={14} className="text-[var(--text-4)]" />
-        <select value={filterPhase} onChange={e => setFilterPhase(e.target.value)} className="px-2 py-1 border border-[var(--border)] rounded text-[12px] bg-white">
+        <select value={filterPhase} onChange={e => setFilterPhase(e.target.value)} className="px-2 py-1 border border-[var(--border)] rounded text-[12px] bg-[var(--surface)]">
           <option value="">All Phases</option>
           <option value="immediate">Immediate</option>
           <option value="short_term">Short Term</option>
           <option value="long_term">Long Term</option>
         </select>
-        <select value={filterStatus} onChange={e => setFilterStatus(e.target.value)} className="px-2 py-1 border border-[var(--border)] rounded text-[12px] bg-white">
+        <select value={filterStatus} onChange={e => setFilterStatus(e.target.value)} className="px-2 py-1 border border-[var(--border)] rounded text-[12px] bg-[var(--surface)]">
           <option value="">All Statuses</option>
           <option value="pending">Pending</option>
           <option value="in_progress">In Progress</option>

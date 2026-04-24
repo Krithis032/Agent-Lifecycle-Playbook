@@ -196,18 +196,18 @@ export default function RepeatableField({
                   <Tooltip content="Duplicate">
                     <button
                       onClick={() => duplicateEntry(entryIndex)}
-                      className="p-1 rounded hover:bg-blue-50 transition-colors"
+                      className="p-1 rounded hover:bg-[var(--info-soft)] transition-colors"
                     >
-                      <Copy size={13} className="text-blue-500" />
+                      <Copy size={13} className="text-[var(--info)]" />
                     </button>
                   </Tooltip>
                   <Tooltip content={entries.length <= 1 ? 'Cannot delete the last entry' : 'Delete'}>
                     <button
                       onClick={() => removeEntry(entryIndex)}
                       disabled={entries.length <= 1}
-                      className="p-1 rounded hover:bg-red-50 disabled:opacity-30 transition-colors"
+                      className="p-1 rounded hover:bg-[var(--error-soft)] disabled:opacity-30 transition-colors"
                     >
-                      <Trash2 size={13} className="text-red-400" />
+                      <Trash2 size={13} className="text-[var(--error)]" />
                     </button>
                   </Tooltip>
                 </div>
@@ -288,7 +288,7 @@ export default function RepeatableField({
       {/* Add Entry Button */}
       <button
         onClick={addEntry}
-        className="flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-[var(--accent)] border border-dashed border-[var(--accent)] rounded-lg hover:bg-blue-50 transition-colors w-full justify-center"
+        className="flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-[var(--accent)] border border-dashed border-[var(--accent)] rounded-lg hover:bg-[var(--info-soft)] transition-colors w-full justify-center"
         title={`Add another ${label.toLowerCase()}`}
       >
         <Plus size={14} /> Add {label.replace(/s$/, '').replace(/ies$/, 'y')}

@@ -27,7 +27,7 @@ export default function ComplianceChecklist({ checks, onChange }: ComplianceChec
   return (
     <div className="space-y-6">
       {COMPLIANCE_FRAMEWORKS.map((fw) => (
-        <div key={fw.framework} className="border border-[var(--border)] rounded-lg p-5 bg-white">
+        <div key={fw.framework} className="border border-[var(--border)] rounded-lg p-5 bg-[var(--surface)]">
           <h3 className="text-[14px] font-semibold text-[var(--text)] mb-1">{fw.name}</h3>
           <span className="text-[11px] font-bold text-[var(--accent)] uppercase tracking-wider">{fw.framework}</span>
           <div className="mt-4 space-y-3">
@@ -44,7 +44,7 @@ export default function ComplianceChecklist({ checks, onChange }: ComplianceChec
                         type="button"
                         onClick={() => updateCheck(ci, 'status', opt.value)}
                         className={`px-2.5 py-1 rounded text-[10px] font-bold uppercase tracking-wide transition-colors ${
-                          check?.status === opt.value ? opt.color + ' ring-1 ring-current' : 'bg-white border border-[var(--border)] text-[var(--text-4)]'
+                          check?.status === opt.value ? opt.color + ' ring-1 ring-current' : 'bg-[var(--bg)] border border-[var(--border)] text-[var(--text-4)]'
                         }`}
                       >
                         {opt.label}
@@ -55,7 +55,7 @@ export default function ComplianceChecklist({ checks, onChange }: ComplianceChec
                     type="text"
                     value={check?.notes || ''}
                     onChange={(e) => updateCheck(ci, 'notes', e.target.value)}
-                    className="w-full px-2 py-1 border border-[var(--border)] rounded text-[12px] bg-white focus:border-[var(--accent)] focus:outline-none"
+                    className="w-full px-2 py-1 border border-[var(--border)] rounded text-[12px] bg-[var(--bg)] focus:border-[var(--accent)] focus:outline-none"
                     placeholder="Notes..."
                   />
                 </div>

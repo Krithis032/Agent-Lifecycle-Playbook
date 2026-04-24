@@ -53,7 +53,7 @@ export default async function TemplateFillPage({
   }
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="animate-fade-in flex flex-col gap-6">
       <div>
         <Link href="/templates" className="text-[13px] text-[var(--accent)] hover:underline flex items-center gap-1 mb-3">
           <ArrowLeft size={14} /> Back to Templates

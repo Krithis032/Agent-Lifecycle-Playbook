@@ -218,17 +218,17 @@ export default function TemplateForm({
     <div className="space-y-6">
       {/* Draft status banner */}
       {hasDraft && (
-        <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-amber-50 border border-amber-200 text-amber-700 text-[13px]">
+        <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[var(--warning-soft)] border border-[rgba(212,168,83,0.15)] text-[var(--warning)] text-[13px]">
           <CloudOff size={14} />
           <span className="font-medium">Draft auto-saved locally.</span>
-          <span className="text-amber-600">Your progress is preserved even if you leave the page.</span>
+          <span className="text-[var(--warning)]">Your progress is preserved even if you leave the page.</span>
           <button
             onClick={() => {
               clearDraft();
               setTitle(initialTitle);
               setValues(initialValues);
             }}
-            className="ml-auto text-[12px] font-semibold underline hover:text-amber-900"
+            className="ml-auto text-[12px] font-semibold underline hover:text-[var(--warning)]"
           >
             Discard Draft
           </button>
@@ -253,7 +253,7 @@ export default function TemplateForm({
         <div className="text-right shrink-0">
           <div className="flex items-center gap-2 justify-end mb-1">
             {draftStatus === 'saved' && (
-              <span className="flex items-center gap-1 text-[11px] text-green-600 font-medium">
+              <span className="flex items-center gap-1 text-[11px] text-[var(--success)] font-medium">
                 <CheckCircle size={12} /> Draft saved
               </span>
             )}

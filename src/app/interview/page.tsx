@@ -11,9 +11,9 @@ export default async function InterviewPage() {
   });
 
   return (
-    <div>
+    <div className="animate-fade-in">
       <div className="eyebrow mb-4">CAIO Preparation</div>
-      <h1 className="text-3xl font-extrabold tracking-tight mb-2 text-[var(--text)]">
+      <h1 className="text-3xl font-bold tracking-tight mb-2 text-[var(--text)]">
         Interview <span className="text-[var(--accent)] font-light italic">Angles</span>
       </h1>
       <p className="text-[15px] text-[var(--text-3)] max-w-[640px] mb-8">

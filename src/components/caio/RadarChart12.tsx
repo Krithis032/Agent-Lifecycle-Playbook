@@ -65,7 +65,7 @@ export default function RadarChart12({ scores, targetScores }: RadarChart12Props
   };
 
   return (
-    <div className="bg-white rounded-lg border border-[var(--border)] p-6">
+    <div className="bg-[var(--surface)] rounded-lg border border-[var(--border)] p-6">
       <h3 className="text-[15px] font-semibold mb-4 text-[var(--text)]">CAIO 12-Domain Assessment</h3>
       <Radar data={{ labels: scores.map(s => s.domainName), datasets }} options={options} />
     </div>

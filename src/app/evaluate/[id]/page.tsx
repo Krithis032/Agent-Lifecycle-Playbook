@@ -35,7 +35,7 @@ export default async function EvaluationDetailPage({ params }: { params: { id: s
   const tb = typeBadge[evaluation.evalType] || { v: 'accent' as const, l: evaluation.evalType };
 
   return (
-    <div className="flex flex-col gap-8">
+    <div className="animate-fade-in flex flex-col gap-8">
       {/* Header */}
       <div className="flex items-start justify-between">
         <div>
@@ -56,7 +56,7 @@ export default async function EvaluationDetailPage({ params }: { params: { id: s
         <div className="flex gap-2">
           <Link
             href={`/evaluate/${id}/compare`}
-            className="px-3 py-2 text-sm font-medium border border-[var(--border)] rounded-lg hover:border-[var(--accent)] transition-colors flex items-center gap-1.5 text-[var(--text-2)]"
+            className="px-3 py-2 text-sm font-medium border border-[var(--border)] rounded-[var(--radius-sm)] hover:border-[var(--accent)] transition-colors flex items-center gap-1.5 text-[var(--text-2)]"
           >
             <GitCompare size={14} /> Compare
           </Link>

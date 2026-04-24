@@ -216,7 +216,7 @@ export default function TemplateFillForm({ template, projectId, existingFill, on
         </div>
         {field.type === 'textarea' ? (
           <textarea
-            className="w-full px-3 py-2 border border-[var(--border)] rounded-lg text-[13px] bg-[var(--bg)] text-[var(--text)] focus:border-[var(--accent)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-soft)] resize-y transition-all"
+            className="w-full px-3 py-2 border border-[var(--border)] rounded-[var(--radius-sm)] text-[13px] bg-[var(--bg)] text-[var(--text)] focus:border-[var(--accent)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-soft)] resize-y transition-all"
             rows={4}
             placeholder={field.placeholder || ''}
             title={field.helpText || `Enter ${field.label.toLowerCase()}`}
@@ -225,7 +225,7 @@ export default function TemplateFillForm({ template, projectId, existingFill, on
           />
         ) : field.type === 'select' ? (
           <select
-            className="w-full px-3 py-2 border border-[var(--border)] rounded-lg text-[13px] bg-[var(--bg)] text-[var(--text)] focus:border-[var(--accent)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-soft)] transition-all"
+            className="w-full px-3 py-2 border border-[var(--border)] rounded-[var(--radius-sm)] text-[13px] bg-[var(--bg)] text-[var(--text)] focus:border-[var(--accent)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-soft)] transition-all"
             title={field.helpText || `Select ${field.label.toLowerCase()}`}
             value={value}
             onChange={(e) => onChange(e.target.value)}
@@ -246,14 +246,14 @@ export default function TemplateFillForm({ template, projectId, existingFill, on
         ) : field.type === 'date' ? (
           <input
             type="date"
-            className="w-full px-3 py-2 border border-[var(--border)] rounded-lg text-[13px] bg-[var(--bg)] text-[var(--text)] focus:border-[var(--accent)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-soft)] transition-all"
+            className="w-full px-3 py-2 border border-[var(--border)] rounded-[var(--radius-sm)] text-[13px] bg-[var(--bg)] text-[var(--text)] focus:border-[var(--accent)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-soft)] transition-all"
             title={field.helpText || `Select ${field.label.toLowerCase()}`}
             value={value}
             onChange={(e) => onChange(e.target.value)}
           />
         ) : (
           <input
-            className="w-full px-3 py-2 border border-[var(--border)] rounded-lg text-[13px] bg-[var(--bg)] text-[var(--text)] focus:border-[var(--accent)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-soft)] transition-all"
+            className="w-full px-3 py-2 border border-[var(--border)] rounded-[var(--radius-sm)] text-[13px] bg-[var(--bg)] text-[var(--text)] focus:border-[var(--accent)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-soft)] transition-all"
             placeholder={field.placeholder || ''}
             title={field.helpText || `Enter ${field.label.toLowerCase()}`}
             value={value}
@@ -270,7 +270,7 @@ export default function TemplateFillForm({ template, projectId, existingFill, on
         <div>
           <div className="flex items-center gap-2 mb-1">
             <FileText size={18} className="text-[var(--purple)]" />
-            <h2 className="text-xl font-extrabold tracking-tight text-[var(--text)]">{template.name}</h2>
+            <h2 className="text-xl font-bold tracking-tight text-[var(--text)]">{template.name}</h2>
           </div>
           {template.description && (
             <p className="text-[13px] text-[var(--text-3)]">{template.description}</p>
@@ -299,7 +299,7 @@ export default function TemplateFillForm({ template, projectId, existingFill, on
 
       {/* Draft banner */}
       {hasDraft && (
-        <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-amber-50 border border-amber-200 text-amber-700 text-[13px] mb-4">
+        <div className="flex items-center gap-2 px-4 py-2 rounded-[var(--radius-sm)] bg-[var(--warning-soft)] border border-[var(--warning)] text-[var(--warning)] text-[13px] mb-4">
           <CloudOff size={14} />
           <span className="font-medium">Draft auto-saved locally.</span>
           <button
@@ -312,7 +312,7 @@ export default function TemplateFillForm({ template, projectId, existingFill, on
               setFieldValues(existingFill?.fieldValues || initial);
               setTitle(existingFill?.title || `${template.name} - New`);
             }}
-            className="ml-auto text-[12px] font-semibold underline hover:text-amber-900"
+            className="ml-auto text-[12px] font-semibold underline hover:opacity-80"
           >
             Discard Draft
           </button>
@@ -322,10 +322,10 @@ export default function TemplateFillForm({ template, projectId, existingFill, on
       {/* Title */}
       <Card className="mb-4">
         <Tooltip content="A descriptive title for this document instance">
-          <label className="block text-[11px] font-extrabold uppercase tracking-widest text-[var(--text-4)] mb-1.5 cursor-help">Document Title</label>
+          <label className="block text-[11px] font-bold uppercase tracking-widest text-[var(--text-4)] mb-1.5 cursor-help">Document Title</label>
         </Tooltip>
         <input
-          className="w-full px-3 py-2 border border-[var(--border)] rounded-lg text-[14px] bg-[var(--bg)] text-[var(--text)] focus:border-[var(--accent)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-soft)] transition-all"
+          className="w-full px-3 py-2 border border-[var(--border)] rounded-[var(--radius-sm)] text-[14px] bg-[var(--bg)] text-[var(--text)] focus:border-[var(--accent)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-soft)] transition-all"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           placeholder="Title for this document"

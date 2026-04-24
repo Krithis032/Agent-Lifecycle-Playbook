@@ -36,20 +36,26 @@ export default function Nav() {
   };
 
   return (
-    <aside className="fixed top-0 left-0 h-screen w-[200px] bg-[var(--surface)] border-r border-[var(--border)] flex flex-col z-50 font-sans">
+    <aside className="fixed top-0 left-0 h-screen w-[220px] bg-[var(--surface)] border-r border-[var(--border)] flex flex-col z-50 font-sans">
       {/* Logo */}
-      <div className="px-4 h-[48px] flex items-center shrink-0 border-b border-[var(--border)]">
-        <Link href="/" className="flex items-center gap-2">
-          <div className="w-2 h-2 rounded-full bg-[var(--accent)] animate-pulse" />
-          <span className="text-[15px] font-bold text-[var(--accent)] tracking-tight">
+      <div className="px-5 h-[56px] flex items-center shrink-0 border-b border-[var(--border)]">
+        <Link href="/" className="flex items-center gap-2.5">
+          <div className="w-7 h-7 rounded-lg bg-[var(--accent)] flex items-center justify-center animate-pulse-glow">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--bg)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 2L2 7l10 5 10-5-10-5z" />
+              <path d="M2 17l10 5 10-5" />
+              <path d="M2 12l10 5 10-5" />
+            </svg>
+          </div>
+          <span className="text-[14px] font-bold text-[var(--text)] tracking-tight">
             ADP
           </span>
         </Link>
       </div>
 
       {/* Nav items */}
-      <nav className="flex-1 overflow-y-auto py-2 px-2">
-        <div className="flex flex-col gap-px">
+      <nav className="flex-1 overflow-y-auto py-3 px-3 scrollbar-hide">
+        <div className="flex flex-col gap-0.5">
           {navItems.map((item) => {
             const Icon = item.icon;
             const active = isActive(item.href);
@@ -57,13 +63,13 @@ export default function Nav() {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`flex items-center gap-2.5 px-2.5 py-[7px] rounded-lg text-[12.5px] font-semibold transition-all duration-200 ${
+                className={`flex items-center gap-2.5 px-3 py-[8px] rounded-[var(--radius-sm)] text-[12.5px] font-medium transition-all duration-200 group ${
                   active
                     ? 'text-[var(--accent)] bg-[var(--accent-soft)]'
-                    : 'text-[var(--text-3)] hover:text-[var(--text)] hover:bg-[var(--accent-glow)]'
+                    : 'text-[var(--text-3)] hover:text-[var(--text-2)] hover:bg-[var(--surface-hover)]'
                 }`}
               >
-                <Icon size={15} />
+                <Icon size={15} className={`shrink-0 transition-colors ${active ? 'text-[var(--accent)]' : 'text-[var(--text-4)] group-hover:text-[var(--text-3)]'}`} />
                 <span>{item.label}</span>
               </Link>
             );
@@ -72,10 +78,10 @@ export default function Nav() {
       </nav>
 
       {/* Sign Out at bottom */}
-      <div className="px-2 pb-3 pt-1.5 border-t border-[var(--border)] shrink-0">
+      <div className="px-3 pb-4 pt-2 border-t border-[var(--border)] shrink-0">
         <button
           onClick={() => signOut({ callbackUrl: '/login' })}
-          className="flex items-center gap-2.5 w-full px-2.5 py-[7px] rounded-lg text-[12.5px] font-semibold text-[var(--text-3)] hover:text-[var(--error)] hover:bg-[var(--error-soft)] transition-all duration-200"
+          className="flex items-center gap-2.5 w-full px-3 py-[8px] rounded-[var(--radius-sm)] text-[12.5px] font-medium text-[var(--text-4)] hover:text-[var(--error)] hover:bg-[var(--error-soft)] transition-all duration-200"
         >
           <LogOut size={15} />
           <span>Sign Out</span>

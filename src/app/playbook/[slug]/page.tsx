@@ -31,7 +31,7 @@ export default async function PhaseDetailPage({ params }: Props) {
   if (!phase) notFound();
 
   return (
-    <div>
+    <div className="animate-fade-in">
       <PhaseTimeline phases={allPhases} currentSlug={slug} />
 
       <div className="mt-6 mb-8">
@@ -39,7 +39,7 @@ export default async function PhaseDetailPage({ params }: Props) {
           <span className="text-3xl">{phase.icon}</span>
           <div>
             <div className="eyebrow">Phase {phase.phaseNum}</div>
-            <h1 className="text-3xl font-extrabold tracking-tight text-[var(--text)]">
+            <h1 className="text-3xl font-bold tracking-tight text-[var(--text)]">
               {phase.name}
             </h1>
           </div>

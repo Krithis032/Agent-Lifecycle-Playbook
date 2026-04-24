@@ -140,7 +140,7 @@ function NewEvaluationPageInner() {
   };
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="animate-fade-in flex flex-col gap-6">
       <div>
         <h1 className="text-2xl font-semibold tracking-tight text-[var(--text)]">New Evaluation</h1>
         <p className="text-sm text-[var(--text-3)] mt-1">Compare options across weighted criteria to make data-driven decisions.</p>
@@ -168,7 +168,7 @@ function NewEvaluationPageInner() {
                     <button
                       key={p.slug}
                       onClick={() => selectPreset(p.slug)}
-                      className={`text-left p-3 rounded-lg border transition-all text-sm ${
+                      className={`text-left p-3 rounded-[var(--radius-sm)] border transition-all text-sm ${
                         selectedPreset === p.slug
                           ? 'border-[var(--accent)] bg-[var(--accent-soft)]'
                           : 'border-[var(--border)] hover:border-[var(--accent)]'
@@ -194,7 +194,7 @@ function NewEvaluationPageInner() {
                 value={title}
                 onChange={e => setTitle(e.target.value)}
                 placeholder="e.g., Q4 Framework Selection"
-                className="w-full px-3 py-2 text-sm border border-[var(--border)] rounded-lg focus:outline-none focus:border-[var(--accent)] bg-[var(--bg)]"
+                className="w-full px-3 py-2 text-sm border border-[var(--border)] rounded-[var(--radius-sm)] focus:outline-none focus:border-[var(--accent)] bg-[var(--bg)]"
               />
             </div>
             <OptionConfigurator options={options} onChange={setOptions} />

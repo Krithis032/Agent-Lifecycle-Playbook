@@ -13,9 +13,9 @@ export default async function PlaybookPage() {
   });
 
   return (
-    <div>
+    <div className="animate-fade-in">
       <div className="eyebrow mb-4">7-Phase Lifecycle</div>
-      <h1 className="text-4xl font-extrabold tracking-tight mb-2 text-[var(--text)]">
+      <h1 className="text-4xl font-bold tracking-tight mb-2 text-[var(--text)]">
         Agent Deployment <span className="text-[var(--accent)] font-light italic">Playbook</span>
       </h1>
       <p className="text-[16px] text-[var(--text-3)] max-w-[640px] mb-8">

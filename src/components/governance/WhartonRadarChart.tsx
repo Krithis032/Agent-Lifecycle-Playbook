@@ -60,7 +60,7 @@ export default function WhartonRadarChart({ scores, title = 'Wharton 10-Domain G
   };
 
   return (
-    <div className="bg-white rounded-lg border border-[var(--border)] p-6">
+    <div className="bg-[var(--surface)] rounded-lg border border-[var(--border)] p-6">
       {title && <h3 className="text-[15px] font-semibold mb-4 text-[var(--text)]">{title}</h3>}
       <Radar data={data} options={options} />
     </div>

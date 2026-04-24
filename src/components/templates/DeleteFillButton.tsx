@@ -36,14 +36,14 @@ export default function DeleteFillButton({ fillId, templateSlug }: DeleteFillBut
         <button
           onClick={handleDelete}
           disabled={deleting}
-          className="px-3 py-2 text-sm font-semibold bg-red-600 text-white rounded-lg hover:bg-red-700 flex items-center gap-1.5 disabled:opacity-50"
+          className="px-3 py-2 text-sm font-semibold bg-[var(--error)] text-white rounded-[var(--radius-sm)] hover:opacity-90 flex items-center gap-1.5 disabled:opacity-50"
         >
           {deleting ? <Loader2 size={14} className="animate-spin" /> : <Trash2 size={14} />}
           {deleting ? 'Deleting...' : 'Confirm Delete'}
         </button>
         <button
           onClick={() => setConfirming(false)}
-          className="px-3 py-2 text-sm font-medium border border-[var(--border)] rounded-lg hover:border-[var(--text-3)] text-[var(--text-3)]"
+          className="px-3 py-2 text-sm font-medium border border-[var(--border)] rounded-[var(--radius-sm)] hover:border-[var(--text-3)] text-[var(--text-3)]"
         >
           Cancel
         </button>
@@ -54,7 +54,7 @@ export default function DeleteFillButton({ fillId, templateSlug }: DeleteFillBut
   return (
     <button
       onClick={() => setConfirming(true)}
-      className="px-3 py-2 text-sm font-medium border border-[var(--border)] rounded-lg hover:border-red-400 hover:text-red-600 flex items-center gap-1.5 text-[var(--text-3)] transition-colors"
+      className="px-3 py-2 text-sm font-medium border border-[var(--border)] rounded-[var(--radius-sm)] hover:border-[var(--error)] hover:text-[var(--error)] flex items-center gap-1.5 text-[var(--text-3)] transition-colors"
       title="Delete this document"
     >
       <Trash2 size={14} />

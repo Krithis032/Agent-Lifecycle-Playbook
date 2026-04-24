@@ -16,7 +16,7 @@ const paddingStyles = {
 export default function Card({ children, hover = false, padding = 'md', className = '', ...props }: CardProps) {
   return (
     <div
-      className={`bg-[var(--surface-active)] border border-[var(--border)] rounded-[8px] shadow-sm ${paddingStyles[padding]} transition-all duration-200 ${hover ? 'hover:-translate-y-0.5 hover:shadow-md hover:border-[var(--accent)] cursor-pointer' : ''} ${className}`}
+      className={`bg-[var(--surface)] border border-[var(--border)] rounded-[var(--radius)] ${paddingStyles[padding]} transition-all duration-200 ${hover ? 'hover:-translate-y-0.5 hover:shadow-[var(--shadow-card)] hover:border-[var(--border-hover)] cursor-pointer' : ''} ${className}`}
       {...props}
     >
       {children}

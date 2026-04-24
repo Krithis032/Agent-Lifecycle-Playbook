@@ -15,22 +15,22 @@ export default function Accordion({ title, children, defaultOpen = false, number
   const [open, setOpen] = useState(defaultOpen);
 
   return (
-    <div className={`bg-[var(--canvas)] border-[1.5px] rounded-[14px] mb-3 overflow-hidden transition-all duration-300 ${open ? 'border-[var(--accent)] shadow-[var(--shadow-card)]' : 'border-[var(--border)] hover:border-[var(--text-4)]'}`}>
+    <div className={`bg-[var(--surface)] border rounded-[var(--radius)] mb-3 overflow-hidden transition-all duration-300 ${open ? 'border-[var(--border-hover)] shadow-[var(--shadow-card)]' : 'border-[var(--border)] hover:border-[var(--border-hover)]'}`}>
       <button
         onClick={() => setOpen(!open)}
         className="flex items-center gap-3.5 px-5 py-4 w-full text-left cursor-pointer select-none"
       >
         {number !== undefined && (
           <span
-            className="text-xs font-extrabold w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
+            className="text-[11px] font-bold w-7 h-7 rounded-[var(--radius-sm)] flex items-center justify-center shrink-0"
             style={{ background: `${numberColor}15`, color: numberColor }}
           >
             {number}
           </span>
         )}
-        <span className="text-sm font-bold flex-1 tracking-tight">{title}</span>
-        <span className={`w-6 h-6 rounded-md flex items-center justify-center transition-all duration-300 ${open ? 'bg-[var(--accent-soft)] text-[var(--accent)] rotate-180' : 'bg-[var(--surface)] text-[var(--text-4)]'}`}>
-          <ChevronDown size={14} />
+        <span className="text-[13px] font-semibold flex-1 tracking-tight text-[var(--text)]">{title}</span>
+        <span className={`w-6 h-6 rounded-[var(--radius-sm)] flex items-center justify-center transition-all duration-300 ${open ? 'bg-[var(--accent-soft)] text-[var(--accent)] rotate-180' : 'bg-[var(--surface-hover)] text-[var(--text-4)]'}`}>
+          <ChevronDown size={13} />
         </span>
       </button>
       <div className={`transition-all duration-500 overflow-hidden ${open ? 'max-h-[20000px]' : 'max-h-0'}`}>

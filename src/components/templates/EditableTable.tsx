@@ -210,20 +210,20 @@ export default function EditableTable({
                       <Tooltip content="Duplicate row">
                         <button
                           onClick={() => duplicateRow(rowIndex)}
-                          className="p-1 rounded hover:bg-blue-50 transition-colors"
+                          className="p-1 rounded hover:bg-[var(--info-soft)] transition-colors"
                           title="Duplicate"
                         >
-                          <Copy size={13} className="text-blue-500" />
+                          <Copy size={13} className="text-[var(--info)]" />
                         </button>
                       </Tooltip>
                       <Tooltip content={rows.length <= 1 ? 'Cannot delete the last row' : 'Delete row'}>
                         <button
                           onClick={() => removeRow(rowIndex)}
                           disabled={rows.length <= 1}
-                          className="p-1 rounded hover:bg-red-50 disabled:opacity-30 transition-colors"
+                          className="p-1 rounded hover:bg-[var(--error-soft)] disabled:opacity-30 transition-colors"
                           title="Delete"
                         >
-                          <Trash2 size={13} className="text-red-400" />
+                          <Trash2 size={13} className="text-[var(--error)]" />
                         </button>
                       </Tooltip>
                     </div>
@@ -238,7 +238,7 @@ export default function EditableTable({
         <div className="px-3 py-2 bg-[var(--surface)] border-t border-[var(--border)]">
           <button
             onClick={addRow}
-            className="flex items-center gap-1.5 text-xs font-medium text-[var(--accent)] hover:text-blue-700 transition-colors"
+            className="flex items-center gap-1.5 text-xs font-medium text-[var(--accent)] hover:text-[var(--accent-hover)] transition-colors"
             title="Add a new row to the table"
           >
             <Plus size={14} /> Add Row

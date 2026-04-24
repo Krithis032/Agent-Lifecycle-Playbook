@@ -26,14 +26,14 @@ export default async function CaioDashboard() {
   };
 
   return (
-    <div className="flex flex-col gap-8">
+    <div className="animate-fade-in flex flex-col gap-8">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight text-[var(--text)]">CAIO Dashboard</h1>
           <p className="text-sm text-[var(--text-3)] mt-1">12-domain AI maturity assessments with Claude Opus-generated insights.</p>
         </div>
-        <Link href="/caio/assess" className="bg-[var(--accent)] text-white px-4 py-2 rounded-[6px] text-sm font-medium hover:bg-blue-700 transition-colors flex items-center gap-2">
+        <Link href="/caio/assess" className="bg-[var(--accent)] text-white px-4 py-2 rounded-[6px] text-sm font-medium hover:bg-[var(--accent-hover)] transition-colors flex items-center gap-2">
           <Plus size={16} /> New Assessment
         </Link>
       </div>
@@ -41,7 +41,7 @@ export default async function CaioDashboard() {
       {/* Summary */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-5">
         <Card className="flex items-center gap-4">
-          <div className="w-12 h-12 rounded-full bg-purple-50 text-purple-700 flex items-center justify-center">
+          <div className="w-12 h-12 rounded-full bg-[rgba(139,92,246,0.1)] text-[#a78bfa] flex items-center justify-center">
             <Award size={24} strokeWidth={1.5} />
           </div>
           <div>
@@ -100,7 +100,7 @@ export default async function CaioDashboard() {
 
       {/* Table */}
       <Card padding="none" className="overflow-hidden">
-        <div className="px-6 py-4 border-b border-[var(--border)] bg-[var(--surface)]">
+        <div className="px-6 py-4 border-b border-[var(--border)] bg-[var(--surface-hover)]">
           <h2 className="text-[15px] font-semibold text-[var(--text)]">All Assessments</h2>
         </div>
         <div className="overflow-x-auto">
@@ -118,7 +118,7 @@ export default async function CaioDashboard() {
             </thead>
             <tbody className="divide-y divide-[var(--border)]">
               {assessments.map((a) => (
-                <tr key={a.id} className="hover:bg-[var(--surface)] transition-colors">
+                <tr key={a.id} className="hover:bg-[var(--surface-hover)] transition-colors">
                   <td className="px-6 py-4 font-medium text-[var(--text)]">{a.initiativeName}</td>
                   <td className="px-6 py-4"><Badge variant="accent">{a.assessmentMode}</Badge></td>
                   <td className="px-6 py-4">

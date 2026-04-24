@@ -31,14 +31,14 @@ export default async function GovernanceDashboard() {
   };
 
   return (
-    <div className="flex flex-col gap-8">
+    <div className="animate-fade-in flex flex-col gap-8">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight text-[var(--text)]">TRiSM Governance</h1>
           <p className="text-sm text-[var(--text-3)] mt-1">Trust, Risk & Security Management assessments across all projects.</p>
         </div>
-        <Link href="/governance/assess" className="bg-[var(--accent)] text-white px-4 py-2 rounded-[6px] text-sm font-medium hover:bg-blue-700 transition-colors flex items-center gap-2">
+        <Link href="/governance/assess" className="bg-[var(--accent)] text-white px-4 py-2 rounded-[6px] text-sm font-medium hover:bg-[var(--accent-hover)] transition-colors flex items-center gap-2">
           <Plus size={16} /> New Assessment
         </Link>
       </div>
@@ -76,7 +76,7 @@ export default async function GovernanceDashboard() {
 
       {/* Assessment Table */}
       <Card padding="none" className="overflow-hidden">
-        <div className="px-6 py-4 border-b border-[var(--border)] bg-[var(--surface)] flex justify-between items-center">
+        <div className="px-6 py-4 border-b border-[var(--border)] bg-[var(--surface-hover)] flex justify-between items-center">
           <h2 className="text-[15px] font-semibold text-[var(--text)]">All Assessments</h2>
         </div>
         <div className="overflow-x-auto">
@@ -94,7 +94,7 @@ export default async function GovernanceDashboard() {
             </thead>
             <tbody className="divide-y divide-[var(--border)]">
               {assessments.map((a) => (
-                <tr key={a.id} className="hover:bg-[var(--surface)] transition-colors">
+                <tr key={a.id} className="hover:bg-[var(--surface-hover)] transition-colors">
                   <td className="px-6 py-4 font-medium text-[var(--text)]">
                     {a.project?.name || `Project #${a.projectId}`}
                   </td>

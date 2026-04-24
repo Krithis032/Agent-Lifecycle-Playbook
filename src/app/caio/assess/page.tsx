@@ -112,7 +112,7 @@ export default function CaioAssessPage() {
   const avgScore = domains.reduce((s, d) => s + d.score, 0) / domains.length;
 
   return (
-    <div className="max-w-4xl mx-auto">
+    <div className="max-w-4xl mx-auto animate-fade-in">
       {/* Header */}
       <div className="mb-6">
         <h1 className="text-2xl font-semibold tracking-tight text-[var(--text)]">New CAIO Assessment</h1>
@@ -145,20 +145,20 @@ export default function CaioAssessPage() {
       <div className="mb-6">
         {step === 0 && (
           <Card>
-            <h2 className="text-[15px] font-semibold mb-4">Assessment Setup</h2>
+            <h2 className="text-[15px] font-bold mb-4">Assessment Setup</h2>
             <div className="space-y-4">
               <div>
-                <label className="text-[12px] font-semibold text-[var(--text-2)] block mb-1">Initiative Name *</label>
+                <label className="text-[12px] font-bold text-[var(--text-2)] block mb-1">Initiative Name *</label>
                 <input
                   type="text"
                   value={initiativeName}
                   onChange={(e) => setInitiativeName(e.target.value)}
-                  className="w-full px-3 py-2 border border-[var(--border)] rounded-md text-[13px] bg-white focus:border-[var(--accent)] focus:outline-none"
+                  className="w-full px-3 py-2 border border-[var(--border)] rounded-[var(--radius-sm)] text-[13px] bg-[var(--surface)] focus:border-[var(--accent)] focus:outline-none"
                   placeholder="e.g., Customer Support AI Agent"
                 />
               </div>
               <div>
-                <label className="text-[12px] font-semibold text-[var(--text-2)] block mb-1">Assessment Mode</label>
+                <label className="text-[12px] font-bold text-[var(--text-2)] block mb-1">Assessment Mode</label>
                 <div className="flex gap-2">
                   {[
                     { value: 'audit', label: 'Audit', desc: 'Guided questionnaire' },
@@ -168,13 +168,13 @@ export default function CaioAssessPage() {
                     <button
                       key={m.value}
                       onClick={() => setAssessmentMode(m.value as typeof assessmentMode)}
-                      className={`flex-1 p-3 rounded-md text-left transition-colors ${
+                      className={`flex-1 p-3 rounded-[var(--radius-sm)] text-left transition-colors ${
                         assessmentMode === m.value
                           ? 'bg-[var(--accent-soft)] border-2 border-[var(--accent)]'
                           : 'bg-[var(--surface)] border-2 border-transparent hover:bg-[var(--surface-hover)]'
                       }`}
                     >
-                      <div className="text-[13px] font-semibold">{m.label}</div>
+                      <div className="text-[13px] font-bold">{m.label}</div>
                       <div className="text-[11px] text-[var(--text-3)]">{m.desc}</div>
                     </button>
                   ))}
@@ -182,11 +182,11 @@ export default function CaioAssessPage() {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-[12px] font-semibold text-[var(--text-2)] block mb-1">Linked Project (optional)</label>
+                  <label className="text-[12px] font-bold text-[var(--text-2)] block mb-1">Linked Project (optional)</label>
                   <select
                     value={projectId || ''}
                     onChange={(e) => setProjectId(e.target.value ? parseInt(e.target.value) : undefined)}
-                    className="w-full px-3 py-2 border border-[var(--border)] rounded-md text-[13px] bg-white focus:border-[var(--accent)] focus:outline-none"
+                    className="w-full px-3 py-2 border border-[var(--border)] rounded-[var(--radius-sm)] text-[13px] bg-[var(--surface)] focus:border-[var(--accent)] focus:outline-none"
                   >
                     <option value="">None</option>
                     {projects.map(p => (
@@ -195,11 +195,11 @@ export default function CaioAssessPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="text-[12px] font-semibold text-[var(--text-2)] block mb-1">Target Maturity Level</label>
+                  <label className="text-[12px] font-bold text-[var(--text-2)] block mb-1">Target Maturity Level</label>
                   <select
                     value={targetMaturity}
                     onChange={(e) => setTargetMaturity(parseInt(e.target.value))}
-                    className="w-full px-3 py-2 border border-[var(--border)] rounded-md text-[13px] bg-white focus:border-[var(--accent)] focus:outline-none"
+                    className="w-full px-3 py-2 border border-[var(--border)] rounded-[var(--radius-sm)] text-[13px] bg-[var(--surface)] focus:border-[var(--accent)] focus:outline-none"
                   >
                     {[1, 2, 3, 4, 5].map(l => (
                       <option key={l} value={l}>{l} — {scoreLabels[l]?.split(' — ')[1]}</option>
@@ -230,10 +230,10 @@ export default function CaioAssessPage() {
                     const di = domains.findIndex(d => d.domainKey === domain.key);
                     const d = domains[di];
                     return (
-                      <div key={domain.key} className="border border-[var(--border)] rounded-lg p-5 bg-white">
+                      <div key={domain.key} className="border border-[var(--border)] rounded-[var(--radius-sm)] p-5 bg-[var(--surface)]">
                         <div className="flex justify-between items-start mb-3">
                           <div>
-                            <h4 className="text-[14px] font-semibold text-[var(--text)]">{domain.name}</h4>
+                            <h4 className="text-[14px] font-bold text-[var(--text)]">{domain.name}</h4>
                             <div className="flex flex-wrap gap-1 mt-1">
                               {domain.frameworks.map((f, fi) => (
                                 <span key={fi} className="text-[9px] font-medium px-1.5 py-0.5 rounded bg-[var(--surface)] text-[var(--text-4)]">{f}</span>
@@ -248,7 +248,7 @@ export default function CaioAssessPage() {
 
                         <div className="space-y-2.5">
                           {domain.questions.map((q, qi) => (
-                            <div key={qi} className="bg-[var(--surface)] rounded-md p-3">
+                            <div key={qi} className="bg-[var(--bg)] rounded-[var(--radius-sm)] p-3">
                               <p className="text-[12px] text-[var(--text-2)] mb-2">{q}</p>
                               <div className="flex gap-1.5 mb-2">
                                 {[1, 2, 3, 4, 5].map(score => (
@@ -256,10 +256,10 @@ export default function CaioAssessPage() {
                                     key={score}
                                     type="button"
                                     onClick={() => updateQuestion(di, qi, 'score', score)}
-                                    className={`px-2.5 py-1 rounded text-[10px] font-bold transition-colors ${
+                                    className={`px-2.5 py-1 rounded-[var(--radius-sm)] text-[10px] font-bold transition-colors ${
                                       d.questionScores[qi]?.score === score
                                         ? 'bg-[var(--accent)] text-white'
-                                        : 'bg-white border border-[var(--border)] text-[var(--text-3)] hover:border-[var(--accent)]'
+                                        : 'bg-[var(--surface)] border border-[var(--border)] text-[var(--text-3)] hover:border-[var(--accent)]'
                                     }`}
                                   >
                                     {score}
@@ -270,7 +270,7 @@ export default function CaioAssessPage() {
                                 type="text"
                                 value={d.questionScores[qi]?.evidence || ''}
                                 onChange={(e) => updateQuestion(di, qi, 'evidence', e.target.value)}
-                                className="w-full px-2 py-1 border border-[var(--border)] rounded text-[12px] bg-white focus:border-[var(--accent)] focus:outline-none"
+                                className="w-full px-2 py-1 border border-[var(--border)] rounded-[var(--radius-sm)] text-[12px] bg-[var(--surface)] focus:border-[var(--accent)] focus:outline-none"
                                 placeholder="Evidence / notes..."
                               />
                             </div>
@@ -281,7 +281,7 @@ export default function CaioAssessPage() {
                           rows={2}
                           value={d.currentState}
                           onChange={(e) => updateDomainField(di, 'currentState', e.target.value)}
-                          className="w-full px-3 py-2 border border-[var(--border)] rounded-md text-[13px] bg-white focus:border-[var(--accent)] focus:outline-none resize-none mt-3"
+                          className="w-full px-3 py-2 border border-[var(--border)] rounded-[var(--radius-sm)] text-[13px] bg-[var(--surface)] focus:border-[var(--accent)] focus:outline-none resize-none mt-3"
                           placeholder="Current state / key observations..."
                         />
                       </div>
@@ -298,14 +298,14 @@ export default function CaioAssessPage() {
             {generating ? (
               <div>
                 <Loader2 size={48} className="mx-auto mb-4 text-[var(--accent)] animate-spin" />
-                <h3 className="text-lg font-semibold mb-2">Generating AI Analysis...</h3>
+                <h3 className="text-lg font-bold mb-2">Generating AI Analysis...</h3>
                 <p className="text-[13px] text-[var(--text-3)] max-w-md mx-auto">
                   Claude Opus is analyzing your domain scores and generating executive findings, risk assessments, and phased action items. This may take a moment.
                 </p>
               </div>
             ) : generated ? (
               <div className="text-left max-w-xl mx-auto">
-                <h3 className="text-lg font-semibold mb-4 text-center">✅ Analysis Complete</h3>
+                <h3 className="text-lg font-bold mb-4 text-center">✅ Analysis Complete</h3>
                 <p className="text-[13px] text-[var(--text-2)]">{generated.executiveSummary?.substring(0, 300)}...</p>
                 <div className="flex gap-4 justify-center mt-4">
                   <Badge variant="accent">Maturity: {generated.maturityLevel} — {generated.maturityLabel}</Badge>
@@ -316,7 +316,7 @@ export default function CaioAssessPage() {
             ) : (
               <div>
                 <Sparkles size={48} className="mx-auto mb-4 text-[var(--accent)]" />
-                <h3 className="text-lg font-semibold mb-2">Ready for AI Analysis</h3>
+                <h3 className="text-lg font-bold mb-2">Ready for AI Analysis</h3>
                 <p className="text-[13px] text-[var(--text-3)] max-w-md mx-auto mb-6">
                   Claude Opus will analyze your 12-domain scores and generate executive findings, severity assessments, and phased action items.
                 </p>

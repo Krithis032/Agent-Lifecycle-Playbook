@@ -27,7 +27,7 @@ const categoryLabels: Record<string, string> = {
 
 export default function RiskItemCard({ risk, onStatusChange, onMitigationChange }: RiskItemCardProps) {
   return (
-    <div className="border border-[var(--border)] rounded-lg p-4 bg-white">
+    <div className="border border-[var(--border)] rounded-[var(--radius-sm)] p-4 bg-[var(--surface)]">
       <div className="flex items-start justify-between mb-2">
         <h4 className="text-[13px] font-semibold text-[var(--text)] leading-snug">{risk.title}</h4>
         <div className="flex gap-1.5 shrink-0 ml-2">
@@ -44,7 +44,7 @@ export default function RiskItemCard({ risk, onStatusChange, onMitigationChange 
           <select
             value={risk.status}
             onChange={(e) => onStatusChange(e.target.value)}
-            className="text-[12px] px-2 py-1 border border-[var(--border)] rounded bg-white focus:outline-none focus:border-[var(--accent)]"
+            className="text-[12px] px-2 py-1 border border-[var(--border)] rounded bg-[var(--surface)] focus:outline-none focus:border-[var(--accent)]"
           >
             <option value="open">Open</option>
             <option value="mitigated">Mitigated</option>
@@ -56,7 +56,7 @@ export default function RiskItemCard({ risk, onStatusChange, onMitigationChange 
         )}
       </div>
       {risk.mitigation && (
-        <div className="bg-[var(--surface)] rounded p-2 text-[12px] text-[var(--text-2)]">
+        <div className="bg-[var(--surface-hover)] rounded p-2 text-[12px] text-[var(--text-2)]">
           <span className="font-semibold">Mitigation: </span>{risk.mitigation}
         </div>
       )}
@@ -64,7 +64,7 @@ export default function RiskItemCard({ risk, onStatusChange, onMitigationChange 
         <input
           type="text"
           placeholder="Add mitigation plan..."
-          className="w-full mt-2 px-2 py-1 border border-[var(--border)] rounded text-[12px] focus:border-[var(--accent)] focus:outline-none"
+          className="w-full mt-2 px-2 py-1 border border-[var(--border)] rounded bg-[var(--bg)] text-[var(--text)] text-[12px] focus:border-[var(--accent)] focus:outline-none"
           onBlur={(e) => { if (e.target.value) onMitigationChange(e.target.value); }}
         />
       )}

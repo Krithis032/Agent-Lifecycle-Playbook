@@ -44,7 +44,7 @@ export default async function FillViewPage({ params }: { params: Promise<{ slug:
   }
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="animate-fade-in flex flex-col gap-6">
       <div className="flex items-start justify-between">
         <div>
           <Link href={`/templates/${slug}/fills`} className="text-[13px] text-[var(--accent)] hover:underline flex items-center gap-1 mb-3">
@@ -60,7 +60,7 @@ export default async function FillViewPage({ params }: { params: Promise<{ slug:
         <div className="flex gap-2">
           <Link
             href={`/templates/${slug}?edit=${fillId}`}
-            className="px-3 py-2 text-sm font-medium border border-[var(--border)] rounded-lg hover:border-[var(--accent)] flex items-center gap-1.5 text-[var(--text-2)]"
+            className="px-3 py-2 text-sm font-medium border border-[var(--border)] rounded-[var(--radius-sm)] hover:border-[var(--accent)] flex items-center gap-1.5 text-[var(--text-2)]"
           >
             <Pencil size={14} /> Edit
           </Link>
@@ -68,13 +68,13 @@ export default async function FillViewPage({ params }: { params: Promise<{ slug:
             href={`/api/templates/fills/${fillId}/export/pdf`}
             target="_blank"
             rel="noopener noreferrer"
-            className="px-3 py-2 text-sm font-medium border border-[var(--border)] rounded-lg hover:border-[var(--accent)] flex items-center gap-1.5 text-[var(--text-2)]"
+            className="px-3 py-2 text-sm font-medium border border-[var(--border)] rounded-[var(--radius-sm)] hover:border-[var(--accent)] flex items-center gap-1.5 text-[var(--text-2)]"
           >
             <FileText size={14} /> PDF
           </a>
           <a
             href={`/api/templates/fills/${fillId}/export/docx`}
-            className="px-3 py-2 text-sm font-semibold bg-[var(--accent)] text-white rounded-lg hover:opacity-90 flex items-center gap-1.5"
+            className="px-3 py-2 text-sm font-semibold bg-[var(--accent)] text-white rounded-[var(--radius-sm)] hover:opacity-90 flex items-center gap-1.5"
           >
             <Download size={14} /> DOCX
           </a>
@@ -103,7 +103,7 @@ export default async function FillViewPage({ params }: { params: Promise<{ slug:
                     {rows.length === 0 ? (
                       <div className="text-sm text-[var(--text-4)] italic">(no data)</div>
                     ) : (
-                      <div className="overflow-x-auto border border-[var(--border)] rounded-lg">
+                      <div className="overflow-x-auto border border-[var(--border)] rounded-[var(--radius-sm)]">
                         <table className="w-full text-sm">
                           <thead>
                             <tr className="bg-[var(--surface)]">
@@ -141,7 +141,7 @@ export default async function FillViewPage({ params }: { params: Promise<{ slug:
                     ) : (
                       <div className="space-y-3">
                         {entries.map((entry, ei) => (
-                          <div key={ei} className="border border-[var(--border)] rounded-lg p-4 bg-[var(--surface)]">
+                          <div key={ei} className="border border-[var(--border)] rounded-[var(--radius-sm)] p-4 bg-[var(--surface)]">
                             <div className="text-xs font-bold text-[var(--accent)] mb-2">#{ei + 1}</div>
                             <div className="space-y-1.5">
                               {subs.map(sf => {

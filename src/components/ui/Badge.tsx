@@ -1,17 +1,17 @@
 type BadgeVariant = 'default' | 'accent' | 'green' | 'amber' | 'purple' | 'cyan' | 'coral' | 'success' | 'warning' | 'error' | 'info';
 
 const variantStyles: Record<BadgeVariant, string> = {
-  default: 'bg-[var(--surface)] text-[var(--text-3)]',
-  accent: 'bg-[var(--accent-soft)] text-[var(--accent)]',
-  green: 'bg-[var(--success-soft)] text-[var(--success)]',
-  success: 'bg-[var(--success-soft)] text-[var(--success)]',
-  coral: 'bg-[var(--error-soft)] text-[var(--error)]',
-  error: 'bg-[var(--error-soft)] text-[var(--error)]',
-  amber: 'bg-[var(--warning-soft)] text-[var(--warning)]',
-  warning: 'bg-[var(--warning-soft)] text-[var(--warning)]',
-  purple: 'bg-purple-50 text-purple-700',
-  cyan: 'bg-cyan-50 text-cyan-700',
-  info: 'bg-[var(--info-soft)] text-[var(--info)]',
+  default: 'bg-[var(--surface-hover)] text-[var(--text-3)] border-[var(--border)]',
+  accent: 'bg-[var(--accent-soft)] text-[var(--accent)] border-[rgba(212,168,83,0.15)]',
+  green: 'bg-[var(--success-soft)] text-[var(--success)] border-[rgba(78,173,107,0.15)]',
+  success: 'bg-[var(--success-soft)] text-[var(--success)] border-[rgba(78,173,107,0.15)]',
+  coral: 'bg-[var(--error-soft)] text-[var(--error)] border-[rgba(224,85,85,0.15)]',
+  error: 'bg-[var(--error-soft)] text-[var(--error)] border-[rgba(224,85,85,0.15)]',
+  amber: 'bg-[var(--warning-soft)] text-[var(--warning)] border-[rgba(212,168,83,0.15)]',
+  warning: 'bg-[var(--warning-soft)] text-[var(--warning)] border-[rgba(212,168,83,0.15)]',
+  purple: 'bg-[rgba(139,92,246,0.1)] text-[#a78bfa] border-[rgba(139,92,246,0.15)]',
+  cyan: 'bg-[rgba(34,211,238,0.08)] text-[#67e8f9] border-[rgba(34,211,238,0.12)]',
+  info: 'bg-[var(--info-soft)] text-[var(--info)] border-[rgba(91,155,213,0.15)]',
 };
 
 interface BadgeProps {
@@ -22,7 +22,7 @@ interface BadgeProps {
 
 export default function Badge({ children, variant = 'default', className = '' }: BadgeProps) {
   return (
-    <span className={`inline-block text-[11px] font-bold tracking-wide px-2.5 py-0.5 rounded-[4px] uppercase ${variantStyles[variant]} ${className}`}>
+    <span className={`inline-block text-[10px] font-semibold tracking-wider px-2 py-0.5 rounded-[4px] uppercase border ${variantStyles[variant]} ${className}`}>
       {children}
     </span>
   );

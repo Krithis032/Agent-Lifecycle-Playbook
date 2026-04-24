@@ -35,7 +35,7 @@ export default function WhartonDomainForm({ domains, onChange }: WhartonDomainFo
       {WHARTON_DOMAINS.map((domain, di) => {
         const d = domains[di];
         return (
-          <div key={domain.key} className="border border-[var(--border)] rounded-lg p-5 bg-white">
+          <div key={domain.key} className="border border-[var(--border)] rounded-lg p-5 bg-[var(--surface)]">
             <div className="flex justify-between items-start mb-3">
               <div>
                 <h3 className="text-[14px] font-semibold text-[var(--text)]">{domain.name}</h3>
@@ -60,7 +60,7 @@ export default function WhartonDomainForm({ domains, onChange }: WhartonDomainFo
                         className={`px-3 py-1 rounded text-[11px] font-semibold transition-colors ${
                           d.questions[qi]?.score === score
                             ? 'bg-[var(--accent)] text-white'
-                            : 'bg-white border border-[var(--border)] text-[var(--text-3)] hover:border-[var(--accent)]'
+                            : 'bg-[var(--bg)] border border-[var(--border)] text-[var(--text-3)] hover:border-[var(--accent)]'
                         }`}
                       >
                         {scoreLabels[score]}
@@ -71,7 +71,7 @@ export default function WhartonDomainForm({ domains, onChange }: WhartonDomainFo
                     type="text"
                     value={d.questions[qi]?.evidence || ''}
                     onChange={(e) => updateQuestion(di, qi, 'evidence', e.target.value)}
-                    className="w-full px-2 py-1 border border-[var(--border)] rounded text-[12px] bg-white focus:border-[var(--accent)] focus:outline-none"
+                    className="w-full px-2 py-1 border border-[var(--border)] rounded text-[12px] bg-[var(--bg)] focus:border-[var(--accent)] focus:outline-none"
                     placeholder="Evidence / notes..."
                   />
                 </div>
@@ -83,7 +83,7 @@ export default function WhartonDomainForm({ domains, onChange }: WhartonDomainFo
               rows={2}
               value={d.currentState}
               onChange={(e) => updateDomainField(di, 'currentState', e.target.value)}
-              className="w-full px-3 py-2 border border-[var(--border)] rounded-md text-[13px] bg-white focus:border-[var(--accent)] focus:outline-none resize-none mb-2"
+              className="w-full px-3 py-2 border border-[var(--border)] rounded-md text-[13px] bg-[var(--bg)] focus:border-[var(--accent)] focus:outline-none resize-none mb-2"
               placeholder="Current state assessment..."
             />
           </div>

@@ -160,7 +160,7 @@ export default function GovernanceAssessPage() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto">
+    <div className="max-w-4xl mx-auto animate-fade-in">
       {/* Header */}
       <div className="mb-6">
         <h1 className="text-2xl font-semibold tracking-tight text-[var(--text)]">New Governance Assessment</h1>
@@ -200,7 +200,7 @@ export default function GovernanceAssessPage() {
                 <select
                   value={projectId}
                   onChange={(e) => setProjectId(parseInt(e.target.value))}
-                  className="w-full px-3 py-2 border border-[var(--border)] rounded-md text-[13px] bg-white focus:border-[var(--accent)] focus:outline-none"
+                  className="w-full px-3 py-2 border border-[var(--border)] rounded-[var(--radius-sm)] text-[13px] bg-[var(--surface)] focus:border-[var(--accent)] focus:outline-none"
                 >
                   <option value={0}>— Select Project —</option>
                   {projects.map(p => (
@@ -215,9 +215,9 @@ export default function GovernanceAssessPage() {
                     <button
                       key={t}
                       onClick={() => setAssessmentType(t)}
-                      className={`px-4 py-2 rounded-md text-[13px] font-semibold transition-colors ${
+                      className={`px-4 py-2 rounded-[var(--radius-sm)] text-[13px] font-bold transition-colors ${
                         assessmentType === t
-                          ? 'bg-[var(--accent)] text-white'
+                          ? 'bg-[var(--accent)] text-white hover:bg-[var(--accent-hover)]'
                           : 'bg-[var(--surface)] text-[var(--text-3)] hover:bg-[var(--surface-hover)]'
                       }`}
                     >
@@ -245,21 +245,21 @@ export default function GovernanceAssessPage() {
         {step === 4 && (
           <div className="space-y-4">
             <Card>
-              <h2 className="text-[15px] font-semibold mb-4">Add Risk Items</h2>
+              <h2 className="text-[15px] font-bold mb-4">Add Risk Items</h2>
               <div className="grid grid-cols-2 gap-3 mb-3">
-                <select value={newRisk.category} onChange={(e) => setNewRisk(p => ({ ...p, category: e.target.value as RiskItemInput['category'] }))} className="px-3 py-2 border border-[var(--border)] rounded-md text-[13px] bg-white focus:border-[var(--accent)] focus:outline-none">
+                <select value={newRisk.category} onChange={(e) => setNewRisk(p => ({ ...p, category: e.target.value as RiskItemInput['category'] }))} className="px-3 py-2 border border-[var(--border)] rounded-[var(--radius-sm)] text-[13px] bg-[var(--surface)] focus:border-[var(--accent)] focus:outline-none">
                   {['data', 'model', 'security', 'compliance', 'operational', 'ethical'].map(c => (
                     <option key={c} value={c}>{c.charAt(0).toUpperCase() + c.slice(1)}</option>
                   ))}
                 </select>
-                <select value={newRisk.severity} onChange={(e) => setNewRisk(p => ({ ...p, severity: e.target.value as RiskItemInput['severity'] }))} className="px-3 py-2 border border-[var(--border)] rounded-md text-[13px] bg-white focus:border-[var(--accent)] focus:outline-none">
+                <select value={newRisk.severity} onChange={(e) => setNewRisk(p => ({ ...p, severity: e.target.value as RiskItemInput['severity'] }))} className="px-3 py-2 border border-[var(--border)] rounded-[var(--radius-sm)] text-[13px] bg-[var(--surface)] focus:border-[var(--accent)] focus:outline-none">
                   {['low', 'medium', 'high', 'critical'].map(s => (
                     <option key={s} value={s}>{s.charAt(0).toUpperCase() + s.slice(1)}</option>
                   ))}
                 </select>
               </div>
-              <input type="text" placeholder="Risk title..." value={newRisk.title} onChange={(e) => setNewRisk(p => ({ ...p, title: e.target.value }))} className="w-full px-3 py-2 border border-[var(--border)] rounded-md text-[13px] bg-white focus:border-[var(--accent)] focus:outline-none mb-2" />
-              <textarea rows={2} placeholder="Description..." value={newRisk.description} onChange={(e) => setNewRisk(p => ({ ...p, description: e.target.value }))} className="w-full px-3 py-2 border border-[var(--border)] rounded-md text-[13px] bg-white focus:border-[var(--accent)] focus:outline-none resize-none mb-2" />
+              <input type="text" placeholder="Risk title..." value={newRisk.title} onChange={(e) => setNewRisk(p => ({ ...p, title: e.target.value }))} className="w-full px-3 py-2 border border-[var(--border)] rounded-[var(--radius-sm)] text-[13px] bg-[var(--surface)] focus:border-[var(--accent)] focus:outline-none mb-2" />
+              <textarea rows={2} placeholder="Description..." value={newRisk.description} onChange={(e) => setNewRisk(p => ({ ...p, description: e.target.value }))} className="w-full px-3 py-2 border border-[var(--border)] rounded-[var(--radius-sm)] text-[13px] bg-[var(--surface)] focus:border-[var(--accent)] focus:outline-none resize-none mb-2" />
               <Button size="sm" onClick={addRisk} disabled={!newRisk.title.trim()}>
                 <AlertTriangle size={14} /> Add Risk
               </Button>
@@ -286,23 +286,23 @@ export default function GovernanceAssessPage() {
 
         {step === 5 && (
           <Card>
-            <h2 className="text-[15px] font-semibold mb-4 flex items-center gap-2">
+            <h2 className="text-[15px] font-bold mb-4 flex items-center gap-2">
               <Shield size={18} className="text-[var(--accent)]" /> Assessment Summary
             </h2>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-              <div className="text-center p-3 bg-[var(--surface)] rounded-lg">
+              <div className="text-center p-3 bg-[var(--surface)] rounded-[var(--radius-sm)]">
                 <div className="text-2xl font-bold text-[var(--accent)]">{overallScore}</div>
                 <div className="text-[11px] text-[var(--text-3)]">Overall Score</div>
               </div>
-              <div className="text-center p-3 bg-[var(--surface)] rounded-lg">
+              <div className="text-center p-3 bg-[var(--surface)] rounded-[var(--radius-sm)]">
                 <div className="text-2xl font-bold text-[var(--text)]">{trustAvg.toFixed(1)}</div>
                 <div className="text-[11px] text-[var(--text-3)]">Trust Avg (/10)</div>
               </div>
-              <div className="text-center p-3 bg-[var(--surface)] rounded-lg">
+              <div className="text-center p-3 bg-[var(--surface)] rounded-[var(--radius-sm)]">
                 <div className="text-2xl font-bold text-[var(--text)]">{(whartonAvg * 100).toFixed(0)}%</div>
                 <div className="text-[11px] text-[var(--text-3)]">Wharton Avg</div>
               </div>
-              <div className="text-center p-3 bg-[var(--surface)] rounded-lg">
+              <div className="text-center p-3 bg-[var(--surface)] rounded-[var(--radius-sm)]">
                 <Badge variant={getRiskClass() === 'low' ? 'success' : getRiskClass() === 'critical' ? 'error' : 'warning'} className="text-[14px]">
                   {getRiskClass().toUpperCase()}
                 </Badge>

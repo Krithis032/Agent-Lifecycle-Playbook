@@ -79,10 +79,10 @@ export default function SetupPage() {
 
   if (success) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[var(--bg)]">
+      <div className="min-h-screen flex items-center justify-center bg-[var(--bg)] animate-fade-in">
         <div className="w-full max-w-[400px] mx-auto px-4 text-center">
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-green-100 mb-4">
-            <ShieldCheck size={28} className="text-green-600" />
+          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-[var(--success-soft)] mb-4">
+            <ShieldCheck size={28} className="text-[var(--success)]" />
           </div>
           <h2 className="text-xl font-bold text-[var(--text)]">Setup Complete</h2>
           <p className="text-[13px] text-[var(--text-3)] mt-2">
@@ -94,7 +94,7 @@ export default function SetupPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[var(--bg)]">
+    <div className="min-h-screen flex items-center justify-center bg-[var(--bg)] animate-fade-in">
       <div className="w-full max-w-[440px] mx-auto px-4">
         {/* Header */}
         <div className="text-center mb-8">
@@ -105,7 +105,7 @@ export default function SetupPage() {
               <path d="M2 12l10 5 10-5" />
             </svg>
           </div>
-          <h1 className="text-2xl font-extrabold tracking-tight text-[var(--text)]">
+          <h1 className="text-2xl font-bold tracking-tight text-[var(--text)]">
             Initial Setup
           </h1>
           <p className="text-[13px] text-[var(--text-3)] mt-1">
@@ -114,24 +114,24 @@ export default function SetupPage() {
         </div>
 
         {/* Card */}
-        <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-8 shadow-sm">
+        <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-8">
           {/* Security notice */}
-          <div className="flex items-start gap-3 px-3 py-2.5 rounded-lg bg-blue-50 border border-blue-200 mb-6">
-            <ShieldCheck size={16} className="text-blue-600 mt-0.5 shrink-0" />
-            <p className="text-[12px] text-blue-700 leading-relaxed">
+          <div className="flex items-start gap-3 px-3 py-2.5 rounded-[var(--radius-sm)] bg-[var(--info-soft)] border border-[rgba(78,173,247,0.15)] mb-6">
+            <ShieldCheck size={16} className="text-[var(--info)] mt-0.5 shrink-0" />
+            <p className="text-[12px] text-[var(--info)] leading-relaxed">
               This page is only available during first-time setup. Once an admin account is created, this page will be permanently disabled.
             </p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             {error && (
-              <div className="px-3 py-2 rounded-lg bg-red-50 border border-red-200 text-red-700 text-[13px] font-medium">
+              <div className="px-3 py-2 rounded-[var(--radius-sm)] bg-[var(--error-soft)] border border-[rgba(224,85,85,0.15)] text-[var(--error)] text-[13px] font-bold">
                 {error}
               </div>
             )}
 
             <div>
-              <label className="block text-[12px] font-semibold text-[var(--text-3)] mb-1.5">
+              <label className="block text-[12px] font-bold text-[var(--text-3)] mb-1.5">
                 Full Name
               </label>
               <input
@@ -145,7 +145,7 @@ export default function SetupPage() {
             </div>
 
             <div>
-              <label className="block text-[12px] font-semibold text-[var(--text-3)] mb-1.5">
+              <label className="block text-[12px] font-bold text-[var(--text-3)] mb-1.5">
                 Email
               </label>
               <input
@@ -159,7 +159,7 @@ export default function SetupPage() {
             </div>
 
             <div>
-              <label className="block text-[12px] font-semibold text-[var(--text-3)] mb-1.5">
+              <label className="block text-[12px] font-bold text-[var(--text-3)] mb-1.5">
                 Password
               </label>
               <div className="relative">
@@ -184,7 +184,7 @@ export default function SetupPage() {
             </div>
 
             <div>
-              <label className="block text-[12px] font-semibold text-[var(--text-3)] mb-1.5">
+              <label className="block text-[12px] font-bold text-[var(--text-3)] mb-1.5">
                 Confirm Password
               </label>
               <input
@@ -201,7 +201,7 @@ export default function SetupPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full px-4 py-2.5 rounded-xl text-[14px] font-semibold text-white bg-[var(--accent)] hover:bg-[var(--accent-hover)] disabled:opacity-50 disabled:cursor-not-allowed transition-colors mt-2"
+              className="w-full px-4 py-2.5 rounded-xl text-[14px] font-bold text-white bg-[var(--accent)] hover:bg-[var(--accent-hover)] disabled:opacity-50 disabled:cursor-not-allowed transition-colors mt-2"
             >
               {loading ? 'Creating Account...' : 'Create Admin Account'}
             </button>

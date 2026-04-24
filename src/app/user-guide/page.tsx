@@ -59,9 +59,9 @@ function SubSection({ title, children }: { title: string; children: React.ReactN
 
 function Tip({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex items-start gap-2.5 px-3 py-2.5 rounded-lg bg-blue-50 border border-blue-200 mb-4">
-      <Lightbulb size={14} className="text-blue-600 mt-0.5 shrink-0" />
-      <p className="text-[12px] text-blue-700 leading-relaxed">{children}</p>
+    <div className="flex items-start gap-2.5 px-3 py-2.5 rounded-[var(--radius-sm)] bg-[rgba(34,211,238,0.08)] border border-[var(--border-subtle)] mb-4">
+      <Lightbulb size={14} className="text-[#67e8f9] mt-0.5 shrink-0" />
+      <p className="text-[12px] text-[#67e8f9] leading-relaxed">{children}</p>
     </div>
   );
 }
@@ -95,7 +95,7 @@ function NumberedList({ items }: { items: string[] }) {
 /* ─── Main Page ─── */
 export default function UserGuidePage() {
   return (
-    <div className="flex flex-col gap-6 max-w-[900px]">
+    <div className="animate-fade-in flex flex-col gap-6 max-w-[900px]">
       {/* Header */}
       <div>
         <div className="eyebrow mb-2">Documentation</div>
@@ -118,7 +118,7 @@ export default function UserGuidePage() {
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
           {TOC.map((item) => (
-            <a key={item.id} href={`#${item.id}`} className="flex items-center gap-2 px-3 py-2 rounded-lg text-[13px] text-[var(--text-2)] hover:bg-[var(--surface-hover)] hover:text-[var(--accent)] transition-colors">
+            <a key={item.id} href={`#${item.id}`} className="flex items-center gap-2 px-3 py-2 rounded-[var(--radius-sm)] text-[13px] text-[var(--text-2)] hover:bg-[var(--surface-hover)] hover:text-[var(--accent)] transition-colors">
               <ArrowRight size={12} className="text-[var(--text-4)]" />
               {item.label}
             </a>
@@ -460,7 +460,7 @@ export default function UserGuidePage() {
                 { name: 'Continuous Improvement', desc: 'Feedback loops, failure cataloguing, drift detection, retraining triggers' },
               ].map((layer) => (
                 <div key={layer.name} className="flex items-start gap-2">
-                  <CheckCircle size={13} className="text-green-600 shrink-0 mt-[3px]" />
+                  <CheckCircle size={13} className="text-[var(--success)] shrink-0 mt-[3px]" />
                   <span><strong>{layer.name}:</strong> {layer.desc}</span>
                 </div>
               ))}
@@ -841,7 +841,7 @@ export default function UserGuidePage() {
                     { module: 'Settings', admin: 'Full', user: 'View Only', viewer: 'No Access' },
                     { module: 'User Management', admin: 'Full', user: 'No Access', viewer: 'No Access' },
                   ].map((row) => (
-                    <tr key={row.module} className="hover:bg-[var(--surface)] transition-colors">
+                    <tr key={row.module} className="hover:bg-[var(--surface-hover)] transition-colors">
                       <td className="py-2 pr-4 font-medium text-[var(--text)]">{row.module}</td>
                       <td className="py-2 pr-4">{row.admin}</td>
                       <td className="py-2 pr-4">{row.user}</td>
@@ -954,7 +954,7 @@ export default function UserGuidePage() {
                     { tier: 'LinkedIn Learning KB', concepts: '111', files: '3 YAML + index', sources: '16 curated sources (LL01-LL16) covering agents, MCP strategy, and productivity tools', color: '#0077b5' },
                     { tier: 'Strategy & Governance KB', concepts: '174', files: '3 YAML', sources: 'Cross-source synthesis covering governance (NIST/TRiSM/CAIO), evolution patterns, and build & deploy strategies', color: '#15803d' },
                   ].map((row) => (
-                    <tr key={row.tier} className="hover:bg-[var(--surface)] transition-colors">
+                    <tr key={row.tier} className="hover:bg-[var(--surface-hover)] transition-colors">
                       <td className="py-3 pr-6">
                         <div className="flex items-center gap-2">
                           <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: row.color }} />
@@ -1058,7 +1058,7 @@ export default function UserGuidePage() {
                     { name: 'PLAYBOOK_CONTENT_DIR', req: 'No', desc: 'Path to playbook content (default: ./content)' },
                     { name: 'NODE_ENV', req: 'No', desc: 'Environment (development or production)' },
                   ].map((row) => (
-                    <tr key={row.name} className="hover:bg-[var(--surface)] transition-colors">
+                    <tr key={row.name} className="hover:bg-[var(--surface-hover)] transition-colors">
                       <td className="py-2 pr-4 font-mono text-[11px] text-[var(--text)]">{row.name}</td>
                       <td className="py-2 pr-4">{row.req}</td>
                       <td className="py-2 text-[var(--text-3)]">{row.desc}</td>

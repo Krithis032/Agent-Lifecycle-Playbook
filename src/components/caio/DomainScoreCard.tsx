@@ -18,7 +18,7 @@ export default function DomainScoreCard({ domainName, score, riskLevel, gaps, fr
   };
 
   return (
-    <div className="border border-[var(--border)] rounded-lg p-4 bg-white hover:shadow-sm transition-shadow">
+    <div className="border border-[var(--border)] rounded-[var(--radius-sm)] p-4 bg-[var(--surface)] hover:bg-[var(--surface-hover)] transition-colors">
       <div className="flex items-start justify-between mb-2">
         <h4 className="text-[13px] font-semibold text-[var(--text)] leading-snug">{domainName}</h4>
         <span className="text-xl font-bold text-[var(--accent)]">{scoreDisplay}</span>

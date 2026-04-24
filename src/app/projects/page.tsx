@@ -26,11 +26,11 @@ export default function ProjectsPage() {
   const filtered = filter === 'all' ? projects : projects.filter((p) => p.status === filter);
 
   return (
-    <div>
+    <div className="animate-fade-in">
       <div className="flex items-start justify-between mb-8">
         <div>
           <div className="eyebrow mb-2">Project Tracker</div>
-          <h1 className="text-3xl font-extrabold tracking-tight text-[var(--text)]">
+          <h1 className="text-3xl font-bold tracking-tight text-[var(--text)]">
             Agent <span className="text-[var(--accent)] font-light italic">Projects</span>
           </h1>
         </div>
@@ -44,10 +44,10 @@ export default function ProjectsPage() {
           <Tooltip key={s} content={`Show ${s === 'all' ? 'all projects' : s + ' projects only'}`}>
             <button
               onClick={() => setFilter(s)}
-              className={`px-3 py-1.5 rounded-lg text-[12px] font-semibold transition-all ${
+              className={`px-3 py-1.5 rounded-[var(--radius-sm)] text-[12px] font-semibold transition-all ${
                 filter === s
                   ? 'bg-[var(--accent-soft)] text-[var(--accent)]'
-                  : 'text-[var(--text-3)] hover:bg-[var(--surface)]'
+                  : 'text-[var(--text-3)] hover:bg-[var(--surface-hover)]'
               }`}
             >
               {s.charAt(0).toUpperCase() + s.slice(1)}
@@ -92,7 +92,7 @@ export default function ProjectsPage() {
               <label className="block text-[12px] font-semibold text-[var(--text-3)] mb-1 cursor-help">Project Name *</label>
             </Tooltip>
             <input
-              className="w-full px-3 py-2 border border-[var(--border)] rounded-lg text-[14px] bg-[var(--bg)] text-[var(--text)] focus:border-[var(--accent)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-soft)] transition-all"
+              className="w-full px-3 py-2 border border-[var(--border)] rounded-[var(--radius-sm)] text-[14px] bg-[var(--bg)] text-[var(--text)] focus:border-[var(--accent)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-soft)] transition-all"
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
               placeholder="e.g., Customer Support Triage Agent"
@@ -104,7 +104,7 @@ export default function ProjectsPage() {
               <label className="block text-[12px] font-semibold text-[var(--text-3)] mb-1 cursor-help">Description</label>
             </Tooltip>
             <textarea
-              className="w-full px-3 py-2 border border-[var(--border)] rounded-lg text-[14px] bg-[var(--bg)] text-[var(--text)] focus:border-[var(--accent)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-soft)] h-24 transition-all"
+              className="w-full px-3 py-2 border border-[var(--border)] rounded-[var(--radius-sm)] text-[14px] bg-[var(--bg)] text-[var(--text)] focus:border-[var(--accent)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-soft)] h-24 transition-all"
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
               title="Describe what this agent does and who it serves"
@@ -116,7 +116,7 @@ export default function ProjectsPage() {
                 <label className="block text-[12px] font-semibold text-[var(--text-3)] mb-1 cursor-help">Architecture Pattern</label>
               </Tooltip>
               <select
-                className="w-full px-3 py-2 border border-[var(--border)] rounded-lg text-[14px] bg-[var(--bg)] text-[var(--text)] focus:border-[var(--accent)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-soft)] transition-all"
+                className="w-full px-3 py-2 border border-[var(--border)] rounded-[var(--radius-sm)] text-[14px] bg-[var(--bg)] text-[var(--text)] focus:border-[var(--accent)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-soft)] transition-all"
                 value={formData.architecturePattern}
                 onChange={(e) => setFormData({ ...formData, architecturePattern: e.target.value })}
                 title="Select the multi-agent topology for this project"
@@ -134,7 +134,7 @@ export default function ProjectsPage() {
                 <label className="block text-[12px] font-semibold text-[var(--text-3)] mb-1 cursor-help">Framework</label>
               </Tooltip>
               <select
-                className="w-full px-3 py-2 border border-[var(--border)] rounded-lg text-[14px] bg-[var(--bg)] text-[var(--text)] focus:border-[var(--accent)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-soft)] transition-all"
+                className="w-full px-3 py-2 border border-[var(--border)] rounded-[var(--radius-sm)] text-[14px] bg-[var(--bg)] text-[var(--text)] focus:border-[var(--accent)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-soft)] transition-all"
                 value={formData.framework}
                 onChange={(e) => setFormData({ ...formData, framework: e.target.value })}
                 title="Select the framework for agent orchestration"
