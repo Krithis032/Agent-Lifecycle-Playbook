@@ -35,15 +35,15 @@ export default function MaturityGauge({ level, label }: MaturityGaugeProps) {
   };
 
   return (
-    <div className="bg-[var(--surface)] rounded-lg border border-[var(--border)] p-6 text-center">
-      <h3 className="text-[15px] font-semibold mb-2 text-[var(--text)]">Maturity Level</h3>
+    <div className="rounded-lg p-6 text-center" style={{ background: 'var(--surface-elevated)', border: '1px solid var(--border-default)' }}>
+      <h3 className="text-[15px] font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>Maturity Level</h3>
       <div className="relative inline-block">
         <svg width="200" height="140" viewBox="0 0 200 140">
           {/* Background arc */}
           <path
             d={describeArc(startAngle, endAngle)}
             fill="none"
-            stroke="var(--surface)"
+            stroke="var(--surface-1)"
             strokeWidth={strokeWidth}
             strokeLinecap="round"
           />
@@ -57,10 +57,10 @@ export default function MaturityGauge({ level, label }: MaturityGaugeProps) {
             className="transition-all duration-700"
           />
           {/* Level text */}
-          <text x={cx} y={cy - 5} textAnchor="middle" className="text-3xl font-bold" fill="var(--text)" style={{ fontSize: '32px', fontWeight: 800 }}>
+          <text x={cx} y={cy - 5} textAnchor="middle" fill="var(--text-primary)" style={{ fontSize: '32px', fontWeight: 800, fontFamily: 'Urbanist' }}>
             {clampedLevel}
           </text>
-          <text x={cx} y={cx + 18} textAnchor="middle" className="text-xs" fill="var(--text-3)" style={{ fontSize: '12px' }}>
+          <text x={cx} y={cx + 18} textAnchor="middle" fill="var(--text-tertiary)" style={{ fontSize: '12px', fontFamily: 'Urbanist' }}>
             / 5
           </text>
         </svg>
@@ -69,7 +69,7 @@ export default function MaturityGauge({ level, label }: MaturityGaugeProps) {
         <span className="text-[14px] font-bold" style={{ color: maturity.color }}>
           {label || maturity.label}
         </span>
-        <p className="text-[11px] text-[var(--text-3)] mt-1">{maturity.description}</p>
+        <p className="text-[11px] mt-1" style={{ color: 'var(--text-tertiary)' }}>{maturity.description}</p>
       </div>
       {/* Level indicators */}
       <div className="flex justify-center gap-1.5 mt-3">
@@ -77,7 +77,7 @@ export default function MaturityGauge({ level, label }: MaturityGaugeProps) {
           <div
             key={m.level}
             className="w-8 h-2 rounded-full transition-colors"
-            style={{ backgroundColor: m.level <= clampedLevel ? m.color : 'var(--surface)' }}
+            style={{ backgroundColor: m.level <= clampedLevel ? m.color : 'var(--surface-1)' }}
             title={m.label}
           />
         ))}

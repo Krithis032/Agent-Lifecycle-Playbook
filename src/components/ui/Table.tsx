@@ -22,7 +22,8 @@ export default function Table<T extends Record<string, any>>({ columns, data, on
             {columns.map((col) => (
               <th
                 key={col.key}
-                className="text-left px-4 py-3 text-[9px] font-bold tracking-[1.5px] uppercase text-[var(--text-4)] bg-[var(--surface-hover)] border-b border-[var(--border)]"
+                className="text-left px-4 py-3 text-[9px] font-bold tracking-[1.5px] uppercase"
+                style={{ color: 'var(--text-quaternary)', background: 'var(--surface-1)', borderBottom: '1px solid var(--border-default)' }}
               >
                 {col.header}
               </th>
@@ -33,11 +34,12 @@ export default function Table<T extends Record<string, any>>({ columns, data, on
           {data.map((row, i) => (
             <tr
               key={i}
-              className={`border-b border-[var(--border-subtle)] hover:bg-[var(--surface-hover)] transition-colors ${onRowClick ? 'cursor-pointer' : ''}`}
+              className={`transition-colors ${onRowClick ? 'cursor-pointer' : ''}`}
+              style={{ borderBottom: '1px solid var(--border-default)' }}
               {...(onRowClick ? { onClick: () => onRowClick(row) } : {})}
             >
               {columns.map((col) => (
-                <td key={col.key} className="px-4 py-3 text-[var(--text-2)]">
+                <td key={col.key} className="px-4 py-3" style={{ color: 'var(--text-secondary)' }}>
                   {col.render ? col.render(row) : String(row[col.key] ?? '')}
                 </td>
               ))}

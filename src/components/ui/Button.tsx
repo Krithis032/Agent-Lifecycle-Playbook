@@ -9,16 +9,16 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const variantStyles: Record<Variant, string> = {
-  primary: 'bg-[var(--accent)] text-white hover:bg-[var(--accent-hover)] shadow-[0_1px_8px_rgba(196,154,60,0.2)]',
-  secondary: 'bg-[var(--surface-hover)] text-[var(--text-2)] border border-[var(--border)] hover:border-[var(--border-hover)] hover:text-[var(--text)]',
-  ghost: 'bg-transparent text-[var(--text-3)] hover:bg-[var(--surface-hover)] hover:text-[var(--text-2)]',
-  danger: 'bg-[var(--error-soft)] text-[var(--error)] hover:bg-[rgba(224,85,85,0.2)] border border-[rgba(224,85,85,0.15)]',
+  primary: 'bg-[var(--brand-primary)] text-[var(--text-inverse)] hover:bg-[var(--brand-primary-hover)]',
+  secondary: 'bg-transparent text-[var(--brand-primary)] border border-[var(--brand-primary)] hover:bg-[var(--brand-soft)]',
+  ghost: 'bg-transparent text-[var(--text-secondary)] hover:bg-[var(--surface-1)]',
+  danger: 'bg-[var(--status-error)] text-[var(--text-inverse)] hover:bg-red-700',
 };
 
 const sizeStyles: Record<Size, string> = {
-  sm: 'px-3 py-1.5 text-[11px]',
-  md: 'px-4 py-2 text-[13px]',
-  lg: 'px-6 py-3 text-[14px]',
+  sm: 'px-3 py-1.5 text-[12px] min-h-[36px]',
+  md: 'px-4 py-2 text-[13px] min-h-[40px]',
+  lg: 'px-6 py-3 text-[14px] min-h-[44px]',
 };
 
 const Button = forwardRef<HTMLButtonElement, ButtonProps>(
@@ -26,7 +26,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     return (
       <button
         ref={ref}
-        className={`inline-flex items-center justify-center gap-2 font-semibold rounded-[var(--radius-sm)] transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed disabled:pointer-events-none ${variantStyles[variant]} ${sizeStyles[size]} ${className}`}
+        className={`inline-flex items-center justify-center gap-2 font-semibold rounded-[var(--radius-md)] transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed disabled:pointer-events-none focus-visible:outline-2 focus-visible:outline-[var(--brand-primary)] focus-visible:outline-offset-2 ${variantStyles[variant]} ${sizeStyles[size]} ${className}`}
         disabled={disabled}
         {...props}
       >

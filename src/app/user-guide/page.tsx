@@ -38,8 +38,8 @@ function SectionHeader({ id, number, title, icon: Icon, color, bg }: {
         <div className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0" style={{ backgroundColor: bg, color }}>
           <Icon size={18} />
         </div>
-        <h2 className="text-[18px] font-bold text-[var(--text)]">
-          <span className="text-[var(--text-4)] mr-1.5">{number}</span>{title}
+        <h2 className="text-[18px] font-bold" style={{ color: 'var(--text-primary)' }}>
+          <span style={{ color: 'var(--text-quaternary)' }} className="mr-1.5">{number}</span>{title}
         </h2>
       </div>
     </div>
@@ -49,17 +49,17 @@ function SectionHeader({ id, number, title, icon: Icon, color, bg }: {
 function SubSection({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div className="mb-5">
-      <h3 className="text-[14px] font-semibold text-[var(--text)] mb-2 flex items-center gap-2">
-        <ChevronRight size={14} className="text-[var(--accent)]" />{title}
+      <h3 className="text-[14px] font-semibold mb-2 flex items-center gap-2" style={{ color: 'var(--text-primary)' }}>
+        <ChevronRight size={14} style={{ color: 'var(--brand-primary)' }} />{title}
       </h3>
-      <div className="text-[13px] text-[var(--text-2)] leading-relaxed pl-5">{children}</div>
+      <div className="text-[13px] leading-relaxed pl-5" style={{ color: 'var(--text-secondary)' }}>{children}</div>
     </div>
   );
 }
 
 function Tip({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex items-start gap-2.5 px-3 py-2.5 rounded-[var(--radius-sm)] bg-[rgba(34,211,238,0.08)] border border-[var(--border-subtle)] mb-4">
+    <div className="flex items-start gap-2.5 px-3 py-2.5 rounded-lg mb-4" style={{ background: 'rgba(34,211,238,0.08)', border: '1px solid var(--border-default)' }}>
       <Lightbulb size={14} className="text-[#0891b2] mt-0.5 shrink-0" />
       <p className="text-[12px] text-[#0891b2] leading-relaxed">{children}</p>
     </div>
@@ -71,7 +71,7 @@ function BulletList({ items }: { items: string[] }) {
     <ul className="space-y-1.5 mb-3">
       {items.map((item, i) => (
         <li key={i} className="flex items-start gap-2">
-          <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent)] shrink-0 mt-[7px]" />
+          <span className="w-1.5 h-1.5 rounded-full shrink-0 mt-[7px]" style={{ background: 'var(--brand-primary)' }} />
           <span>{item}</span>
         </li>
       ))}
@@ -84,7 +84,7 @@ function NumberedList({ items }: { items: string[] }) {
     <ol className="space-y-1.5 mb-3">
       {items.map((item, i) => (
         <li key={i} className="flex items-start gap-2">
-          <span className="text-[var(--accent)] font-bold text-[12px] min-w-[18px] mt-[1px]">{i + 1}.</span>
+          <span className="font-bold text-[12px] min-w-[18px] mt-[1px]" style={{ color: 'var(--brand-primary)' }}>{i + 1}.</span>
           <span>{item}</span>
         </li>
       ))}
@@ -103,9 +103,9 @@ export default function UserGuidePage() {
           <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ backgroundColor: '#e0f2fe', color: '#0e7490' }}>
             <BookMarked size={22} strokeWidth={1.5} />
           </div>
-          <h1 className="text-2xl font-semibold tracking-tight text-[var(--text)]">User Guide</h1>
+          <h1 className="text-2xl font-semibold tracking-tight" style={{ color: 'var(--text-primary)' }}>User Guide</h1>
         </div>
-        <p className="text-[15px] text-[var(--text-3)] max-w-[720px]">
+        <p className="text-[15px] max-w-[720px]" style={{ color: 'var(--text-tertiary)' }}>
           Complete reference for the Agent Deployment Playbook (ADP) portal. This guide covers every module, workflow,
           governance framework, and administrative function available in the platform.
         </p>
@@ -113,13 +113,13 @@ export default function UserGuidePage() {
 
       {/* Table of Contents */}
       <Card>
-        <h2 className="text-[15px] font-semibold text-[var(--text)] mb-4 flex items-center gap-2">
-          <Layers size={16} className="text-[var(--accent)]" /> Table of Contents
+        <h2 className="text-[15px] font-semibold mb-4 flex items-center gap-2" style={{ color: 'var(--text-primary)' }}>
+          <Layers size={16} style={{ color: 'var(--brand-primary)' }} /> Table of Contents
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
           {TOC.map((item) => (
-            <a key={item.id} href={`#${item.id}`} className="flex items-center gap-2 px-3 py-2 rounded-[var(--radius-sm)] text-[13px] text-[var(--text-2)] hover:bg-[var(--surface-hover)] hover:text-[var(--accent)] transition-colors">
-              <ArrowRight size={12} className="text-[var(--text-4)]" />
+            <a key={item.id} href={`#${item.id}`} className="flex items-center gap-2 px-3 py-2 rounded-lg text-[13px] transition-colors" style={{ color: 'var(--text-secondary)' }}>
+              <ArrowRight size={12} style={{ color: 'var(--text-quaternary)' }} />
               {item.label}
             </a>
           ))}
@@ -131,7 +131,7 @@ export default function UserGuidePage() {
       {/* ══════════════════════════════════════════════════════════════════════ */}
       <Card>
         <SectionHeader id="overview" number="1." title="Portal Overview" icon={Info} color="#0e7490" bg="#e0f2fe" />
-        <div className="text-[13px] text-[var(--text-2)] leading-relaxed space-y-3">
+        <div className="text-[13px] leading-relaxed space-y-3" style={{ color: 'var(--text-secondary)' }}>
           <p>
             The <strong>Agent Deployment Playbook (ADP)</strong> is a comprehensive operational portal designed by Padmasani Srimadhan
             for managing the full lifecycle of AI agent deployments. It provides a structured methodology from initial ideation through
@@ -176,7 +176,7 @@ export default function UserGuidePage() {
       {/* ══════════════════════════════════════════════════════════════════════ */}
       <Card>
         <SectionHeader id="getting-started" number="2." title="Getting Started" icon={Target} color="#15803d" bg="#dcfce7" />
-        <div className="text-[13px] text-[var(--text-2)] leading-relaxed space-y-3">
+        <div className="text-[13px] leading-relaxed space-y-3" style={{ color: 'var(--text-secondary)' }}>
           <SubSection title="First-Time Setup">
             <p className="mb-3">
               When ADP is deployed for the first time (with an empty database), you will be automatically redirected to the
@@ -225,7 +225,7 @@ export default function UserGuidePage() {
       {/* ══════════════════════════════════════════════════════════════════════ */}
       <Card>
         <SectionHeader id="home" number="3." title="Home (Command Center)" icon={Home} color="#0052cc" bg="#dbeafe" />
-        <div className="text-[13px] text-[var(--text-2)] leading-relaxed space-y-3">
+        <div className="text-[13px] leading-relaxed space-y-3" style={{ color: 'var(--text-secondary)' }}>
           <p>
             The Command Center is your dashboard and primary entry point. It provides a real-time overview of all activity
             across the portal with key metrics, quick actions, and recent activity feeds.
@@ -272,7 +272,7 @@ export default function UserGuidePage() {
       {/* ══════════════════════════════════════════════════════════════════════ */}
       <Card>
         <SectionHeader id="playbook" number="4." title="Playbook Module" icon={BookOpen} color="#6b3fa0" bg="#f3e8ff" />
-        <div className="text-[13px] text-[var(--text-2)] leading-relaxed space-y-3">
+        <div className="text-[13px] leading-relaxed space-y-3" style={{ color: 'var(--text-secondary)' }}>
           <p>
             The Playbook is the core methodology engine of ADP. It defines a <strong>7-phase agent deployment lifecycle</strong>,
             each with structured steps, deliverables, tools, pro tips, and gate checks. All content is loaded from YAML configuration
@@ -306,11 +306,11 @@ export default function UserGuidePage() {
               ].map((p) => (
                 <div key={p.phase} className="border-l-2 pl-4" style={{ borderColor: p.color }}>
                   <div className="flex items-center gap-2 mb-1">
-                    <span className="font-semibold text-[var(--text)]">{p.phase}</span>
-                    <span className="text-[11px] px-2 py-0.5 rounded-full bg-[var(--surface)] text-[var(--text-3)]">{p.duration}</span>
+                    <span className="font-semibold" style={{ color: 'var(--text-primary)' }}>{p.phase}</span>
+                    <span className="text-[11px] px-2 py-0.5 rounded-full" style={{ background: 'var(--surface-elevated)', color: 'var(--text-tertiary)' }}>{p.duration}</span>
                   </div>
                   <p className="mb-2">{p.desc}</p>
-                  <p className="text-[12px] text-[var(--text-3)]">
+                  <p className="text-[12px]" style={{ color: 'var(--text-tertiary)' }}>
                     <strong>Steps:</strong> {p.steps.join(' / ')}
                   </p>
                 </div>
@@ -328,7 +328,7 @@ export default function UserGuidePage() {
 
           <SubSection title="Reference Data">
             <p>
-              The <strong>Playbook Reference</strong> page (<Link href="/playbook/reference" className="text-[var(--accent)] hover:underline">/playbook/reference</Link>) provides
+              The <strong>Playbook Reference</strong> page (<Link href="/playbook/reference" className="hover:underline" style={{ color: 'var(--brand-primary)' }}>/playbook/reference</Link>) provides
               lookup tables for architecture patterns, framework comparisons, model tier recommendations, and the risk classification matrix.
             </p>
           </SubSection>
@@ -340,7 +340,7 @@ export default function UserGuidePage() {
       {/* ══════════════════════════════════════════════════════════════════════ */}
       <Card>
         <SectionHeader id="projects" number="5." title="Projects Module" icon={FolderKanban} color="#0052cc" bg="#dbeafe" />
-        <div className="text-[13px] text-[var(--text-2)] leading-relaxed space-y-3">
+        <div className="text-[13px] leading-relaxed space-y-3" style={{ color: 'var(--text-secondary)' }}>
           <p>
             The Projects module is where you create and manage AI agent deployment projects. Each project tracks through
             the 7-phase lifecycle with step-level deliverables, phase progress, and gate approvals.
@@ -390,7 +390,7 @@ export default function UserGuidePage() {
       {/* ══════════════════════════════════════════════════════════════════════ */}
       <Card>
         <SectionHeader id="advisor" number="6." title="KB Advisor Module" icon={Sparkles} color="#b45309" bg="#fef3c7" />
-        <div className="text-[13px] text-[var(--text-2)] leading-relaxed space-y-3">
+        <div className="text-[13px] leading-relaxed space-y-3" style={{ color: 'var(--text-secondary)' }}>
           <p>
             The Knowledge Base Advisor provides intelligent search and AI-powered Q&A across 1,468 curated concepts
             covering agentic AI, RAG, MCP, governance, and deployment strategies.
@@ -419,7 +419,7 @@ export default function UserGuidePage() {
 
           <SubSection title="KB Explorer">
             <p>
-              The <strong>Explore</strong> page (<Link href="/advisor/explore" className="text-[var(--accent)] hover:underline">/advisor/explore</Link>)
+              The <strong>Explore</strong> page (<Link href="/advisor/explore" className="hover:underline" style={{ color: 'var(--brand-primary)' }}>/advisor/explore</Link>)
               provides a browsable view of all KB domains and their concepts. Filter by domain or source tier to navigate
               the knowledge base hierarchically.
             </p>
@@ -432,7 +432,7 @@ export default function UserGuidePage() {
       {/* ══════════════════════════════════════════════════════════════════════ */}
       <Card>
         <SectionHeader id="governance" number="7." title="Governance Module (TRiSM)" icon={Shield} color="#15803d" bg="#dcfce7" />
-        <div className="text-[13px] text-[var(--text-2)] leading-relaxed space-y-3">
+        <div className="text-[13px] leading-relaxed space-y-3" style={{ color: 'var(--text-secondary)' }}>
           <p>
             The Governance module implements the <strong>TRiSM (Trust, Risk, and Security Management)</strong> framework
             for AI agent assessments. It evaluates projects across 7 trust layers, 10 Wharton AI governance domains,
@@ -460,7 +460,7 @@ export default function UserGuidePage() {
                 { name: 'Continuous Improvement', desc: 'Feedback loops, failure cataloguing, drift detection, retraining triggers' },
               ].map((layer) => (
                 <div key={layer.name} className="flex items-start gap-2">
-                  <CheckCircle size={13} className="text-[var(--success)] shrink-0 mt-[3px]" />
+                  <CheckCircle size={13} className="shrink-0 mt-[3px]" style={{ color: 'var(--status-success)' }} />
                   <span><strong>{layer.name}:</strong> {layer.desc}</span>
                 </div>
               ))}
@@ -515,7 +515,7 @@ export default function UserGuidePage() {
       {/* ══════════════════════════════════════════════════════════════════════ */}
       <Card>
         <SectionHeader id="caio" number="8." title="CAIO Module (AI Maturity)" icon={Award} color="#b45309" bg="#fef3c7" />
-        <div className="text-[13px] text-[var(--text-2)] leading-relaxed space-y-3">
+        <div className="text-[13px] leading-relaxed space-y-3" style={{ color: 'var(--text-secondary)' }}>
           <p>
             The CAIO module provides a <strong>12-domain AI maturity assessment</strong> designed for Chief AI Officer-level visibility.
             Assessments are powered by Claude Opus which generates findings, action items, and executive summaries based on your inputs.
@@ -532,27 +532,27 @@ export default function UserGuidePage() {
           <SubSection title="12 Assessment Domains">
             <p className="mb-2">Organized into 4 groups:</p>
 
-            <p className="font-semibold text-[var(--text)] mt-3 mb-1">Strategic & Governance</p>
+            <p className="font-semibold mt-3 mb-1" style={{ color: 'var(--text-primary)' }}>Strategic & Governance</p>
             <NumberedList items={[
               'Strategic Vision & CAIO Leadership: Vision clarity, CAIO authority, portfolio balance, business outcomes',
               'AI Governance Framework: NIST AI RMF alignment, governance board effectiveness, policy documentation',
               'Ethical AI & Responsible Innovation: 6 ethical principles adherence, ethics review process, compliance checklist',
             ]} />
 
-            <p className="font-semibold text-[var(--text)] mt-3 mb-1">Data & Fairness</p>
+            <p className="font-semibold mt-3 mb-1" style={{ color: 'var(--text-primary)' }}>Data & Fairness</p>
             <NumberedList items={[
               'Data Strategy & Governance: 7-component governance model, data architecture, quality metrics, privacy lifecycle',
               'Algorithmic Fairness & Bias: Data audit depth, proxy variable detection, fairness definition trade-offs, team diversity',
               'Privacy & Data Protection: GDPR/DPDP/CCPA compliance, federated learning, differential privacy, privacy by design',
             ]} />
 
-            <p className="font-semibold text-[var(--text)] mt-3 mb-1">Organization & Technology</p>
+            <p className="font-semibold mt-3 mb-1" style={{ color: 'var(--text-primary)' }}>Organization & Technology</p>
             <NumberedList items={[
               'AI Talent & Organizational Culture: Competency framework, talent mix (20/30/50 rule), psychological safety metrics',
               'Technology Architecture & MLOps: AI system classification (deterministic/probabilistic/generative), CI/CD pipelines, 5-category monitoring, SCALE assessment',
             ]} />
 
-            <p className="font-semibold text-[var(--text)] mt-3 mb-1">Execution & Measurement</p>
+            <p className="font-semibold mt-3 mb-1" style={{ color: 'var(--text-primary)' }}>Execution & Measurement</p>
             <NumberedList items={[
               'AI Project & Portfolio Management: 5-phase project framework, cross-functional ownership, vendor selection criteria',
               'AI Security & Risk Management: Risk assessment methodology, adversarial attack surface analysis, incident response readiness',
@@ -595,7 +595,7 @@ export default function UserGuidePage() {
       {/* ══════════════════════════════════════════════════════════════════════ */}
       <Card>
         <SectionHeader id="evaluate" number="9." title="Evaluate Module" icon={BarChart3} color="#6b3fa0" bg="#f3e8ff" />
-        <div className="text-[13px] text-[var(--text-2)] leading-relaxed space-y-3">
+        <div className="text-[13px] leading-relaxed space-y-3" style={{ color: 'var(--text-secondary)' }}>
           <p>
             The Evaluate module provides a <strong>weighted decision matrix</strong> for comparing options across configurable criteria.
             It supports framework selection, architecture pattern comparison, model tier decisions, and custom evaluations.
@@ -604,24 +604,24 @@ export default function UserGuidePage() {
           <SubSection title="Evaluation Types">
             <div className="space-y-3">
               <div>
-                <p className="font-semibold text-[var(--text)] mb-1">Framework Selection</p>
+                <p className="font-semibold mb-1" style={{ color: 'var(--text-primary)' }}>Framework Selection</p>
                 <p>Compare agent frameworks (LangGraph, CrewAI, Claude Agent SDK, AutoGen, etc.) using default criteria:
                   Production Readiness (20%), Learning Curve (15%), Pattern Support (20%), Claude Integration (15%),
                   Controllability (15%), Scalability (10%), Cost Efficiency (5%).</p>
               </div>
               <div>
-                <p className="font-semibold text-[var(--text)] mb-1">Architecture Pattern</p>
+                <p className="font-semibold mb-1" style={{ color: 'var(--text-primary)' }}>Architecture Pattern</p>
                 <p>Compare patterns (Single Agent, Pipeline, Supervisor, Swarm) using criteria:
                   Complexity Fit (20%), Controllability (20%), Latency (15%), Team Capability (15%),
                   Scalability (10%), Cost (10%), Governance Compatibility (10%).</p>
               </div>
               <div>
-                <p className="font-semibold text-[var(--text)] mb-1">Model Tier Selection</p>
+                <p className="font-semibold mb-1" style={{ color: 'var(--text-primary)' }}>Model Tier Selection</p>
                 <p>Compare Claude model tiers (Opus, Sonnet, Haiku) for specific use cases with presets for
                   Customer Support, Code Generation, Research, Data Analysis, and more.</p>
               </div>
               <div>
-                <p className="font-semibold text-[var(--text)] mb-1">Custom Evaluation</p>
+                <p className="font-semibold mb-1" style={{ color: 'var(--text-primary)' }}>Custom Evaluation</p>
                 <p>Define your own options and criteria with custom weights for any comparison scenario.</p>
               </div>
             </div>
@@ -654,7 +654,7 @@ export default function UserGuidePage() {
       {/* ══════════════════════════════════════════════════════════════════════ */}
       <Card>
         <SectionHeader id="templates" number="10." title="Template Studio" icon={FileText} color="#0e7490" bg="#e0f2fe" />
-        <div className="text-[13px] text-[var(--text-2)] leading-relaxed space-y-3">
+        <div className="text-[13px] leading-relaxed space-y-3" style={{ color: 'var(--text-secondary)' }}>
           <p>
             The Template Studio provides <strong>21 document templates</strong> organized by deployment phase. Templates
             enable consistent, structured documentation for every stage of your agent project.
@@ -707,7 +707,7 @@ export default function UserGuidePage() {
       {/* ══════════════════════════════════════════════════════════════════════ */}
       <Card>
         <SectionHeader id="documents" number="11." title="Documents Module" icon={Upload} color="#64748b" bg="#f1f5f9" />
-        <div className="text-[13px] text-[var(--text-2)] leading-relaxed space-y-3">
+        <div className="text-[13px] leading-relaxed space-y-3" style={{ color: 'var(--text-secondary)' }}>
           <p>
             The Documents module provides centralized file management for project-related documents.
             Upload, organize, search, and manage files associated with your agent deployments.
@@ -731,7 +731,7 @@ export default function UserGuidePage() {
       {/* ══════════════════════════════════════════════════════════════════════ */}
       <Card>
         <SectionHeader id="interview" number="12." title="Interview Prep" icon={Mic} color="#dc2626" bg="#fee2e2" />
-        <div className="text-[13px] text-[var(--text-2)] leading-relaxed space-y-3">
+        <div className="text-[13px] leading-relaxed space-y-3" style={{ color: 'var(--text-secondary)' }}>
           <p>
             The Interview module provides <strong>C-suite articulation guidance</strong> for each deployment phase.
             It helps you frame conversations with executives, board members, and stakeholders using the appropriate
@@ -765,7 +765,7 @@ export default function UserGuidePage() {
       {/* ══════════════════════════════════════════════════════════════════════ */}
       <Card>
         <SectionHeader id="settings" number="13." title="Settings & Administration" icon={Settings} color="#64748b" bg="#f1f5f9" />
-        <div className="text-[13px] text-[var(--text-2)] leading-relaxed space-y-3">
+        <div className="text-[13px] leading-relaxed space-y-3" style={{ color: 'var(--text-secondary)' }}>
           <p>
             The Settings page is the admin control panel for managing users, teams, API configuration, and system information.
             Full access is restricted to users with the <strong>Admin</strong> role.
@@ -810,7 +810,7 @@ export default function UserGuidePage() {
       {/* ══════════════════════════════════════════════════════════════════════ */}
       <Card>
         <SectionHeader id="rbac" number="14." title="Role-Based Access Control" icon={Users} color="#6b3fa0" bg="#f3e8ff" />
-        <div className="text-[13px] text-[var(--text-2)] leading-relaxed space-y-3">
+        <div className="text-[13px] leading-relaxed space-y-3" style={{ color: 'var(--text-secondary)' }}>
           <p>
             ADP implements three user roles with different permission levels. All authenticated routes
             are protected by NextAuth middleware. API endpoints enforce role checks server-side.
@@ -819,7 +819,7 @@ export default function UserGuidePage() {
           <SubSection title="Permission Matrix">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-[12px]">
-                <thead className="text-[var(--text-3)] font-medium border-b border-[var(--border)]">
+                <thead className="font-medium" style={{ color: 'var(--text-tertiary)', borderBottom: '1px solid var(--border-default)' }}>
                   <tr>
                     <th className="pb-2 pr-4 font-semibold">Module</th>
                     <th className="pb-2 pr-4 font-semibold">Admin</th>
@@ -827,7 +827,7 @@ export default function UserGuidePage() {
                     <th className="pb-2 font-semibold">Viewer</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[var(--border)]">
+                <tbody>
                   {[
                     { module: 'Home Dashboard', admin: 'Full', user: 'Full', viewer: 'Full' },
                     { module: 'Playbook', admin: 'Full', user: 'Full', viewer: 'View Only' },
@@ -841,8 +841,8 @@ export default function UserGuidePage() {
                     { module: 'Settings', admin: 'Full', user: 'View Only', viewer: 'No Access' },
                     { module: 'User Management', admin: 'Full', user: 'No Access', viewer: 'No Access' },
                   ].map((row) => (
-                    <tr key={row.module} className="hover:bg-[var(--surface-hover)] transition-colors">
-                      <td className="py-2 pr-4 font-medium text-[var(--text)]">{row.module}</td>
+                    <tr key={row.module} className="transition-colors" style={{ borderBottom: '1px solid var(--border-default)' }}>
+                      <td className="py-2 pr-4 font-medium" style={{ color: 'var(--text-primary)' }}>{row.module}</td>
                       <td className="py-2 pr-4">{row.admin}</td>
                       <td className="py-2 pr-4">{row.user}</td>
                       <td className="py-2">{row.viewer}</td>
@@ -860,7 +860,7 @@ export default function UserGuidePage() {
       {/* ══════════════════════════════════════════════════════════════════════ */}
       <Card>
         <SectionHeader id="workflows" number="15." title="Common Workflows" icon={ArrowRight} color="#0052cc" bg="#dbeafe" />
-        <div className="text-[13px] text-[var(--text-2)] leading-relaxed space-y-3">
+        <div className="text-[13px] leading-relaxed space-y-3" style={{ color: 'var(--text-secondary)' }}>
 
           <SubSection title="End-to-End Agent Project">
             <NumberedList items={[
@@ -929,7 +929,7 @@ export default function UserGuidePage() {
       {/* ══════════════════════════════════════════════════════════════════════ */}
       <Card>
         <SectionHeader id="kb-reference" number="16." title="Knowledge Base Reference" icon={Search} color="#0e7490" bg="#e0f2fe" />
-        <div className="text-[13px] text-[var(--text-2)] leading-relaxed space-y-3">
+        <div className="text-[13px] leading-relaxed space-y-3" style={{ color: 'var(--text-secondary)' }}>
           <p>
             The Knowledge Base contains <strong>1,468 curated concepts</strong> across 5 tiers, sourced from
             Anthropic documentation, IBM courses, LinkedIn Learning, and cross-source synthesis.
@@ -938,7 +938,7 @@ export default function UserGuidePage() {
           <SubSection title="KB Tier Breakdown">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-[12px]">
-                <thead className="text-[var(--text-3)] font-medium border-b border-[var(--border)]">
+                <thead className="font-medium" style={{ color: 'var(--text-tertiary)', borderBottom: '1px solid var(--border-default)' }}>
                   <tr>
                     <th className="pb-2 pr-6">Tier</th>
                     <th className="pb-2 pr-6">Concepts</th>
@@ -946,31 +946,31 @@ export default function UserGuidePage() {
                     <th className="pb-2">Sources</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[var(--border)]">
+                <tbody>
                   {[
                     { tier: 'Core Agentic AI KB', concepts: '1,022', files: '10 YAML', sources: '8 domains — foundations, architecture, multi-agent, memory, tools, infrastructure, enterprise safety, blueprints', color: '#0052cc' },
                     { tier: 'RAG & MCP Deep KB', concepts: '76', files: '1 YAML', sources: 'Deep concepts with code scaffolds for Retrieval-Augmented Generation and Model Context Protocol', color: '#6b3fa0' },
-                    { tier: 'IBM Courses KB', concepts: '85', files: '1 YAML', sources: '6 IBM agentic AI courses covering enterprise patterns, governance, and deployment', color: '#0e7490' },
-                    { tier: 'LinkedIn Learning KB', concepts: '111', files: '3 YAML + index', sources: '16 curated sources (LL01-LL16) covering agents, MCP strategy, and productivity tools', color: '#0077b5' },
+                    { tier: 'Enterprise Patterns KB', concepts: '85', files: '1 YAML', sources: 'Enterprise agentic AI concepts covering patterns, governance, and deployment', color: '#0e7490' },
+                    { tier: 'Agents & Tools KB', concepts: '111', files: '3 YAML + index', sources: '16 curated concept modules covering agents, MCP strategy, and productivity tools', color: '#0077b5' },
                     { tier: 'Strategy & Governance KB', concepts: '174', files: '3 YAML', sources: 'Cross-source synthesis covering governance (NIST/TRiSM/CAIO), evolution patterns, and build & deploy strategies', color: '#15803d' },
                   ].map((row) => (
-                    <tr key={row.tier} className="hover:bg-[var(--surface-hover)] transition-colors">
+                    <tr key={row.tier} className="transition-colors" style={{ borderBottom: '1px solid var(--border-default)' }}>
                       <td className="py-3 pr-6">
                         <div className="flex items-center gap-2">
                           <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: row.color }} />
-                          <span className="font-medium text-[var(--text)]">{row.tier}</span>
+                          <span className="font-medium" style={{ color: 'var(--text-primary)' }}>{row.tier}</span>
                         </div>
                       </td>
-                      <td className="py-3 pr-6 font-bold text-[var(--text)]">{row.concepts}</td>
-                      <td className="py-3 pr-6 text-[var(--text-3)]">{row.files}</td>
-                      <td className="py-3 text-[var(--text-3)]">{row.sources}</td>
+                      <td className="py-3 pr-6 font-bold" style={{ color: 'var(--text-primary)' }}>{row.concepts}</td>
+                      <td className="py-3 pr-6" style={{ color: 'var(--text-tertiary)' }}>{row.files}</td>
+                      <td className="py-3" style={{ color: 'var(--text-tertiary)' }}>{row.sources}</td>
                     </tr>
                   ))}
-                  <tr className="border-t-2 border-[var(--border)] font-bold">
-                    <td className="py-3 pr-6 text-[var(--text)]">Total</td>
-                    <td className="py-3 pr-6 text-[var(--accent)]">1,468</td>
-                    <td className="py-3 pr-6 text-[var(--text-3)]">20 YAML</td>
-                    <td className="py-3 text-[var(--text-3)]">34+ sources</td>
+                  <tr className="font-bold" style={{ borderTop: '2px solid var(--border-default)' }}>
+                    <td className="py-3 pr-6" style={{ color: 'var(--text-primary)' }}>Total</td>
+                    <td className="py-3 pr-6" style={{ color: 'var(--brand-primary)' }}>1,468</td>
+                    <td className="py-3 pr-6" style={{ color: 'var(--text-tertiary)' }}>20 YAML</td>
+                    <td className="py-3" style={{ color: 'var(--text-tertiary)' }}>34+ sources</td>
                   </tr>
                 </tbody>
               </table>
@@ -998,7 +998,7 @@ export default function UserGuidePage() {
       {/* ══════════════════════════════════════════════════════════════════════ */}
       <Card>
         <SectionHeader id="troubleshooting" number="17." title="Troubleshooting & FAQ" icon={AlertTriangle} color="#dc2626" bg="#fee2e2" />
-        <div className="text-[13px] text-[var(--text-2)] leading-relaxed space-y-3">
+        <div className="text-[13px] leading-relaxed space-y-3" style={{ color: 'var(--text-secondary)' }}>
 
           <SubSection title="Common Issues">
             <div className="space-y-4">
@@ -1024,8 +1024,8 @@ export default function UserGuidePage() {
                 { q: 'CAIO assessment returns no AI analysis',
                   a: 'CAIO assessments require Claude Opus (CLAUDE_GOVERNANCE_MODEL). Verify the model name is correct and your API key has access to Opus. Check for API rate limiting.' },
               ].map((item) => (
-                <div key={item.q} className="border-l-2 border-[var(--border)] pl-4">
-                  <p className="font-semibold text-[var(--text)] mb-1">Q: {item.q}</p>
+                <div key={item.q} className="border-l-2 pl-4" style={{ borderColor: 'var(--border-default)' }}>
+                  <p className="font-semibold mb-1" style={{ color: 'var(--text-primary)' }}>Q: {item.q}</p>
                   <p>A: {item.a}</p>
                 </div>
               ))}
@@ -1035,14 +1035,14 @@ export default function UserGuidePage() {
           <SubSection title="Environment Variables Reference">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-[12px]">
-                <thead className="text-[var(--text-3)] font-medium border-b border-[var(--border)]">
+                <thead className="font-medium" style={{ color: 'var(--text-tertiary)', borderBottom: '1px solid var(--border-default)' }}>
                   <tr>
                     <th className="pb-2 pr-4 font-semibold">Variable</th>
                     <th className="pb-2 pr-4 font-semibold">Required</th>
                     <th className="pb-2 font-semibold">Description</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[var(--border)]">
+                <tbody>
                   {[
                     { name: 'DATABASE_URL', req: 'Yes', desc: 'MySQL connection string (mysql://user:pass@host:port/db)' },
                     { name: 'ANTHROPIC_API_KEY', req: 'Yes', desc: 'Anthropic API key for Claude models' },
@@ -1058,10 +1058,10 @@ export default function UserGuidePage() {
                     { name: 'PLAYBOOK_CONTENT_DIR', req: 'No', desc: 'Path to playbook content (default: ./content)' },
                     { name: 'NODE_ENV', req: 'No', desc: 'Environment (development or production)' },
                   ].map((row) => (
-                    <tr key={row.name} className="hover:bg-[var(--surface-hover)] transition-colors">
-                      <td className="py-2 pr-4 font-mono text-[11px] text-[var(--text)]">{row.name}</td>
+                    <tr key={row.name} className="transition-colors" style={{ borderBottom: '1px solid var(--border-default)' }}>
+                      <td className="py-2 pr-4 font-mono text-[11px]" style={{ color: 'var(--text-primary)' }}>{row.name}</td>
                       <td className="py-2 pr-4">{row.req}</td>
-                      <td className="py-2 text-[var(--text-3)]">{row.desc}</td>
+                      <td className="py-2" style={{ color: 'var(--text-tertiary)' }}>{row.desc}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -1072,7 +1072,7 @@ export default function UserGuidePage() {
       </Card>
 
       {/* Footer */}
-      <div className="text-center text-[11px] text-[var(--text-4)] pb-4">
+      <div className="text-center text-[11px] pb-4" style={{ color: 'var(--text-quaternary)' }}>
         Agent Deployment Playbook User Guide v1.0 — April 2026 — Built by Padmasani Srimadhan
       </div>
     </div>

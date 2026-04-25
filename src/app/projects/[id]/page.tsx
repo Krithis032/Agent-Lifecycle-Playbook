@@ -7,15 +7,16 @@ import Button from '@/components/ui/Button';
 import Card from '@/components/ui/Card';
 import Badge from '@/components/ui/Badge';
 import Progress from '@/components/ui/Progress';
+import SectionPanel from '@/components/ui/SectionPanel';
 import GateTracker from '@/components/projects/GateTracker';
 import TemplateFillForm from '@/components/projects/TemplateFillForm';
-import { ChevronRight, CheckCircle2, Circle, PlayCircle, Clock, FileText, Shield, Lightbulb, Code } from 'lucide-react';
+import { ChevronRight, CheckCircle2, Circle, PlayCircle, Clock, FileText, Shield, Lightbulb, Code, ListChecks, ClipboardCheck } from 'lucide-react';
 import type { PlaybookStepData, TemplateData } from '@/types/project';
 
-const statusBadge: Record<string, 'default' | 'accent' | 'green' | 'amber'> = {
+const statusBadge: Record<string, 'default' | 'brand' | 'success' | 'warning'> = {
   not_started: 'default',
-  in_progress: 'accent',
-  completed: 'green',
+  in_progress: 'brand',
+  completed: 'success',
   skipped: 'default',
 };
 
@@ -61,8 +62,8 @@ export default function ProjectDetailPage({ params }: { params: { id: string } }
     setGates(items);
   }, [project, activePhaseId, playbookPhases]);
 
-  if (loading) return <p className="text-[var(--text-3)] py-12 text-center">Loading project...</p>;
-  if (!project) return <p className="text-[var(--text-3)] py-12 text-center">Project not found</p>;
+  if (loading) return <p style={{ color: 'var(--text-tertiary)' }} className="py-12 text-center">Loading project...</p>;
+  if (!project) return <p style={{ color: 'var(--text-tertiary)' }} className="py-12 text-center">Project not found</p>;
 
   const activePhase = playbookPhases.find((p) => p.id === activePhaseId);
   const activeStep = activePhase?.steps.find((s) => s.id === activeStepId);
@@ -111,26 +112,32 @@ export default function ProjectDetailPage({ params }: { params: { id: string } }
       {/* Header */}
       <div className="flex items-start justify-between mb-6">
         <div>
-          <Link href="/projects" className="text-[12px] font-semibold text-[var(--text-4)] hover:text-[var(--accent)] transition-colors mb-2 block">
+          <Link
+            href="/projects"
+            className="text-[12px] font-semibold transition-colors mb-2 block"
+            style={{ color: 'var(--text-quaternary)' }}
+            onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--brand-primary)'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--text-quaternary)'; }}
+          >
             &larr; All Projects
           </Link>
-          <h1 className="text-3xl font-bold tracking-tight text-[var(--text)]">
+          <h1 className="text-3xl font-bold tracking-tight" style={{ color: 'var(--text-primary)' }}>
             {project.name}
           </h1>
           {project.description && (
-            <p className="text-[14px] text-[var(--text-3)] mt-1 max-w-[600px]">{project.description}</p>
+            <p className="text-[14px] mt-1 max-w-[600px]" style={{ color: 'var(--text-tertiary)' }}>{project.description}</p>
           )}
           <div className="flex gap-2 mt-3">
-            <Badge variant={project.status === 'active' ? 'green' : 'default'}>{project.status}</Badge>
-            {project.framework && <Badge variant="purple">{project.framework}</Badge>}
-            {project.architecturePattern && <Badge variant="cyan">{project.architecturePattern.replace('_', ' ')}</Badge>}
+            <Badge variant={project.status === 'active' ? 'success' : project.status === 'completed' ? 'brand' : 'default'}>{project.status}</Badge>
+            {project.framework && <Badge variant="info">{project.framework}</Badge>}
+            {project.architecturePattern && <Badge variant="info">{project.architecturePattern.replace('_', ' ')}</Badge>}
           </div>
         </div>
         <div className="flex gap-2">
           <a
             href={`/api/projects/${projectId}/export/pdf`}
             target="_blank"
-            className="flex items-center gap-1.5 px-3 py-2 rounded-[var(--radius-sm)] text-[12px] font-semibold bg-[var(--accent)] text-white hover:opacity-90 transition-opacity"
+            className="adp-btn-primary flex items-center gap-1.5 px-3 py-2 rounded-[var(--radius-sm)] text-[12px] font-semibold"
           >
             <FileText size={14} /> PDF Report
           </a>
@@ -147,13 +154,14 @@ export default function ProjectDetailPage({ params }: { params: { id: string } }
               <div key={pp.phaseId} className="flex items-center">
                 <button
                   onClick={() => { setActivePhaseId(pp.phaseId); setActiveStepId(null); }}
-                  className={`flex items-center gap-1.5 px-2 py-1.5 rounded-[var(--radius-sm)] text-[11px] font-semibold transition-all whitespace-nowrap ${
-                    isActive
-                      ? 'bg-[var(--accent-soft)] text-[var(--accent)] ring-1 ring-[var(--accent)]'
-                      : pp.status === 'completed'
-                      ? 'text-[var(--success)]'
-                      : 'text-[var(--text-3)] hover:bg-[var(--surface-hover)]'
-                  }`}
+                  className="flex items-center gap-1.5 px-2 py-1.5 rounded-[var(--radius-sm)] text-[11px] font-semibold transition-all whitespace-nowrap"
+                  style={{
+                    background: isActive ? 'var(--brand-soft)' : 'transparent',
+                    color: isActive ? 'var(--brand-primary)' : pp.status === 'completed' ? 'var(--status-success)' : 'var(--text-tertiary)',
+                    boxShadow: isActive ? 'inset 0 0 0 1px var(--brand-primary)' : 'none',
+                  }}
+                  onMouseEnter={(e) => { if (!isActive) e.currentTarget.style.background = 'var(--surface-0)'; }}
+                  onMouseLeave={(e) => { if (!isActive) e.currentTarget.style.background = 'transparent'; }}
                 >
                   {pp.status === 'completed' ? (
                     <CheckCircle2 size={12} />
@@ -164,10 +172,10 @@ export default function ProjectDetailPage({ params }: { params: { id: string } }
                   )}
                   <span className="text-sm">{pp.phase?.icon}</span>
                   <span>{pp.phase?.name}</span>
-                  {isCurrent && <span className="w-1 h-1 rounded-full bg-[var(--accent)] animate-pulse" />}
+                  {isCurrent && <span className="w-1 h-1 rounded-full animate-pulse" style={{ background: 'var(--brand-primary)' }} />}
                 </button>
                 {i < phaseProgress.length - 1 && (
-                  <ChevronRight size={12} className="text-[var(--text-4)] mx-0 shrink-0" />
+                  <ChevronRight size={12} className="mx-0 shrink-0" style={{ color: 'var(--text-quaternary)' }} />
                 )}
               </div>
             );
@@ -181,21 +189,21 @@ export default function ProjectDetailPage({ params }: { params: { id: string } }
           {/* LEFT: Steps List */}
           <div className="lg:col-span-1">
             <div className="flex items-center justify-between mb-3">
-              <h2 className="text-[14px] font-bold text-[var(--text)]">
+              <h2 className="text-[14px] font-bold" style={{ color: 'var(--text-primary)' }}>
                 {activePhase.icon} Phase {activePhase.phaseNum}: {activePhase.name}
               </h2>
             </div>
             {activePhase.duration && (
-              <p className="text-[11px] text-[var(--text-4)] mb-3 flex items-center gap-1">
+              <p className="text-[11px] mb-3 flex items-center gap-1" style={{ color: 'var(--text-quaternary)' }}>
                 <Clock size={12} /> {activePhase.duration}
               </p>
             )}
 
             {/* Step Completion Progress */}
             <Card padding="sm" className="mb-4">
-              <Progress value={completedSteps} max={Math.max(totalSteps, 1)} label={`Steps (${completedSteps}/${totalSteps})`} color="var(--accent)" size="sm" />
+              <Progress value={completedSteps} max={Math.max(totalSteps, 1)} label={`Steps (${completedSteps}/${totalSteps})`} color="var(--module-projects)" size="sm" />
               <div className="mt-2">
-                <Progress value={checkedGates} max={Math.max(totalGates, 1)} label={`Gates (${checkedGates}/${totalGates})`} color="var(--green)" size="sm" />
+                <Progress value={checkedGates} max={Math.max(totalGates, 1)} label={`Gates (${checkedGates}/${totalGates})`} color="var(--status-success)" size="sm" />
               </div>
             </Card>
 
@@ -208,11 +216,13 @@ export default function ProjectDetailPage({ params }: { params: { id: string } }
                 return (
                   <div
                     key={step.id}
-                    className={`w-full flex items-start gap-2.5 px-3 py-2.5 rounded-[var(--radius-sm)] text-left transition-all ${
-                      isSelected
-                        ? 'bg-[var(--accent-soft)] ring-1 ring-[var(--accent)]'
-                        : 'hover:bg-[var(--surface-hover)]'
-                    }`}
+                    className="w-full flex items-start gap-2.5 px-3 py-2.5 rounded-[var(--radius-sm)] text-left transition-all"
+                    style={{
+                      background: isSelected ? 'var(--brand-soft)' : 'transparent',
+                      boxShadow: isSelected ? 'inset 0 0 0 1px var(--brand-primary)' : 'none',
+                    }}
+                    onMouseEnter={(e) => { if (!isSelected) e.currentTarget.style.background = 'var(--surface-0)'; }}
+                    onMouseLeave={(e) => { if (!isSelected) e.currentTarget.style.background = isSelected ? 'var(--brand-soft)' : 'transparent'; }}
                   >
                     <button
                       onClick={(e) => { e.stopPropagation(); updateStepProgress(step.id, { status: nextStatus }); }}
@@ -220,26 +230,26 @@ export default function ProjectDetailPage({ params }: { params: { id: string } }
                       title={stepStatus === 'not_started' ? 'Click to start' : stepStatus === 'in_progress' ? 'Click to complete' : 'Click to reopen'}
                     >
                       {stepStatus === 'completed' ? (
-                        <CheckCircle2 size={18} className="text-[var(--green)]" />
+                        <CheckCircle2 size={18} style={{ color: 'var(--status-success)' }} />
                       ) : stepStatus === 'in_progress' ? (
-                        <PlayCircle size={18} className="text-[var(--accent)]" />
+                        <PlayCircle size={18} style={{ color: 'var(--module-projects)' }} />
                       ) : (
-                        <Circle size={18} className="text-[var(--text-4)] hover:text-[var(--accent)]" />
+                        <Circle size={18} style={{ color: 'var(--text-quaternary)' }} />
                       )}
                     </button>
                     <button
                       onClick={() => setActiveStepId(step.id)}
                       className="flex-1 min-w-0 text-left"
                     >
-                      <span className="text-[12px] font-bold text-[var(--text)] block leading-snug">
+                      <span className="text-[12px] font-bold block leading-snug" style={{ color: 'var(--text-primary)' }}>
                         Step {step.stepNum}: {step.title}
                       </span>
-                      <span className="text-[10px] text-[var(--text-4)]">
+                      <span className="text-[10px]" style={{ color: 'var(--text-quaternary)' }}>
                         {(step.deliverables as string[] | null)?.length || 0} deliverables
                         {step.tools ? ` / ${(step.tools as string[]).length} tools` : ''}
                       </span>
                     </button>
-                    <ChevronRight size={14} className="text-[var(--text-4)] shrink-0 mt-0.5" />
+                    <ChevronRight size={14} className="shrink-0 mt-0.5" style={{ color: 'var(--text-quaternary)' }} />
                   </div>
                 );
               })}
@@ -248,16 +258,19 @@ export default function ProjectDetailPage({ params }: { params: { id: string } }
             {/* Phase Templates */}
             {phaseTemplates.length > 0 && (
               <div className="mt-4">
-                <h3 className="text-[11px] font-bold uppercase tracking-widest text-[var(--text-4)] mb-2">Templates</h3>
+                <h3 className="text-[11px] font-bold uppercase tracking-widest mb-2" style={{ color: 'var(--text-quaternary)' }}>Templates</h3>
                 <div className="space-y-1.5">
                   {phaseTemplates.map((t) => (
                     <button
                       key={t.id}
                       onClick={() => setShowTemplate(t)}
-                      className="w-full flex items-center gap-2 px-3 py-2 rounded-[var(--radius-sm)] hover:bg-[var(--surface-hover)] transition-all text-left"
+                      className="w-full flex items-center gap-2 px-3 py-2 rounded-[var(--radius-sm)] transition-all text-left"
+                      style={{ background: 'transparent' }}
+                      onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--surface-0)'; }}
+                      onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
                     >
-                      <FileText size={14} className="text-[var(--purple)] shrink-0" />
-                      <span className="text-[12px] font-semibold text-[var(--text-2)]">{t.name}</span>
+                      <FileText size={14} className="shrink-0" style={{ color: 'var(--module-templates)' }} />
+                      <span className="text-[12px] font-semibold" style={{ color: 'var(--text-secondary)' }}>{t.name}</span>
                     </button>
                   ))}
                 </div>
@@ -315,18 +328,19 @@ export default function ProjectDetailPage({ params }: { params: { id: string } }
                 }}
               />
             ) : (
-              <div>
-                <h3 className="text-lg font-bold mb-4">Gate Checks</h3>
-                {gates.length > 0 ? (
-                  <GateTracker gates={gates} onToggle={handleGateToggle} />
-                ) : (
-                  <Card className="text-center py-12">
-                    <Shield size={32} className="mx-auto mb-3 text-[var(--text-4)]" />
-                    <p className="text-[14px] font-semibold text-[var(--text-3)]">No gate checks for this phase</p>
-                    <p className="text-[12px] text-[var(--text-4)] mt-1">Select a step from the left to see its details and deliverables.</p>
-                  </Card>
-                )}
-              </div>
+              <SectionPanel title="Gate Checks" icon={ClipboardCheck}>
+                <div className="p-4">
+                  {gates.length > 0 ? (
+                    <GateTracker gates={gates} onToggle={handleGateToggle} />
+                  ) : (
+                    <div className="text-center py-12">
+                      <Shield size={32} className="mx-auto mb-3" style={{ color: 'var(--text-quaternary)' }} />
+                      <p className="text-[14px] font-semibold" style={{ color: 'var(--text-tertiary)' }}>No gate checks for this phase</p>
+                      <p className="text-[12px] mt-1" style={{ color: 'var(--text-quaternary)' }}>Select a step from the left to see its details and deliverables.</p>
+                    </div>
+                  )}
+                </div>
+              </SectionPanel>
             )}
           </div>
         </div>
@@ -373,7 +387,7 @@ function StepDetail({
       {/* Step Header */}
       <div className="flex items-start justify-between mb-4">
         <div>
-          <h2 className="text-xl font-bold tracking-tight text-[var(--text)]">
+          <h2 className="text-xl font-bold tracking-tight" style={{ color: 'var(--text-primary)' }}>
             Step {step.stepNum}: {step.title}
           </h2>
           <Badge variant={statusBadge[status] || 'default'} className="mt-2">
@@ -400,31 +414,47 @@ function StepDetail({
       </div>
 
       {/* Step Body */}
-      <Card className="mb-4">
-        <div className="text-[13px] text-[var(--text-2)] leading-relaxed whitespace-pre-wrap">{step.body}</div>
-      </Card>
+      <SectionPanel title="Description" icon={ListChecks} className="mb-4">
+        <div className="p-4">
+          <div className="text-[13px] leading-relaxed whitespace-pre-wrap" style={{ color: 'var(--text-secondary)' }}>{step.body}</div>
+        </div>
+      </SectionPanel>
 
       {/* Pro Tip */}
       {step.proTip && (
-        <Card className="mb-4 border-l-4 border-l-[var(--amber)]">
+        <div
+          className="mb-4 rounded-[var(--radius-lg)] p-4"
+          style={{
+            background: 'var(--status-warning-soft)',
+            border: '1px solid color-mix(in srgb, var(--status-warning) 20%, transparent)',
+            borderLeft: '4px solid var(--status-warning)',
+          }}
+        >
           <div className="flex items-start gap-2">
-            <Lightbulb size={16} className="text-[var(--amber)] mt-0.5 shrink-0" />
+            <Lightbulb size={16} className="mt-0.5 shrink-0" style={{ color: 'var(--status-warning)' }} />
             <div>
-              <h4 className="text-[11px] font-bold uppercase tracking-widest text-[var(--amber)] mb-1">Pro Tip</h4>
-              <p className="text-[13px] text-[var(--text-2)]">{step.proTip}</p>
+              <h4 className="text-[11px] font-bold uppercase tracking-widest mb-1" style={{ color: 'var(--status-warning)' }}>Pro Tip</h4>
+              <p className="text-[13px]" style={{ color: 'var(--text-secondary)' }}>{step.proTip}</p>
             </div>
           </div>
-        </Card>
+        </div>
       )}
 
       {/* Code Example */}
       {step.codeExample && (
         <Card className="mb-4">
           <div className="flex items-center gap-2 mb-2">
-            <Code size={14} className="text-[var(--purple)]" />
-            <h4 className="text-[11px] font-bold uppercase tracking-widest text-[var(--text-4)]">Code Example</h4>
+            <Code size={14} style={{ color: 'var(--module-templates)' }} />
+            <h4 className="text-[11px] font-bold uppercase tracking-widest" style={{ color: 'var(--text-quaternary)' }}>Code Example</h4>
           </div>
-          <pre className="bg-[var(--surface)] rounded-[var(--radius-sm)] p-4 overflow-x-auto text-[12px] font-mono text-[var(--text-2)]">
+          <pre
+            className="rounded-[var(--radius-sm)] p-4 overflow-x-auto text-[12px] font-mono"
+            style={{
+              background: 'var(--surface-1)',
+              color: 'var(--text-secondary)',
+              border: '1px solid var(--border-default)',
+            }}
+          >
             {step.codeExample}
           </pre>
         </Card>
@@ -433,7 +463,7 @@ function StepDetail({
       {/* Deliverables Checklist */}
       {deliverables.length > 0 && (
         <Card className="mb-4">
-          <h4 className="text-[11px] font-bold uppercase tracking-widest text-[var(--text-4)] mb-3">
+          <h4 className="text-[11px] font-bold uppercase tracking-widest mb-3" style={{ color: 'var(--text-quaternary)' }}>
             Deliverables ({Object.keys(deliverableData).filter((k) => deliverableData[k]).length}/{deliverables.length})
           </h4>
           <div className="space-y-3">
@@ -442,16 +472,23 @@ function StepDetail({
               const value = deliverableData[key] || '';
               return (
                 <div key={i}>
-                  <label className="flex items-center gap-2 text-[13px] font-semibold text-[var(--text-2)] mb-1">
+                  <label className="flex items-center gap-2 text-[13px] font-semibold mb-1" style={{ color: 'var(--text-secondary)' }}>
                     {value ? (
-                      <CheckCircle2 size={14} className="text-[var(--green)] shrink-0" />
+                      <CheckCircle2 size={14} className="shrink-0" style={{ color: 'var(--status-success)' }} />
                     ) : (
-                      <Circle size={14} className="text-[var(--text-4)] shrink-0" />
+                      <Circle size={14} className="shrink-0" style={{ color: 'var(--text-quaternary)' }} />
                     )}
                     {d}
                   </label>
                   <textarea
-                    className="w-full px-3 py-2 border border-[var(--border)] rounded-[var(--radius-sm)] text-[12px] bg-[var(--bg)] text-[var(--text)] focus:border-[var(--accent)] focus:outline-none resize-none"
+                    className="w-full px-3 py-2 rounded-[var(--radius-sm)] text-[12px] resize-none focus:outline-none focus:ring-2"
+                    style={{
+                      border: '1px solid var(--border-default)',
+                      background: 'var(--surface-0)',
+                      color: 'var(--text-primary)',
+                    }}
+                    onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--border-focus)'; e.currentTarget.style.boxShadow = '0 0 0 2px color-mix(in srgb, var(--brand-primary) 15%, transparent)'; }}
+                    onBlur={(e) => { e.currentTarget.style.borderColor = 'var(--border-default)'; e.currentTarget.style.boxShadow = 'none'; }}
                     rows={2}
                     placeholder={`Notes or link for: ${d}`}
                     value={value}
@@ -467,10 +504,10 @@ function StepDetail({
       {/* Tools */}
       {tools.length > 0 && (
         <Card className="mb-4">
-          <h4 className="text-[11px] font-bold uppercase tracking-widest text-[var(--text-4)] mb-2">Tools & Resources</h4>
+          <h4 className="text-[11px] font-bold uppercase tracking-widest mb-2" style={{ color: 'var(--text-quaternary)' }}>Tools & Resources</h4>
           <div className="flex flex-wrap gap-2">
             {tools.map((t, i) => (
-              <Badge key={i} variant="cyan">{t}</Badge>
+              <Badge key={i} variant="info">{t}</Badge>
             ))}
           </div>
         </Card>
@@ -478,9 +515,16 @@ function StepDetail({
 
       {/* Notes */}
       <Card>
-        <h4 className="text-[11px] font-bold uppercase tracking-widest text-[var(--text-4)] mb-2">Your Notes</h4>
+        <h4 className="text-[11px] font-bold uppercase tracking-widest mb-2" style={{ color: 'var(--text-quaternary)' }}>Your Notes</h4>
         <textarea
-          className="w-full px-3 py-2 border border-[var(--border)] rounded-[var(--radius-sm)] text-[13px] bg-[var(--bg)] text-[var(--text)] focus:border-[var(--accent)] focus:outline-none resize-y"
+          className="w-full px-3 py-2 rounded-[var(--radius-sm)] text-[13px] resize-y focus:outline-none focus:ring-2"
+          style={{
+            border: '1px solid var(--border-default)',
+            background: 'var(--surface-0)',
+            color: 'var(--text-primary)',
+          }}
+          onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--border-focus)'; e.currentTarget.style.boxShadow = '0 0 0 2px color-mix(in srgb, var(--brand-primary) 15%, transparent)'; }}
+          onBlur={(e) => { e.currentTarget.style.borderColor = 'var(--border-default)'; e.currentTarget.style.boxShadow = 'none'; }}
           rows={4}
           placeholder="Add notes, observations, decisions..."
           value={localNotes}

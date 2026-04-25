@@ -54,11 +54,10 @@ export default function CriteriaConfigurator({
   return (
     <div className="space-y-4">
       {/* Weight validation */}
-      <div className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium ${
-        isValidWeight
-          ? 'bg-[var(--success-soft)] text-[var(--success)]'
-          : 'bg-[var(--warning-soft)] text-[var(--warning)]'
-      }`}>
+      <div className="flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium" style={{
+        background: isValidWeight ? 'var(--status-success-soft)' : 'var(--status-warning-soft)',
+        color: isValidWeight ? 'var(--status-success)' : 'var(--status-warning)',
+      }}>
         {isValidWeight ? <CheckCircle2 size={16} /> : <AlertCircle size={16} />}
         <span>Total weight: {(totalWeight * 100).toFixed(0)}%</span>
         {!isValidWeight && (
@@ -73,19 +72,23 @@ export default function CriteriaConfigurator({
         {criteria.map(criterion => (
           <div
             key={criterion.key}
-            className="p-4 bg-[var(--surface)] rounded-lg border border-[var(--border)] group"
+            className="p-4 rounded-lg group"
+            style={{ background: 'var(--surface-elevated)', border: '1px solid var(--border-default)' }}
           >
             <div className="flex items-start justify-between gap-3 mb-3">
               <div className="flex-1 min-w-0">
-                <div className="text-sm font-semibold text-[var(--text)]">{criterion.name}</div>
+                <div className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>{criterion.name}</div>
                 {criterion.description && (
-                  <div className="text-xs text-[var(--text-3)] mt-0.5">{criterion.description}</div>
+                  <div className="text-xs mt-0.5" style={{ color: 'var(--text-tertiary)' }}>{criterion.description}</div>
                 )}
               </div>
               <button
                 onClick={() => removeCriterion(criterion.key)}
                 disabled={criteria.length <= minCriteria}
-                className="w-7 h-7 flex items-center justify-center rounded-md hover:bg-[var(--error-soft)] text-[var(--text-4)] hover:text-[var(--error)] transition-colors disabled:opacity-30 opacity-0 group-hover:opacity-100"
+                className="w-7 h-7 flex items-center justify-center rounded-md transition-colors disabled:opacity-30 opacity-0 group-hover:opacity-100"
+                style={{ color: 'var(--text-quaternary)' }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--status-error-soft)'; e.currentTarget.style.color = 'var(--status-error)'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-quaternary)'; }}
               >
                 <X size={14} />
               </button>
@@ -98,9 +101,10 @@ export default function CriteriaConfigurator({
                 step={5}
                 value={Math.round(criterion.weight * 100)}
                 onChange={e => updateWeight(criterion.key, parseInt(e.target.value) / 100)}
-                className="flex-1 accent-[var(--accent)]"
+                className="flex-1"
+                style={{ accentColor: 'var(--module-evaluate)' }}
               />
-              <span className="text-sm font-bold text-[var(--accent)] w-12 text-right tabular-nums">
+              <span className="text-sm font-bold w-12 text-right tabular-nums" style={{ color: 'var(--module-evaluate)' }}>
                 {(criterion.weight * 100).toFixed(0)}%
               </span>
             </div>
@@ -112,38 +116,45 @@ export default function CriteriaConfigurator({
       {criteria.length < maxCriteria && (
         <div className="flex gap-2 items-end">
           <div className="flex-1">
-            <label className="block text-xs font-medium text-[var(--text-3)] mb-1">Criterion Name</label>
+            <label className="block text-xs font-medium mb-1" style={{ color: 'var(--text-tertiary)' }}>Criterion Name</label>
             <input
               type="text"
               value={newName}
               onChange={e => setNewName(e.target.value)}
               placeholder="e.g., Performance"
-              className="w-full px-3 py-2 text-sm border border-[var(--border)] rounded-lg focus:outline-none focus:border-[var(--accent)] bg-[var(--bg)]"
+              className="w-full px-3 py-2 text-sm rounded-lg focus:outline-none"
+              style={{ border: '1px solid var(--border-default)', background: 'var(--surface-0)', color: 'var(--text-primary)' }}
+              onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--border-focus)'; e.currentTarget.style.boxShadow = '0 0 0 2px var(--brand-soft)'; }}
+              onBlur={(e) => { e.currentTarget.style.borderColor = 'var(--border-default)'; e.currentTarget.style.boxShadow = 'none'; }}
               onKeyDown={e => e.key === 'Enter' && addCriterion()}
             />
           </div>
           <div className="flex-1">
-            <label className="block text-xs font-medium text-[var(--text-3)] mb-1">Description (optional)</label>
+            <label className="block text-xs font-medium mb-1" style={{ color: 'var(--text-tertiary)' }}>Description (optional)</label>
             <input
               type="text"
               value={newDesc}
               onChange={e => setNewDesc(e.target.value)}
               placeholder="What does this measure?"
-              className="w-full px-3 py-2 text-sm border border-[var(--border)] rounded-lg focus:outline-none focus:border-[var(--accent)] bg-[var(--bg)]"
+              className="w-full px-3 py-2 text-sm rounded-lg focus:outline-none"
+              style={{ border: '1px solid var(--border-default)', background: 'var(--surface-0)', color: 'var(--text-primary)' }}
+              onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--border-focus)'; e.currentTarget.style.boxShadow = '0 0 0 2px var(--brand-soft)'; }}
+              onBlur={(e) => { e.currentTarget.style.borderColor = 'var(--border-default)'; e.currentTarget.style.boxShadow = 'none'; }}
               onKeyDown={e => e.key === 'Enter' && addCriterion()}
             />
           </div>
           <button
             onClick={addCriterion}
             disabled={!newName.trim()}
-            className="px-3 py-2 text-sm font-semibold bg-[var(--accent)] text-white rounded-lg hover:opacity-90 disabled:opacity-40 flex items-center gap-1 shrink-0"
+            className="px-3 py-2 text-sm font-semibold text-white rounded-lg hover:opacity-90 disabled:opacity-40 flex items-center gap-1 shrink-0"
+            style={{ background: 'var(--module-evaluate)' }}
           >
             <Plus size={14} /> Add
           </button>
         </div>
       )}
 
-      <div className="text-xs text-[var(--text-4)]">
+      <div className="text-xs" style={{ color: 'var(--text-quaternary)' }}>
         {criteria.length} of {maxCriteria} criteria · minimum {minCriteria}
       </div>
     </div>

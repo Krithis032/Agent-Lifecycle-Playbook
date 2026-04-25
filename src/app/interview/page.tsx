@@ -13,10 +13,10 @@ export default async function InterviewPage() {
   return (
     <div className="animate-fade-in">
       <div className="eyebrow mb-4">CAIO Preparation</div>
-      <h1 className="text-3xl font-bold tracking-tight mb-2 text-[var(--text)]">
-        Interview <span className="text-[var(--accent)] font-light italic">Angles</span>
+      <h1 className="text-3xl font-bold tracking-tight mb-2" style={{ color: 'var(--text-primary)' }}>
+        Interview <span className="font-light italic" style={{ color: 'var(--module-caio)' }}>Angles</span>
       </h1>
-      <p className="text-[15px] text-[var(--text-3)] max-w-[640px] mb-8">
+      <p className="text-[15px] max-w-[640px] mb-8" style={{ color: 'var(--text-tertiary)' }}>
         CAIO-level articulation for each deployment phase. Use these to frame conversations with executives and stakeholders.
       </p>
 
@@ -45,9 +45,9 @@ export default async function InterviewPage() {
             { q: 'How do you handle agent failures?', a: 'Defense in depth: circuit breakers prevent cascading failures, graceful degradation falls back to manual processes, kill switches allow immediate shutdown, and post-mortem analysis feeds back into evaluation datasets.' },
             { q: 'What is your model tiering strategy?', a: 'We use Opus for complex governance and strategic analysis, Sonnet for advisory and generation tasks, and Haiku for classification, routing, and high-volume extraction. This optimizes cost without sacrificing quality where it matters.' },
           ].map((item, i) => (
-            <div key={i} className="border-l-2 border-[var(--accent)] pl-4">
-              <p className="text-[14px] font-bold text-[var(--text)] mb-1">{item.q}</p>
-              <p className="text-[13px] text-[var(--text-3)]">{item.a}</p>
+            <div key={i} className="border-l-2 pl-4" style={{ borderColor: 'var(--module-caio)' }}>
+              <p className="text-[14px] font-bold mb-1" style={{ color: 'var(--text-primary)' }}>{item.q}</p>
+              <p className="text-[13px]" style={{ color: 'var(--text-tertiary)' }}>{item.a}</p>
             </div>
           ))}
         </div>

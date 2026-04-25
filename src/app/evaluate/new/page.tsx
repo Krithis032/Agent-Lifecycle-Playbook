@@ -8,6 +8,7 @@ import OptionConfigurator from '@/components/evaluate/OptionConfigurator';
 import CriteriaConfigurator from '@/components/evaluate/CriteriaConfigurator';
 import ScoreMatrix from '@/components/evaluate/ScoreMatrix';
 import EvalResults from '@/components/evaluate/EvalResults';
+import PageHeader from '@/components/ui/PageHeader';
 import { calculateEvalWeightedScores, generateRecommendation } from '@/lib/scoring';
 import type { EvalType, EvalOption, EvalCriterion, EvalScore, EvalPreset } from '@/types/evaluation';
 import { FRAMEWORK_EVAL_CRITERIA, ARCHITECTURE_EVAL_CRITERIA } from '@/types/evaluation';
@@ -141,10 +142,11 @@ function NewEvaluationPageInner() {
 
   return (
     <div className="animate-fade-in flex flex-col gap-6">
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight text-[var(--text)]">New Evaluation</h1>
-        <p className="text-sm text-[var(--text-3)] mt-1">Compare options across weighted criteria to make data-driven decisions.</p>
-      </div>
+      <PageHeader
+        eyebrow="Evaluate"
+        title="New Evaluation"
+        subtitle="Compare options across weighted criteria to make data-driven decisions."
+      />
 
       <EvalWizard
         steps={STEPS}
@@ -162,20 +164,20 @@ function NewEvaluationPageInner() {
             <EvalTypeSelector selected={evalType} onSelect={setEvalType} />
             {evalType === 'model_tier' && presets.length > 0 && (
               <div className="space-y-3">
-                <h3 className="text-sm font-semibold text-[var(--text)]">Select a Preset</h3>
+                <h3 className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>Select a Preset</h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                   {presets.map(p => (
                     <button
                       key={p.slug}
                       onClick={() => selectPreset(p.slug)}
-                      className={`text-left p-3 rounded-[var(--radius-sm)] border transition-all text-sm ${
-                        selectedPreset === p.slug
-                          ? 'border-[var(--accent)] bg-[var(--accent-soft)]'
-                          : 'border-[var(--border)] hover:border-[var(--accent)]'
-                      }`}
+                      className="text-left p-3 rounded-lg transition-all text-sm"
+                      style={{
+                        border: selectedPreset === p.slug ? '1px solid var(--brand-primary)' : '1px solid var(--border-default)',
+                        background: selectedPreset === p.slug ? 'var(--brand-soft)' : 'var(--surface-elevated)',
+                      }}
                     >
-                      <div className="font-semibold text-[var(--text)]">{p.name}</div>
-                      <div className="text-xs text-[var(--text-3)] mt-0.5">{p.description}</div>
+                      <div className="font-semibold" style={{ color: 'var(--text-primary)' }}>{p.name}</div>
+                      <div className="text-xs mt-0.5" style={{ color: 'var(--text-tertiary)' }}>{p.description}</div>
                     </button>
                   ))}
                 </div>
@@ -188,13 +190,16 @@ function NewEvaluationPageInner() {
         {step === 1 && (
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-[var(--text)] mb-1">Evaluation Title</label>
+              <label className="block text-sm font-medium mb-1" style={{ color: 'var(--text-primary)' }}>Evaluation Title</label>
               <input
                 type="text"
                 value={title}
                 onChange={e => setTitle(e.target.value)}
                 placeholder="e.g., Q4 Framework Selection"
-                className="w-full px-3 py-2 text-sm border border-[var(--border)] rounded-[var(--radius-sm)] focus:outline-none focus:border-[var(--accent)] bg-[var(--bg)]"
+                className="w-full px-3 py-2 text-sm rounded-lg focus:outline-none"
+                style={{ border: '1px solid var(--border-default)', background: 'var(--surface-0)', color: 'var(--text-primary)' }}
+                onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--border-focus)'; e.currentTarget.style.boxShadow = '0 0 0 2px var(--brand-soft)'; }}
+                onBlur={(e) => { e.currentTarget.style.borderColor = 'var(--border-default)'; e.currentTarget.style.boxShadow = 'none'; }}
               />
             </div>
             <OptionConfigurator options={options} onChange={setOptions} />
@@ -226,7 +231,7 @@ function NewEvaluationPageInner() {
 
 export default function NewEvaluationPage() {
   return (
-    <Suspense fallback={<div className="p-8 text-center text-[var(--text-3)]">Loading...</div>}>
+    <Suspense fallback={<div className="p-8 text-center" style={{ color: 'var(--text-tertiary)' }}>Loading...</div>}>
       <NewEvaluationPageInner />
     </Suspense>
   );

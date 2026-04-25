@@ -24,14 +24,29 @@ interface TeamRow {
 function Tab({ label, icon: Icon, active, onClick }: {
   label: string; icon: React.ElementType; active: boolean; onClick: () => void;
 }) {
+  const [isHovered, setIsHovered] = useState(false);
+
   return (
     <button
       onClick={onClick}
-      className={`flex items-center gap-2 px-4 py-2.5 text-[13px] font-semibold rounded-[var(--radius-sm)] transition-all ${
-        active
-          ? 'text-[var(--accent)] bg-[var(--accent-soft)]'
-          : 'text-[var(--text-3)] hover:text-[var(--text)] hover:bg-[var(--surface-hover)]'
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      className={`flex items-center gap-2 px-4 py-2.5 font-semibold rounded-lg transition-all ${
+        active ? '' : ''
       }`}
+      style={{
+        fontSize: '13px',
+        color: active
+          ? 'var(--brand-primary)'
+          : isHovered
+          ? 'var(--text-primary)'
+          : 'var(--text-tertiary)',
+        backgroundColor: active
+          ? 'var(--brand-soft)'
+          : isHovered
+          ? 'var(--surface-1)'
+          : 'transparent',
+      }}
     >
       <Icon size={16} />
       {label}
@@ -41,13 +56,18 @@ function Tab({ label, icon: Icon, active, onClick }: {
 
 /* ─── Badge ─── */
 function RoleBadge({ role }: { role: string }) {
-  const styles: Record<string, string> = {
-    admin: 'bg-[rgba(139,92,246,0.1)] text-[#7c3aed]',
-    user: 'bg-[var(--accent-soft)] text-[var(--accent)]',
-    viewer: 'bg-[var(--surface)] text-[var(--text-3)]',
+  const styles: Record<string, { backgroundColor: string; color: string }> = {
+    admin: { backgroundColor: 'rgba(139,92,246,0.1)', color: '#7c3aed' },
+    user: { backgroundColor: 'var(--brand-soft)', color: 'var(--brand-primary)' },
+    viewer: { backgroundColor: 'var(--surface-elevated)', color: 'var(--text-tertiary)' },
   };
+  const style = styles[role] || styles.viewer;
+
   return (
-    <span className={`inline-block text-[11px] font-bold tracking-wide px-2.5 py-0.5 rounded-[var(--radius-sm)] uppercase ${styles[role] || styles.viewer}`}>
+    <span
+      className="inline-block font-bold tracking-wide px-2.5 py-0.5 rounded-lg uppercase"
+      style={{ fontSize: '11px', ...style }}
+    >
       {role}
     </span>
   );
@@ -55,11 +75,14 @@ function RoleBadge({ role }: { role: string }) {
 
 function StatusBadge({ status }: { status: string }) {
   return (
-    <span className={`inline-block text-[11px] font-bold tracking-wide px-2.5 py-0.5 rounded-[var(--radius-sm)] uppercase ${
-      status === 'active'
-        ? 'bg-[var(--success-soft)] text-[var(--success)]'
-        : 'bg-[var(--error-soft)] text-[var(--error)]'
-    }`}>
+    <span
+      className="inline-block font-bold tracking-wide px-2.5 py-0.5 rounded-lg uppercase"
+      style={{
+        fontSize: '11px',
+        backgroundColor: status === 'active' ? 'var(--status-success-soft)' : 'var(--status-error-soft)',
+        color: status === 'active' ? 'var(--status-success)' : 'var(--status-error)',
+      }}
+    >
       {status}
     </span>
   );
@@ -69,13 +92,36 @@ function StatusBadge({ status }: { status: string }) {
 function Modal({ open, onClose, title, children }: {
   open: boolean; onClose: () => void; title: string; children: React.ReactNode;
 }) {
+  const [isHovered, setIsHovered] = useState(false);
+
   if (!open) return null;
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/30 backdrop-blur-sm" onClick={onClose}>
-      <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl w-full max-w-md mx-4" onClick={(e) => e.stopPropagation()}>
-        <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--border)]">
-          <h3 className="text-[15px] font-semibold text-[var(--text)]">{title}</h3>
-          <button onClick={onClose} className="p-1 rounded-[var(--radius-sm)] hover:bg-[var(--surface-hover)] text-[var(--text-3)]">
+    <div
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/30 backdrop-blur-sm"
+      onClick={onClose}
+    >
+      <div
+        className="border rounded-2xl w-full max-w-md mx-4"
+        style={{ backgroundColor: 'var(--surface-elevated)', borderColor: 'var(--border-default)' }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div
+          className="flex items-center justify-between px-6 py-4 border-b"
+          style={{ borderColor: 'var(--border-default)' }}
+        >
+          <h3 className="font-semibold" style={{ fontSize: '15px', color: 'var(--text-primary)' }}>
+            {title}
+          </h3>
+          <button
+            onClick={onClose}
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+            className="p-1 rounded-lg"
+            style={{
+              backgroundColor: isHovered ? 'var(--surface-1)' : 'transparent',
+              color: 'var(--text-tertiary)',
+            }}
+          >
             <X size={16} />
           </button>
         </div>
@@ -92,68 +138,101 @@ function SystemTab() {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
       {/* API Status */}
-      <div className="bg-[var(--surface)] border border-[var(--border)] rounded-[var(--radius-sm)] p-6">
+      <div
+        className="border rounded-lg p-6"
+        style={{ backgroundColor: 'var(--surface-elevated)', borderColor: 'var(--border-default)' }}
+      >
         <div className="flex items-center gap-3 mb-4">
-          <div className="w-10 h-10 rounded-full bg-[rgba(139,92,246,0.1)] text-[#7c3aed] flex items-center justify-center">
+          <div
+            className="w-10 h-10 rounded-full flex items-center justify-center"
+            style={{ backgroundColor: 'rgba(139,92,246,0.1)', color: '#7c3aed' }}
+          >
             <Key size={20} />
           </div>
-          <h2 className="text-[15px] font-semibold text-[var(--text)]">API Configuration</h2>
+          <h2 className="font-semibold" style={{ fontSize: '15px', color: 'var(--text-primary)' }}>
+            API Configuration
+          </h2>
         </div>
         <div className="space-y-3 text-sm">
           <div className="flex items-center justify-between">
-            <span className="text-[var(--text-3)]">Anthropic API Key</span>
+            <span style={{ color: 'var(--text-tertiary)' }}>Anthropic API Key</span>
             <div className="flex items-center gap-1.5">
-              <CheckCircle size={14} className="text-[var(--success)]" />
-              <span className="text-[var(--success)] font-medium">Active</span>
+              <CheckCircle size={14} style={{ color: 'var(--status-success)' }} />
+              <span className="font-medium" style={{ color: 'var(--status-success)' }}>Active</span>
             </div>
           </div>
           <div className="flex items-center justify-between">
-            <span className="text-[var(--text-3)]">Model Tiers</span>
-            <span className="text-[var(--text)]">Haiku / Sonnet / Opus</span>
+            <span style={{ color: 'var(--text-tertiary)' }}>Model Tiers</span>
+            <span style={{ color: 'var(--text-primary)' }}>Haiku / Sonnet / Opus</span>
           </div>
         </div>
       </div>
 
       {/* Database */}
-      <div className="bg-[var(--surface)] border border-[var(--border)] rounded-[var(--radius-sm)] p-6">
+      <div
+        className="border rounded-lg p-6"
+        style={{ backgroundColor: 'var(--surface-elevated)', borderColor: 'var(--border-default)' }}
+      >
         <div className="flex items-center gap-3 mb-4">
-          <div className="w-10 h-10 rounded-full bg-[var(--success-soft)] text-[var(--success)] flex items-center justify-center">
+          <div
+            className="w-10 h-10 rounded-full flex items-center justify-center"
+            style={{ backgroundColor: 'var(--status-success-soft)', color: 'var(--status-success)' }}
+          >
             <Database size={20} />
           </div>
-          <h2 className="text-[15px] font-semibold text-[var(--text)]">Database</h2>
+          <h2 className="font-semibold" style={{ fontSize: '15px', color: 'var(--text-primary)' }}>
+            Database
+          </h2>
         </div>
         <div className="space-y-2 text-sm">
           <div className="flex justify-between">
-            <span className="text-[var(--text-3)]">Engine</span>
-            <span className="text-[var(--text)]">MySQL 8</span>
+            <span style={{ color: 'var(--text-tertiary)' }}>Engine</span>
+            <span style={{ color: 'var(--text-primary)' }}>MySQL 8</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-[var(--text-3)]">ORM</span>
-            <span className="text-[var(--text)]">Prisma</span>
+            <span style={{ color: 'var(--text-tertiary)' }}>ORM</span>
+            <span style={{ color: 'var(--text-primary)' }}>Prisma</span>
           </div>
         </div>
       </div>
 
       {/* System Info */}
-      <div className="bg-[var(--surface)] border border-[var(--border)] rounded-[var(--radius-sm)] p-6 md:col-span-2">
+      <div
+        className="border rounded-lg p-6 md:col-span-2"
+        style={{ backgroundColor: 'var(--surface-elevated)', borderColor: 'var(--border-default)' }}
+      >
         <div className="flex items-center gap-3 mb-4">
-          <div className="w-10 h-10 rounded-full bg-[var(--surface)] text-[var(--text-3)] flex items-center justify-center">
+          <div
+            className="w-10 h-10 rounded-full flex items-center justify-center"
+            style={{ backgroundColor: 'var(--surface-elevated)', color: 'var(--text-tertiary)' }}
+          >
             <Info size={20} />
           </div>
-          <h2 className="text-[15px] font-semibold text-[var(--text)]">System</h2>
+          <h2 className="font-semibold" style={{ fontSize: '15px', color: 'var(--text-primary)' }}>
+            System
+          </h2>
         </div>
         <div className="grid grid-cols-3 gap-4 text-sm">
           <div className="flex justify-between">
-            <span className="text-[var(--text-3)]">Framework</span>
-            <span className="text-[var(--text)]">Next.js 14</span>
+            <span style={{ color: 'var(--text-tertiary)' }}>Framework</span>
+            <span style={{ color: 'var(--text-primary)' }}>Next.js 14</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-[var(--text-3)]">Runtime</span>
-            <span className="text-[var(--text)]">Node.js</span>
+            <span style={{ color: 'var(--text-tertiary)' }}>Runtime</span>
+            <span style={{ color: 'var(--text-primary)' }}>Node.js</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-[var(--text-3)]">Version</span>
-            <span className="inline-block text-[11px] font-bold tracking-wide px-2.5 py-0.5 rounded bg-[var(--surface)] text-[var(--text-3)] uppercase">v3.0</span>
+            <span style={{ color: 'var(--text-tertiary)' }}>Version</span>
+            <span
+              className="inline-block font-bold tracking-wide px-2.5 py-0.5 rounded uppercase"
+              style={{
+                fontSize: '11px',
+                backgroundColor: 'var(--surface-elevated)',
+                color: 'var(--text-tertiary)',
+              }}
+            >
+              v3.0
+            </span>
           </div>
         </div>
       </div>
@@ -169,6 +248,7 @@ function UsersTab({ teams }: { teams: TeamRow[] }) {
   const [loading, setLoading] = useState(true);
   const [showCreate, setShowCreate] = useState(false);
   const [editUser, setEditUser] = useState<UserRow | null>(null);
+  const [hoveredButton, setHoveredButton] = useState<string | null>(null);
 
   const fetchUsers = useCallback(async () => {
     const res = await fetch('/api/users');
@@ -194,57 +274,164 @@ function UsersTab({ teams }: { teams: TeamRow[] }) {
     if (res.ok) fetchUsers();
   };
 
-  if (loading) return <p className="text-sm text-[var(--text-3)]">Loading users...</p>;
+  if (loading) return <p className="text-sm" style={{ color: 'var(--text-tertiary)' }}>Loading users...</p>;
 
   return (
     <>
       <div className="flex items-center justify-between mb-6">
-        <p className="text-sm text-[var(--text-3)]">{users.length} user{users.length !== 1 ? 's' : ''}</p>
+        <p className="text-sm" style={{ color: 'var(--text-tertiary)' }}>
+          {users.length} user{users.length !== 1 ? 's' : ''}
+        </p>
         <button
           onClick={() => setShowCreate(true)}
-          className="flex items-center gap-2 px-4 py-2 rounded-[var(--radius-sm)] text-[13px] font-semibold text-white bg-[var(--accent)] hover:bg-[var(--accent-hover)] transition-colors"
+          onMouseEnter={() => setHoveredButton('create-user')}
+          onMouseLeave={() => setHoveredButton(null)}
+          className="flex items-center gap-2 px-4 py-2 rounded-lg font-semibold text-white transition-colors"
+          style={{
+            fontSize: '13px',
+            backgroundColor: hoveredButton === 'create-user' ? 'var(--brand-primary)' : 'var(--brand-primary)',
+            opacity: hoveredButton === 'create-user' ? 0.9 : 1,
+          }}
         >
           <UserPlus size={15} />
           Create User
         </button>
       </div>
 
-      <div className="bg-[var(--surface)] border border-[var(--border)] rounded-[var(--radius-sm)] overflow-hidden">
+      <div
+        className="border rounded-lg overflow-hidden"
+        style={{ backgroundColor: 'var(--surface-elevated)', borderColor: 'var(--border-default)' }}
+      >
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-[var(--border)] bg-[var(--surface-hover)]">
-              <th className="text-left px-4 py-3 font-semibold text-[var(--text-3)] text-[12px] uppercase tracking-wider">User</th>
-              <th className="text-left px-4 py-3 font-semibold text-[var(--text-3)] text-[12px] uppercase tracking-wider">Role</th>
-              <th className="text-left px-4 py-3 font-semibold text-[var(--text-3)] text-[12px] uppercase tracking-wider">Team</th>
-              <th className="text-left px-4 py-3 font-semibold text-[var(--text-3)] text-[12px] uppercase tracking-wider">Status</th>
-              <th className="text-right px-4 py-3 font-semibold text-[var(--text-3)] text-[12px] uppercase tracking-wider">Actions</th>
+            <tr
+              className="border-b"
+              style={{ borderColor: 'var(--border-default)', backgroundColor: 'var(--surface-1)' }}
+            >
+              <th
+                className="text-left px-4 py-3 font-semibold uppercase tracking-wider"
+                style={{ color: 'var(--text-tertiary)', fontSize: '12px' }}
+              >
+                User
+              </th>
+              <th
+                className="text-left px-4 py-3 font-semibold uppercase tracking-wider"
+                style={{ color: 'var(--text-tertiary)', fontSize: '12px' }}
+              >
+                Role
+              </th>
+              <th
+                className="text-left px-4 py-3 font-semibold uppercase tracking-wider"
+                style={{ color: 'var(--text-tertiary)', fontSize: '12px' }}
+              >
+                Team
+              </th>
+              <th
+                className="text-left px-4 py-3 font-semibold uppercase tracking-wider"
+                style={{ color: 'var(--text-tertiary)', fontSize: '12px' }}
+              >
+                Status
+              </th>
+              <th
+                className="text-right px-4 py-3 font-semibold uppercase tracking-wider"
+                style={{ color: 'var(--text-tertiary)', fontSize: '12px' }}
+              >
+                Actions
+              </th>
             </tr>
           </thead>
           <tbody>
-            {users.map((u) => (
-              <tr key={u.id} className="border-b border-[var(--border)] last:border-0 hover:bg-[var(--surface-hover)]">
-                <td className="px-4 py-3">
-                  <div className="font-medium text-[var(--text)]">{u.name || '—'}</div>
-                  <div className="text-[12px] text-[var(--text-4)]">{u.email}</div>
-                </td>
-                <td className="px-4 py-3"><RoleBadge role={u.role} /></td>
-                <td className="px-4 py-3 text-[var(--text-3)]">{u.team?.name || '—'}</td>
-                <td className="px-4 py-3"><StatusBadge status={u.status} /></td>
-                <td className="px-4 py-3">
-                  <div className="flex items-center justify-end gap-1">
-                    <button onClick={() => setEditUser(u)} className="p-1.5 rounded-[var(--radius-sm)] hover:bg-[var(--accent-soft)] text-[var(--text-3)] hover:text-[var(--accent)]" title="Edit">
-                      <Edit3 size={14} />
-                    </button>
-                    <button onClick={() => handleToggleStatus(u)} className="p-1.5 rounded-[var(--radius-sm)] hover:bg-[var(--warning-soft)] text-[var(--text-3)] hover:text-[var(--warning)]" title={u.status === 'active' ? 'Suspend' : 'Activate'}>
-                      {u.status === 'active' ? <XCircle size={14} /> : <CheckCircle size={14} />}
-                    </button>
-                    <button onClick={() => handleDelete(u.id)} className="p-1.5 rounded-[var(--radius-sm)] hover:bg-[var(--error-soft)] text-[var(--text-3)] hover:text-[var(--error)]" title="Delete">
-                      <Trash2 size={14} />
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
+            {users.map((u) => {
+              const rowKey = `row-${u.id}`;
+              return (
+                <tr
+                  key={u.id}
+                  className="border-b last:border-0"
+                  style={{ borderColor: 'var(--border-default)' }}
+                  onMouseEnter={() => setHoveredButton(rowKey)}
+                  onMouseLeave={() => setHoveredButton(null)}
+                >
+                  <td
+                    className="px-4 py-3"
+                    style={{ backgroundColor: hoveredButton === rowKey ? 'var(--surface-1)' : 'transparent' }}
+                  >
+                    <div className="font-medium" style={{ color: 'var(--text-primary)' }}>
+                      {u.name || '—'}
+                    </div>
+                    <div style={{ fontSize: '12px', color: 'var(--text-quaternary)' }}>
+                      {u.email}
+                    </div>
+                  </td>
+                  <td
+                    className="px-4 py-3"
+                    style={{ backgroundColor: hoveredButton === rowKey ? 'var(--surface-1)' : 'transparent' }}
+                  >
+                    <RoleBadge role={u.role} />
+                  </td>
+                  <td
+                    className="px-4 py-3"
+                    style={{
+                      color: 'var(--text-tertiary)',
+                      backgroundColor: hoveredButton === rowKey ? 'var(--surface-1)' : 'transparent',
+                    }}
+                  >
+                    {u.team?.name || '—'}
+                  </td>
+                  <td
+                    className="px-4 py-3"
+                    style={{ backgroundColor: hoveredButton === rowKey ? 'var(--surface-1)' : 'transparent' }}
+                  >
+                    <StatusBadge status={u.status} />
+                  </td>
+                  <td
+                    className="px-4 py-3"
+                    style={{ backgroundColor: hoveredButton === rowKey ? 'var(--surface-1)' : 'transparent' }}
+                  >
+                    <div className="flex items-center justify-end gap-1">
+                      <button
+                        onClick={() => setEditUser(u)}
+                        onMouseEnter={() => setHoveredButton(`edit-${u.id}`)}
+                        onMouseLeave={() => setHoveredButton(null)}
+                        className="p-1.5 rounded-lg"
+                        title="Edit"
+                        style={{
+                          backgroundColor: hoveredButton === `edit-${u.id}` ? 'var(--brand-soft)' : 'transparent',
+                          color: hoveredButton === `edit-${u.id}` ? 'var(--brand-primary)' : 'var(--text-tertiary)',
+                        }}
+                      >
+                        <Edit3 size={14} />
+                      </button>
+                      <button
+                        onClick={() => handleToggleStatus(u)}
+                        onMouseEnter={() => setHoveredButton(`toggle-${u.id}`)}
+                        onMouseLeave={() => setHoveredButton(null)}
+                        className="p-1.5 rounded-lg"
+                        title={u.status === 'active' ? 'Suspend' : 'Activate'}
+                        style={{
+                          backgroundColor: hoveredButton === `toggle-${u.id}` ? 'var(--status-warning-soft)' : 'transparent',
+                          color: hoveredButton === `toggle-${u.id}` ? 'var(--status-warning)' : 'var(--text-tertiary)',
+                        }}
+                      >
+                        {u.status === 'active' ? <XCircle size={14} /> : <CheckCircle size={14} />}
+                      </button>
+                      <button
+                        onClick={() => handleDelete(u.id)}
+                        onMouseEnter={() => setHoveredButton(`delete-${u.id}`)}
+                        onMouseLeave={() => setHoveredButton(null)}
+                        className="p-1.5 rounded-lg"
+                        title="Delete"
+                        style={{
+                          backgroundColor: hoveredButton === `delete-${u.id}` ? 'var(--status-error-soft)' : 'transparent',
+                          color: hoveredButton === `delete-${u.id}` ? 'var(--status-error)' : 'var(--text-tertiary)',
+                        }}
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>
@@ -267,6 +454,8 @@ function CreateUserModal({ open, onClose, teams, onCreated }: {
   const [form, setForm] = useState({ email: '', name: '', password: '', role: 'viewer', teamId: '' });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [focusedField, setFocusedField] = useState<string | null>(null);
+  const [hoveredButton, setHoveredButton] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -297,43 +486,154 @@ function CreateUserModal({ open, onClose, teams, onCreated }: {
   return (
     <Modal open={open} onClose={onClose} title="Create User">
       <form onSubmit={handleSubmit} className="space-y-4">
-        {error && <div className="px-3 py-2 rounded-[var(--radius-sm)] bg-[var(--error-soft)] border border-[rgba(224,85,85,0.15)] text-[var(--error)] text-[13px]">{error}</div>}
+        {error && (
+          <div
+            className="px-3 py-2 rounded-lg border"
+            style={{
+              backgroundColor: 'var(--status-error-soft)',
+              borderColor: 'rgba(224,85,85,0.15)',
+              color: 'var(--status-error)',
+              fontSize: '13px',
+            }}
+          >
+            {error}
+          </div>
+        )}
         <div>
-          <label className="block text-[12px] font-semibold text-[var(--text-3)] mb-1">Email *</label>
-          <input type="email" required value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })}
-            className="w-full px-3 py-2 border border-[var(--border)] rounded-[var(--radius-sm)] text-sm bg-[var(--bg)] text-[var(--text)] focus:border-[var(--accent)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-soft)]" />
+          <label
+            className="block font-semibold mb-1"
+            style={{ fontSize: '12px', color: 'var(--text-tertiary)' }}
+          >
+            Email *
+          </label>
+          <input
+            type="email"
+            required
+            value={form.email}
+            onChange={(e) => setForm({ ...form, email: e.target.value })}
+            onFocus={() => setFocusedField('email')}
+            onBlur={() => setFocusedField(null)}
+            className="w-full px-3 py-2 border rounded-lg text-sm"
+            style={{
+              borderColor: focusedField === 'email' ? 'var(--border-focus)' : 'var(--border-default)',
+              backgroundColor: 'var(--surface-0)',
+              color: 'var(--text-primary)',
+              outline: 'none',
+              boxShadow: focusedField === 'email' ? '0 0 0 2px var(--brand-soft)' : 'none',
+            }}
+          />
         </div>
         <div>
-          <label className="block text-[12px] font-semibold text-[var(--text-3)] mb-1">Name</label>
-          <input type="text" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })}
-            className="w-full px-3 py-2 border border-[var(--border)] rounded-[var(--radius-sm)] text-sm bg-[var(--bg)] text-[var(--text)] focus:border-[var(--accent)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-soft)]" />
+          <label
+            className="block font-semibold mb-1"
+            style={{ fontSize: '12px', color: 'var(--text-tertiary)' }}
+          >
+            Name
+          </label>
+          <input
+            type="text"
+            value={form.name}
+            onChange={(e) => setForm({ ...form, name: e.target.value })}
+            onFocus={() => setFocusedField('name')}
+            onBlur={() => setFocusedField(null)}
+            className="w-full px-3 py-2 border rounded-lg text-sm"
+            style={{
+              borderColor: focusedField === 'name' ? 'var(--border-focus)' : 'var(--border-default)',
+              backgroundColor: 'var(--surface-0)',
+              color: 'var(--text-primary)',
+              outline: 'none',
+              boxShadow: focusedField === 'name' ? '0 0 0 2px var(--brand-soft)' : 'none',
+            }}
+          />
         </div>
         <div>
-          <label className="block text-[12px] font-semibold text-[var(--text-3)] mb-1">Password * (min 8 chars)</label>
-          <input type="password" required minLength={8} value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })}
-            className="w-full px-3 py-2 border border-[var(--border)] rounded-[var(--radius-sm)] text-sm bg-[var(--bg)] text-[var(--text)] focus:border-[var(--accent)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-soft)]" />
+          <label
+            className="block font-semibold mb-1"
+            style={{ fontSize: '12px', color: 'var(--text-tertiary)' }}
+          >
+            Password * (min 8 chars)
+          </label>
+          <input
+            type="password"
+            required
+            minLength={8}
+            value={form.password}
+            onChange={(e) => setForm({ ...form, password: e.target.value })}
+            onFocus={() => setFocusedField('password')}
+            onBlur={() => setFocusedField(null)}
+            className="w-full px-3 py-2 border rounded-lg text-sm"
+            style={{
+              borderColor: focusedField === 'password' ? 'var(--border-focus)' : 'var(--border-default)',
+              backgroundColor: 'var(--surface-0)',
+              color: 'var(--text-primary)',
+              outline: 'none',
+              boxShadow: focusedField === 'password' ? '0 0 0 2px var(--brand-soft)' : 'none',
+            }}
+          />
         </div>
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-[12px] font-semibold text-[var(--text-3)] mb-1">Role</label>
-            <select value={form.role} onChange={(e) => setForm({ ...form, role: e.target.value })}
-              className="w-full px-3 py-2 border border-[var(--border)] rounded-[var(--radius-sm)] text-sm bg-[var(--bg)] text-[var(--text)] focus:border-[var(--accent)] focus:outline-none">
+            <label
+              className="block font-semibold mb-1"
+              style={{ fontSize: '12px', color: 'var(--text-tertiary)' }}
+            >
+              Role
+            </label>
+            <select
+              value={form.role}
+              onChange={(e) => setForm({ ...form, role: e.target.value })}
+              onFocus={() => setFocusedField('role')}
+              onBlur={() => setFocusedField(null)}
+              className="w-full px-3 py-2 border rounded-lg text-sm"
+              style={{
+                borderColor: focusedField === 'role' ? 'var(--border-focus)' : 'var(--border-default)',
+                backgroundColor: 'var(--surface-0)',
+                color: 'var(--text-primary)',
+                outline: 'none',
+              }}
+            >
               <option value="viewer">Viewer</option>
               <option value="user">User</option>
               <option value="admin">Admin</option>
             </select>
           </div>
           <div>
-            <label className="block text-[12px] font-semibold text-[var(--text-3)] mb-1">Team</label>
-            <select value={form.teamId} onChange={(e) => setForm({ ...form, teamId: e.target.value })}
-              className="w-full px-3 py-2 border border-[var(--border)] rounded-[var(--radius-sm)] text-sm bg-[var(--bg)] text-[var(--text)] focus:border-[var(--accent)] focus:outline-none">
+            <label
+              className="block font-semibold mb-1"
+              style={{ fontSize: '12px', color: 'var(--text-tertiary)' }}
+            >
+              Team
+            </label>
+            <select
+              value={form.teamId}
+              onChange={(e) => setForm({ ...form, teamId: e.target.value })}
+              onFocus={() => setFocusedField('teamId')}
+              onBlur={() => setFocusedField(null)}
+              className="w-full px-3 py-2 border rounded-lg text-sm"
+              style={{
+                borderColor: focusedField === 'teamId' ? 'var(--border-focus)' : 'var(--border-default)',
+                backgroundColor: 'var(--surface-0)',
+                color: 'var(--text-primary)',
+                outline: 'none',
+              }}
+            >
               <option value="">No team</option>
               {teams.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}
             </select>
           </div>
         </div>
-        <button type="submit" disabled={loading}
-          className="w-full px-4 py-2.5 rounded-[var(--radius-sm)] text-[13px] font-semibold text-white bg-[var(--accent)] hover:bg-[var(--accent-hover)] disabled:opacity-50 transition-colors">
+        <button
+          type="submit"
+          disabled={loading}
+          onMouseEnter={() => setHoveredButton(true)}
+          onMouseLeave={() => setHoveredButton(false)}
+          className="w-full px-4 py-2.5 rounded-lg font-semibold text-white disabled:opacity-50 transition-colors"
+          style={{
+            fontSize: '13px',
+            backgroundColor: 'var(--brand-primary)',
+            opacity: hoveredButton && !loading ? 0.9 : loading ? 0.5 : 1,
+          }}
+        >
           {loading ? 'Creating...' : 'Create User'}
         </button>
       </form>
@@ -353,6 +653,8 @@ function EditUserModal({ user, teams, onClose, onUpdated }: {
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [focusedField, setFocusedField] = useState<string | null>(null);
+  const [hoveredButton, setHoveredButton] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -386,39 +688,130 @@ function EditUserModal({ user, teams, onClose, onUpdated }: {
   return (
     <Modal open={true} onClose={onClose} title={`Edit — ${user.email}`}>
       <form onSubmit={handleSubmit} className="space-y-4">
-        {error && <div className="px-3 py-2 rounded-[var(--radius-sm)] bg-[var(--error-soft)] border border-[rgba(224,85,85,0.15)] text-[var(--error)] text-[13px]">{error}</div>}
+        {error && (
+          <div
+            className="px-3 py-2 rounded-lg border"
+            style={{
+              backgroundColor: 'var(--status-error-soft)',
+              borderColor: 'rgba(224,85,85,0.15)',
+              color: 'var(--status-error)',
+              fontSize: '13px',
+            }}
+          >
+            {error}
+          </div>
+        )}
         <div>
-          <label className="block text-[12px] font-semibold text-[var(--text-3)] mb-1">Name</label>
-          <input type="text" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })}
-            className="w-full px-3 py-2 border border-[var(--border)] rounded-[var(--radius-sm)] text-sm bg-[var(--bg)] text-[var(--text)] focus:border-[var(--accent)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-soft)]" />
+          <label
+            className="block font-semibold mb-1"
+            style={{ fontSize: '12px', color: 'var(--text-tertiary)' }}
+          >
+            Name
+          </label>
+          <input
+            type="text"
+            value={form.name}
+            onChange={(e) => setForm({ ...form, name: e.target.value })}
+            onFocus={() => setFocusedField('name')}
+            onBlur={() => setFocusedField(null)}
+            className="w-full px-3 py-2 border rounded-lg text-sm"
+            style={{
+              borderColor: focusedField === 'name' ? 'var(--border-focus)' : 'var(--border-default)',
+              backgroundColor: 'var(--surface-0)',
+              color: 'var(--text-primary)',
+              outline: 'none',
+              boxShadow: focusedField === 'name' ? '0 0 0 2px var(--brand-soft)' : 'none',
+            }}
+          />
         </div>
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-[12px] font-semibold text-[var(--text-3)] mb-1">Role</label>
-            <select value={form.role} onChange={(e) => setForm({ ...form, role: e.target.value })}
-              className="w-full px-3 py-2 border border-[var(--border)] rounded-[var(--radius-sm)] text-sm bg-[var(--bg)] text-[var(--text)] focus:border-[var(--accent)] focus:outline-none">
+            <label
+              className="block font-semibold mb-1"
+              style={{ fontSize: '12px', color: 'var(--text-tertiary)' }}
+            >
+              Role
+            </label>
+            <select
+              value={form.role}
+              onChange={(e) => setForm({ ...form, role: e.target.value })}
+              onFocus={() => setFocusedField('role')}
+              onBlur={() => setFocusedField(null)}
+              className="w-full px-3 py-2 border rounded-lg text-sm"
+              style={{
+                borderColor: focusedField === 'role' ? 'var(--border-focus)' : 'var(--border-default)',
+                backgroundColor: 'var(--surface-0)',
+                color: 'var(--text-primary)',
+                outline: 'none',
+              }}
+            >
               <option value="viewer">Viewer</option>
               <option value="user">User</option>
               <option value="admin">Admin</option>
             </select>
           </div>
           <div>
-            <label className="block text-[12px] font-semibold text-[var(--text-3)] mb-1">Team</label>
-            <select value={form.teamId} onChange={(e) => setForm({ ...form, teamId: e.target.value })}
-              className="w-full px-3 py-2 border border-[var(--border)] rounded-[var(--radius-sm)] text-sm bg-[var(--bg)] text-[var(--text)] focus:border-[var(--accent)] focus:outline-none">
+            <label
+              className="block font-semibold mb-1"
+              style={{ fontSize: '12px', color: 'var(--text-tertiary)' }}
+            >
+              Team
+            </label>
+            <select
+              value={form.teamId}
+              onChange={(e) => setForm({ ...form, teamId: e.target.value })}
+              onFocus={() => setFocusedField('teamId')}
+              onBlur={() => setFocusedField(null)}
+              className="w-full px-3 py-2 border rounded-lg text-sm"
+              style={{
+                borderColor: focusedField === 'teamId' ? 'var(--border-focus)' : 'var(--border-default)',
+                backgroundColor: 'var(--surface-0)',
+                color: 'var(--text-primary)',
+                outline: 'none',
+              }}
+            >
               <option value="">No team</option>
               {teams.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}
             </select>
           </div>
         </div>
         <div>
-          <label className="block text-[12px] font-semibold text-[var(--text-3)] mb-1">New Password (leave blank to keep current)</label>
-          <input type="password" minLength={8} value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })}
+          <label
+            className="block font-semibold mb-1"
+            style={{ fontSize: '12px', color: 'var(--text-tertiary)' }}
+          >
+            New Password (leave blank to keep current)
+          </label>
+          <input
+            type="password"
+            minLength={8}
+            value={form.password}
+            onChange={(e) => setForm({ ...form, password: e.target.value })}
+            onFocus={() => setFocusedField('password')}
+            onBlur={() => setFocusedField(null)}
             placeholder="Min 8 characters"
-            className="w-full px-3 py-2 border border-[var(--border)] rounded-[var(--radius-sm)] text-sm bg-[var(--bg)] text-[var(--text)] focus:border-[var(--accent)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-soft)]" />
+            className="w-full px-3 py-2 border rounded-lg text-sm"
+            style={{
+              borderColor: focusedField === 'password' ? 'var(--border-focus)' : 'var(--border-default)',
+              backgroundColor: 'var(--surface-0)',
+              color: 'var(--text-primary)',
+              outline: 'none',
+              boxShadow: focusedField === 'password' ? '0 0 0 2px var(--brand-soft)' : 'none',
+            }}
+          />
         </div>
-        <button type="submit" disabled={loading}
-          className="w-full px-4 py-2.5 rounded-[var(--radius-sm)] text-[13px] font-semibold text-white bg-[var(--accent)] hover:bg-[var(--accent-hover)] disabled:opacity-50 transition-colors">
+        <button
+          type="submit"
+          disabled={loading}
+          onMouseEnter={() => setHoveredButton(true)}
+          onMouseLeave={() => setHoveredButton(false)}
+          className="w-full px-4 py-2.5 rounded-lg font-semibold text-white disabled:opacity-50 transition-colors"
+          style={{
+            fontSize: '13px',
+            backgroundColor: 'var(--brand-primary)',
+            opacity: hoveredButton && !loading ? 0.9 : loading ? 0.5 : 1,
+          }}
+        >
           {loading ? 'Saving...' : 'Save Changes'}
         </button>
       </form>
@@ -432,6 +825,7 @@ function EditUserModal({ user, teams, onClose, onUpdated }: {
 function TeamsTab({ teams, onRefresh }: { teams: TeamRow[]; onRefresh: () => void }) {
   const [showCreate, setShowCreate] = useState(false);
   const [editTeam, setEditTeam] = useState<TeamRow | null>(null);
+  const [hoveredButton, setHoveredButton] = useState<string | null>(null);
 
   const handleDelete = async (id: number) => {
     if (!confirm('Delete this team? Members will be unassigned.')) return;
@@ -442,10 +836,19 @@ function TeamsTab({ teams, onRefresh }: { teams: TeamRow[]; onRefresh: () => voi
   return (
     <>
       <div className="flex items-center justify-between mb-6">
-        <p className="text-sm text-[var(--text-3)]">{teams.length} team{teams.length !== 1 ? 's' : ''}</p>
+        <p className="text-sm" style={{ color: 'var(--text-tertiary)' }}>
+          {teams.length} team{teams.length !== 1 ? 's' : ''}
+        </p>
         <button
           onClick={() => setShowCreate(true)}
-          className="flex items-center gap-2 px-4 py-2 rounded-[var(--radius-sm)] text-[13px] font-semibold text-white bg-[var(--accent)] hover:bg-[var(--accent-hover)] transition-colors"
+          onMouseEnter={() => setHoveredButton('create-team')}
+          onMouseLeave={() => setHoveredButton(null)}
+          className="flex items-center gap-2 px-4 py-2 rounded-lg font-semibold text-white transition-colors"
+          style={{
+            fontSize: '13px',
+            backgroundColor: 'var(--brand-primary)',
+            opacity: hoveredButton === 'create-team' ? 0.9 : 1,
+          }}
         >
           <Plus size={15} />
           Create Team
@@ -453,40 +856,79 @@ function TeamsTab({ teams, onRefresh }: { teams: TeamRow[]; onRefresh: () => voi
       </div>
 
       {teams.length === 0 ? (
-        <div className="bg-[var(--surface)] border border-[var(--border)] rounded-[var(--radius-sm)] p-12 text-center">
-          <UsersRound size={40} className="mx-auto text-[var(--text-4)] mb-3" />
-          <p className="text-sm text-[var(--text-3)]">No teams yet. Create one to start organizing your users.</p>
+        <div
+          className="border rounded-lg p-12 text-center"
+          style={{ backgroundColor: 'var(--surface-elevated)', borderColor: 'var(--border-default)' }}
+        >
+          <UsersRound size={40} className="mx-auto mb-3" style={{ color: 'var(--text-quaternary)' }} />
+          <p className="text-sm" style={{ color: 'var(--text-tertiary)' }}>
+            No teams yet. Create one to start organizing your users.
+          </p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {teams.map((team) => (
-            <div key={team.id} className="bg-[var(--surface)] border border-[var(--border)] rounded-[var(--radius-sm)] p-5">
+            <div
+              key={team.id}
+              className="border rounded-lg p-5"
+              style={{ backgroundColor: 'var(--surface-elevated)', borderColor: 'var(--border-default)' }}
+            >
               <div className="flex items-start justify-between mb-3">
                 <div>
-                  <h3 className="text-[15px] font-semibold text-[var(--text)]">{team.name}</h3>
+                  <h3 className="font-semibold" style={{ fontSize: '15px', color: 'var(--text-primary)' }}>
+                    {team.name}
+                  </h3>
                   {team.description && (
-                    <p className="text-[12px] text-[var(--text-4)] mt-0.5">{team.description}</p>
+                    <p className="mt-0.5" style={{ fontSize: '12px', color: 'var(--text-quaternary)' }}>
+                      {team.description}
+                    </p>
                   )}
                 </div>
                 <div className="flex gap-1">
-                  <button onClick={() => setEditTeam(team)} className="p-1.5 rounded-[var(--radius-sm)] hover:bg-[var(--accent-soft)] text-[var(--text-3)] hover:text-[var(--accent)]">
+                  <button
+                    onClick={() => setEditTeam(team)}
+                    onMouseEnter={() => setHoveredButton(`edit-team-${team.id}`)}
+                    onMouseLeave={() => setHoveredButton(null)}
+                    className="p-1.5 rounded-lg"
+                    style={{
+                      backgroundColor: hoveredButton === `edit-team-${team.id}` ? 'var(--brand-soft)' : 'transparent',
+                      color: hoveredButton === `edit-team-${team.id}` ? 'var(--brand-primary)' : 'var(--text-tertiary)',
+                    }}
+                  >
                     <Edit3 size={14} />
                   </button>
-                  <button onClick={() => handleDelete(team.id)} className="p-1.5 rounded-[var(--radius-sm)] hover:bg-[var(--error-soft)] text-[var(--text-3)] hover:text-[var(--error)]">
+                  <button
+                    onClick={() => handleDelete(team.id)}
+                    onMouseEnter={() => setHoveredButton(`delete-team-${team.id}`)}
+                    onMouseLeave={() => setHoveredButton(null)}
+                    className="p-1.5 rounded-lg"
+                    style={{
+                      backgroundColor: hoveredButton === `delete-team-${team.id}` ? 'var(--status-error-soft)' : 'transparent',
+                      color: hoveredButton === `delete-team-${team.id}` ? 'var(--status-error)' : 'var(--text-tertiary)',
+                    }}
+                  >
                     <Trash2 size={14} />
                   </button>
                 </div>
               </div>
               <div className="flex items-center gap-2 mb-3">
-                <Users size={14} className="text-[var(--text-4)]" />
-                <span className="text-[12px] font-medium text-[var(--text-3)]">
+                <Users size={14} style={{ color: 'var(--text-quaternary)' }} />
+                <span className="font-medium" style={{ fontSize: '12px', color: 'var(--text-tertiary)' }}>
                   {team._count.members} member{team._count.members !== 1 ? 's' : ''}
                 </span>
               </div>
               {team.members.length > 0 && (
                 <div className="flex flex-wrap gap-1.5">
                   {team.members.map((m) => (
-                    <span key={m.id} className="inline-flex items-center gap-1 text-[11px] font-medium px-2 py-1 rounded bg-[var(--surface)] text-[var(--text-2)]">
+                    <span
+                      key={m.id}
+                      className="inline-flex items-center gap-1 font-medium px-2 py-1 rounded"
+                      style={{
+                        fontSize: '11px',
+                        backgroundColor: 'var(--surface-elevated)',
+                        color: 'var(--text-secondary)',
+                      }}
+                    >
                       {m.name || m.email.split('@')[0]}
                       <RoleBadge role={m.role} />
                     </span>
@@ -516,6 +958,8 @@ function CreateTeamModal({ open, onClose, onCreated }: {
   const [form, setForm] = useState({ name: '', description: '' });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [focusedField, setFocusedField] = useState<string | null>(null);
+  const [hoveredButton, setHoveredButton] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -543,21 +987,80 @@ function CreateTeamModal({ open, onClose, onCreated }: {
   return (
     <Modal open={open} onClose={onClose} title="Create Team">
       <form onSubmit={handleSubmit} className="space-y-4">
-        {error && <div className="px-3 py-2 rounded-[var(--radius-sm)] bg-[var(--error-soft)] border border-[rgba(224,85,85,0.15)] text-[var(--error)] text-[13px]">{error}</div>}
+        {error && (
+          <div
+            className="px-3 py-2 rounded-lg border"
+            style={{
+              backgroundColor: 'var(--status-error-soft)',
+              borderColor: 'rgba(224,85,85,0.15)',
+              color: 'var(--status-error)',
+              fontSize: '13px',
+            }}
+          >
+            {error}
+          </div>
+        )}
         <div>
-          <label className="block text-[12px] font-semibold text-[var(--text-3)] mb-1">Team Name *</label>
-          <input type="text" required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })}
+          <label
+            className="block font-semibold mb-1"
+            style={{ fontSize: '12px', color: 'var(--text-tertiary)' }}
+          >
+            Team Name *
+          </label>
+          <input
+            type="text"
+            required
+            value={form.name}
+            onChange={(e) => setForm({ ...form, name: e.target.value })}
+            onFocus={() => setFocusedField('name')}
+            onBlur={() => setFocusedField(null)}
             placeholder="e.g. Engineering"
-            className="w-full px-3 py-2 border border-[var(--border)] rounded-[var(--radius-sm)] text-sm bg-[var(--bg)] text-[var(--text)] focus:border-[var(--accent)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-soft)]" />
+            className="w-full px-3 py-2 border rounded-lg text-sm"
+            style={{
+              borderColor: focusedField === 'name' ? 'var(--border-focus)' : 'var(--border-default)',
+              backgroundColor: 'var(--surface-0)',
+              color: 'var(--text-primary)',
+              outline: 'none',
+              boxShadow: focusedField === 'name' ? '0 0 0 2px var(--brand-soft)' : 'none',
+            }}
+          />
         </div>
         <div>
-          <label className="block text-[12px] font-semibold text-[var(--text-3)] mb-1">Description</label>
-          <input type="text" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })}
+          <label
+            className="block font-semibold mb-1"
+            style={{ fontSize: '12px', color: 'var(--text-tertiary)' }}
+          >
+            Description
+          </label>
+          <input
+            type="text"
+            value={form.description}
+            onChange={(e) => setForm({ ...form, description: e.target.value })}
+            onFocus={() => setFocusedField('description')}
+            onBlur={() => setFocusedField(null)}
             placeholder="Optional"
-            className="w-full px-3 py-2 border border-[var(--border)] rounded-[var(--radius-sm)] text-sm bg-[var(--bg)] text-[var(--text)] focus:border-[var(--accent)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-soft)]" />
+            className="w-full px-3 py-2 border rounded-lg text-sm"
+            style={{
+              borderColor: focusedField === 'description' ? 'var(--border-focus)' : 'var(--border-default)',
+              backgroundColor: 'var(--surface-0)',
+              color: 'var(--text-primary)',
+              outline: 'none',
+              boxShadow: focusedField === 'description' ? '0 0 0 2px var(--brand-soft)' : 'none',
+            }}
+          />
         </div>
-        <button type="submit" disabled={loading}
-          className="w-full px-4 py-2.5 rounded-[var(--radius-sm)] text-[13px] font-semibold text-white bg-[var(--accent)] hover:bg-[var(--accent-hover)] disabled:opacity-50 transition-colors">
+        <button
+          type="submit"
+          disabled={loading}
+          onMouseEnter={() => setHoveredButton(true)}
+          onMouseLeave={() => setHoveredButton(false)}
+          className="w-full px-4 py-2.5 rounded-lg font-semibold text-white disabled:opacity-50 transition-colors"
+          style={{
+            fontSize: '13px',
+            backgroundColor: 'var(--brand-primary)',
+            opacity: hoveredButton && !loading ? 0.9 : loading ? 0.5 : 1,
+          }}
+        >
           {loading ? 'Creating...' : 'Create Team'}
         </button>
       </form>
@@ -572,6 +1075,8 @@ function EditTeamModal({ team, onClose, onUpdated }: {
   const [form, setForm] = useState({ name: team.name, description: team.description || '' });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [focusedField, setFocusedField] = useState<string | null>(null);
+  const [hoveredButton, setHoveredButton] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -598,19 +1103,78 @@ function EditTeamModal({ team, onClose, onUpdated }: {
   return (
     <Modal open={true} onClose={onClose} title={`Edit — ${team.name}`}>
       <form onSubmit={handleSubmit} className="space-y-4">
-        {error && <div className="px-3 py-2 rounded-[var(--radius-sm)] bg-[var(--error-soft)] border border-[rgba(224,85,85,0.15)] text-[var(--error)] text-[13px]">{error}</div>}
+        {error && (
+          <div
+            className="px-3 py-2 rounded-lg border"
+            style={{
+              backgroundColor: 'var(--status-error-soft)',
+              borderColor: 'rgba(224,85,85,0.15)',
+              color: 'var(--status-error)',
+              fontSize: '13px',
+            }}
+          >
+            {error}
+          </div>
+        )}
         <div>
-          <label className="block text-[12px] font-semibold text-[var(--text-3)] mb-1">Team Name</label>
-          <input type="text" required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })}
-            className="w-full px-3 py-2 border border-[var(--border)] rounded-[var(--radius-sm)] text-sm bg-[var(--bg)] text-[var(--text)] focus:border-[var(--accent)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-soft)]" />
+          <label
+            className="block font-semibold mb-1"
+            style={{ fontSize: '12px', color: 'var(--text-tertiary)' }}
+          >
+            Team Name
+          </label>
+          <input
+            type="text"
+            required
+            value={form.name}
+            onChange={(e) => setForm({ ...form, name: e.target.value })}
+            onFocus={() => setFocusedField('name')}
+            onBlur={() => setFocusedField(null)}
+            className="w-full px-3 py-2 border rounded-lg text-sm"
+            style={{
+              borderColor: focusedField === 'name' ? 'var(--border-focus)' : 'var(--border-default)',
+              backgroundColor: 'var(--surface-0)',
+              color: 'var(--text-primary)',
+              outline: 'none',
+              boxShadow: focusedField === 'name' ? '0 0 0 2px var(--brand-soft)' : 'none',
+            }}
+          />
         </div>
         <div>
-          <label className="block text-[12px] font-semibold text-[var(--text-3)] mb-1">Description</label>
-          <input type="text" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })}
-            className="w-full px-3 py-2 border border-[var(--border)] rounded-[var(--radius-sm)] text-sm bg-[var(--bg)] text-[var(--text)] focus:border-[var(--accent)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-soft)]" />
+          <label
+            className="block font-semibold mb-1"
+            style={{ fontSize: '12px', color: 'var(--text-tertiary)' }}
+          >
+            Description
+          </label>
+          <input
+            type="text"
+            value={form.description}
+            onChange={(e) => setForm({ ...form, description: e.target.value })}
+            onFocus={() => setFocusedField('description')}
+            onBlur={() => setFocusedField(null)}
+            className="w-full px-3 py-2 border rounded-lg text-sm"
+            style={{
+              borderColor: focusedField === 'description' ? 'var(--border-focus)' : 'var(--border-default)',
+              backgroundColor: 'var(--surface-0)',
+              color: 'var(--text-primary)',
+              outline: 'none',
+              boxShadow: focusedField === 'description' ? '0 0 0 2px var(--brand-soft)' : 'none',
+            }}
+          />
         </div>
-        <button type="submit" disabled={loading}
-          className="w-full px-4 py-2.5 rounded-[var(--radius-sm)] text-[13px] font-semibold text-white bg-[var(--accent)] hover:bg-[var(--accent-hover)] disabled:opacity-50 transition-colors">
+        <button
+          type="submit"
+          disabled={loading}
+          onMouseEnter={() => setHoveredButton(true)}
+          onMouseLeave={() => setHoveredButton(false)}
+          className="w-full px-4 py-2.5 rounded-lg font-semibold text-white disabled:opacity-50 transition-colors"
+          style={{
+            fontSize: '13px',
+            backgroundColor: 'var(--brand-primary)',
+            opacity: hoveredButton && !loading ? 0.9 : loading ? 0.5 : 1,
+          }}
+        >
           {loading ? 'Saving...' : 'Save Changes'}
         </button>
       </form>
@@ -639,12 +1203,16 @@ export default function SettingsPage() {
   return (
     <div className="animate-fade-in flex flex-col gap-6">
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight text-[var(--text)]">Settings</h1>
-        <p className="text-sm text-[var(--text-3)] mt-1">Configuration, user management, and team control.</p>
+        <h1 className="text-2xl font-semibold tracking-tight" style={{ color: 'var(--text-primary)' }}>
+          Settings
+        </h1>
+        <p className="text-sm mt-1" style={{ color: 'var(--text-tertiary)' }}>
+          Configuration, user management, and team control.
+        </p>
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-1 border-b border-[var(--border)] pb-px">
+      <div className="flex gap-1 border-b pb-px" style={{ borderColor: 'var(--border-default)' }}>
         <Tab label="System" icon={Info} active={activeTab === 'system'} onClick={() => setActiveTab('system')} />
         {isAdmin && (
           <>

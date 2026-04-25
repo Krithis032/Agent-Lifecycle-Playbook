@@ -42,18 +42,19 @@ export default function EvalDetailClient({ evalId, criteria, scores, weightedSco
   return (
     <div className="space-y-6">
       {/* Recommendation + AI analysis */}
-      <div className="bg-[var(--accent-soft)] border border-[var(--accent)] rounded-xl p-5">
+      <div className="rounded-xl p-5" style={{ background: 'var(--brand-soft)', border: '1px solid var(--brand-primary)' }}>
         <div className="flex items-start gap-3">
-          <Trophy size={24} className="text-[var(--accent)] shrink-0 mt-0.5" />
+          <Trophy size={24} className="shrink-0 mt-0.5" style={{ color: 'var(--brand-primary)' }} />
           <div className="flex-1">
-            <div className="text-xs font-bold text-[var(--accent)] uppercase tracking-wider mb-1">Recommendation</div>
-            <div className="text-lg font-bold text-[var(--text)]">{recommendation}</div>
-            <div className="text-sm text-[var(--text-2)] mt-1">{rationale}</div>
+            <div className="text-xs font-bold uppercase tracking-wider mb-1" style={{ color: 'var(--brand-primary)' }}>Recommendation</div>
+            <div className="text-lg font-bold" style={{ color: 'var(--text-primary)' }}>{recommendation}</div>
+            <div className="text-sm mt-1" style={{ color: 'var(--text-secondary)' }}>{rationale}</div>
             {!analysis && (
               <button
                 onClick={handleAnalyze}
                 disabled={analyzing}
-                className="mt-3 px-3 py-1.5 text-xs font-semibold bg-[var(--accent)] text-white rounded-md hover:opacity-90 flex items-center gap-1.5 disabled:opacity-40"
+                className="mt-3 px-3 py-1.5 text-xs font-semibold text-white rounded-md hover:opacity-90 flex items-center gap-1.5 disabled:opacity-40"
+                style={{ background: 'var(--brand-primary)' }}
               >
                 {analyzing ? <Loader2 size={12} className="animate-spin" /> : <Sparkles size={12} />}
                 {analyzing ? 'Analyzing...' : 'Get AI Analysis'}
@@ -62,28 +63,28 @@ export default function EvalDetailClient({ evalId, criteria, scores, weightedSco
           </div>
         </div>
         {analysis && (
-          <div className="mt-4 pt-4 border-t border-[var(--accent)]/30 space-y-3">
-            <div className="text-sm text-[var(--text-2)]">{analysis.recommendation}</div>
+          <div className="mt-4 pt-4 space-y-3" style={{ borderTop: '1px solid color-mix(in srgb, var(--brand-primary) 30%, transparent)' }}>
+            <div className="text-sm" style={{ color: 'var(--text-secondary)' }}>{analysis.recommendation}</div>
             {analysis.tradeoffs.length > 0 && (
               <div>
-                <div className="text-xs font-bold text-[var(--text-3)] mb-1">Trade-offs</div>
-                <ul className="text-sm text-[var(--text-2)] space-y-1">
-                  {analysis.tradeoffs.map((t, i) => <li key={i} className="flex gap-2"><span className="text-[var(--text-4)]">•</span>{t}</li>)}
+                <div className="text-xs font-bold mb-1" style={{ color: 'var(--text-tertiary)' }}>Trade-offs</div>
+                <ul className="text-sm space-y-1" style={{ color: 'var(--text-secondary)' }}>
+                  {analysis.tradeoffs.map((t, i) => <li key={i} className="flex gap-2"><span style={{ color: 'var(--text-quaternary)' }}>•</span>{t}</li>)}
                 </ul>
               </div>
             )}
             {analysis.risks.length > 0 && (
               <div>
-                <div className="text-xs font-bold text-[var(--text-3)] mb-1">Risks</div>
-                <ul className="text-sm text-[var(--text-2)] space-y-1">
-                  {analysis.risks.map((r, i) => <li key={i} className="flex gap-2"><span className="text-[var(--warning)]">⚠</span>{r}</li>)}
+                <div className="text-xs font-bold mb-1" style={{ color: 'var(--text-tertiary)' }}>Risks</div>
+                <ul className="text-sm space-y-1" style={{ color: 'var(--text-secondary)' }}>
+                  {analysis.risks.map((r, i) => <li key={i} className="flex gap-2"><span style={{ color: 'var(--status-warning)' }}>•</span>{r}</li>)}
                 </ul>
               </div>
             )}
             {analysis.alternativeConditions && (
               <div>
-                <div className="text-xs font-bold text-[var(--text-3)] mb-1">When to choose the runner-up</div>
-                <div className="text-sm text-[var(--text-2)]">{analysis.alternativeConditions}</div>
+                <div className="text-xs font-bold mb-1" style={{ color: 'var(--text-tertiary)' }}>When to choose the runner-up</div>
+                <div className="text-sm" style={{ color: 'var(--text-secondary)' }}>{analysis.alternativeConditions}</div>
               </div>
             )}
           </div>

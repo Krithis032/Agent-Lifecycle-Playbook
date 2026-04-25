@@ -52,19 +52,25 @@ export default function SectionGroup({
   }).length;
 
   return (
-    <div className="border border-[var(--border)] rounded-xl overflow-hidden">
+    <div className="rounded-xl overflow-hidden" style={{ border: '1px solid var(--border-default)' }}>
       <button
         onClick={() => setOpen(!open)}
-        className="w-full flex items-center justify-between px-5 py-3 bg-[var(--surface)] hover:bg-[var(--surface-hover)] transition-colors text-left"
+        className="w-full flex items-center justify-between px-5 py-3 transition-colors text-left"
+        style={{ background: 'var(--surface-1)' }}
+        onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--surface-elevated)'; }}
+        onMouseLeave={(e) => { e.currentTarget.style.background = 'var(--surface-1)'; }}
       >
         <div className="flex items-center gap-3">
-          {open ? <ChevronDown size={16} className="text-[var(--text-3)]" /> : <ChevronRight size={16} className="text-[var(--text-3)]" />}
-          <span className="text-sm font-semibold text-[var(--text)]">{sectionName}</span>
+          {open
+            ? <ChevronDown size={16} style={{ color: 'var(--text-tertiary)' }} />
+            : <ChevronRight size={16} style={{ color: 'var(--text-tertiary)' }} />
+          }
+          <span className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>{sectionName}</span>
         </div>
-        <span className="text-xs text-[var(--text-4)]">{filledCount}/{fields.length} filled</span>
+        <span className="text-xs" style={{ color: 'var(--text-quaternary)' }}>{filledCount}/{fields.length} filled</span>
       </button>
       {open && (
-        <div className="px-5 py-4 space-y-4 bg-[var(--surface-active)]">
+        <div className="px-5 py-4 space-y-4" style={{ background: 'var(--surface-elevated)' }}>
           {fields.map(field => (
             <FieldRenderer
               key={field.key}

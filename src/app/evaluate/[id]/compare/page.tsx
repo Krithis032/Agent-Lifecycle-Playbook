@@ -23,13 +23,13 @@ export default async function ComparisonPage({ params }: { params: { id: string 
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <Link href={`/evaluate/${id}`} className="text-[13px] text-[var(--accent)] hover:underline flex items-center gap-1 mb-3">
+        <Link href={`/evaluate/${id}`} className="text-[13px] flex items-center gap-1 mb-3" style={{ color: 'var(--module-evaluate)' }}>
           <ArrowLeft size={14} /> Back to Evaluation
         </Link>
-        <h1 className="text-2xl font-semibold tracking-tight text-[var(--text)]">
+        <h1 className="text-2xl font-semibold tracking-tight" style={{ color: 'var(--text-primary)' }}>
           Side-by-Side Comparison
         </h1>
-        <p className="text-sm text-[var(--text-3)] mt-1">{evaluation.title}</p>
+        <p className="text-sm mt-1" style={{ color: 'var(--text-tertiary)' }}>{evaluation.title}</p>
       </div>
       <ComparisonView results={results} criteria={criteria} scores={scores} />
     </div>

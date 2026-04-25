@@ -1,8 +1,10 @@
 import Link from 'next/link';
 import prisma from '@/lib/prisma';
-import Card from '@/components/ui/Card';
 import Badge from '@/components/ui/Badge';
-import { Shield, Plus, ArrowRight, AlertTriangle } from 'lucide-react';
+import PageHeader from '@/components/ui/PageHeader';
+import SectionPanel from '@/components/ui/SectionPanel';
+import StatCard from '@/components/ui/StatCard';
+import { Shield, AlertTriangle, ArrowRight, TrendingUp } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
 
@@ -31,77 +33,50 @@ export default async function GovernanceDashboard() {
   };
 
   return (
-    <div className="animate-fade-in flex flex-col gap-8">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-[var(--text)]">TRiSM Governance</h1>
-          <p className="text-sm text-[var(--text-3)] mt-1">Trust, Risk & Security Management assessments across all projects.</p>
-        </div>
-        <Link href="/governance/assess" className="bg-[var(--accent)] text-white px-4 py-2 rounded-[6px] text-sm font-medium hover:bg-[var(--accent-hover)] transition-colors flex items-center gap-2">
-          <Plus size={16} /> New Assessment
-        </Link>
-      </div>
+    <div className="animate-fade-in flex flex-col gap-6">
+      <PageHeader
+        eyebrow="GOVERNANCE"
+        title="TRiSM Governance"
+        subtitle="Trust, Risk & Security Management assessments across all projects."
+        action={
+          <Link href="/governance/assess" className="adp-btn-primary flex items-center gap-2 px-4 py-2 rounded-[var(--radius-sm)] text-sm font-semibold">
+            <Shield size={16} /> New Assessment
+          </Link>
+        }
+      />
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-        <Card className="flex items-center gap-4">
-          <div className="w-12 h-12 rounded-full bg-[var(--accent-soft)] text-[var(--accent)] flex items-center justify-center">
-            <Shield size={24} strokeWidth={1.5} />
-          </div>
-          <div>
-            <div className="text-3xl font-bold tracking-tight text-[var(--text)]">{totalAssessments}</div>
-            <div className="text-sm text-[var(--text-3)]">Total Assessments</div>
-          </div>
-        </Card>
-        <Card className="flex items-center gap-4">
-          <div className="w-12 h-12 rounded-full bg-[var(--success-soft)] text-[var(--success)] flex items-center justify-center">
-            <Shield size={24} strokeWidth={1.5} />
-          </div>
-          <div>
-            <div className="text-3xl font-bold tracking-tight text-[var(--text)]">{avgScore}</div>
-            <div className="text-sm text-[var(--text-3)]">Avg Trust Score</div>
-          </div>
-        </Card>
-        <Card className="flex items-center gap-4">
-          <div className="w-12 h-12 rounded-full bg-[var(--error-soft)] text-[var(--error)] flex items-center justify-center">
-            <AlertTriangle size={24} strokeWidth={1.5} />
-          </div>
-          <div>
-            <div className="text-3xl font-bold tracking-tight text-[var(--text)]">{criticalRisks}</div>
-            <div className="text-sm text-[var(--text-3)]">Open Critical Risks</div>
-          </div>
-        </Card>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 stagger-grid">
+        <StatCard icon={Shield} value={totalAssessments} label="Total Assessments" color="var(--module-governance)" />
+        <StatCard icon={TrendingUp} value={avgScore} label="Avg Trust Score" color="var(--status-success)" />
+        <StatCard icon={AlertTriangle} value={criticalRisks} label="Open Critical Risks" color="var(--status-error)" />
       </div>
 
       {/* Assessment Table */}
-      <Card padding="none" className="overflow-hidden">
-        <div className="px-6 py-4 border-b border-[var(--border)] bg-[var(--surface-hover)] flex justify-between items-center">
-          <h2 className="text-[15px] font-semibold text-[var(--text)]">All Assessments</h2>
-        </div>
+      <SectionPanel title="All Assessments" icon={Shield}>
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm">
-            <thead className="bg-[var(--surface-hover)] text-[var(--text-3)] font-medium">
-              <tr>
-                <th className="px-6 py-3 border-b border-[var(--border)]">Project</th>
-                <th className="px-6 py-3 border-b border-[var(--border)]">Type</th>
-                <th className="px-6 py-3 border-b border-[var(--border)]">Score</th>
-                <th className="px-6 py-3 border-b border-[var(--border)]">Risk Level</th>
-                <th className="px-6 py-3 border-b border-[var(--border)]">Open Risks</th>
-                <th className="px-6 py-3 border-b border-[var(--border)]">Date</th>
-                <th className="px-6 py-3 border-b border-[var(--border)]"></th>
+            <thead>
+              <tr style={{ background: 'var(--surface-0)' }}>
+                <th className="px-6 py-3 text-[11px] font-bold uppercase tracking-widest" style={{ color: 'var(--text-tertiary)', borderBottom: '1px solid var(--border-default)' }}>Project</th>
+                <th className="px-6 py-3 text-[11px] font-bold uppercase tracking-widest" style={{ color: 'var(--text-tertiary)', borderBottom: '1px solid var(--border-default)' }}>Type</th>
+                <th className="px-6 py-3 text-[11px] font-bold uppercase tracking-widest" style={{ color: 'var(--text-tertiary)', borderBottom: '1px solid var(--border-default)' }}>Score</th>
+                <th className="px-6 py-3 text-[11px] font-bold uppercase tracking-widest" style={{ color: 'var(--text-tertiary)', borderBottom: '1px solid var(--border-default)' }}>Risk Level</th>
+                <th className="px-6 py-3 text-[11px] font-bold uppercase tracking-widest" style={{ color: 'var(--text-tertiary)', borderBottom: '1px solid var(--border-default)' }}>Open Risks</th>
+                <th className="px-6 py-3 text-[11px] font-bold uppercase tracking-widest" style={{ color: 'var(--text-tertiary)', borderBottom: '1px solid var(--border-default)' }}>Date</th>
+                <th className="px-6 py-3" style={{ borderBottom: '1px solid var(--border-default)' }}></th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[var(--border)]">
+            <tbody>
               {assessments.map((a) => (
-                <tr key={a.id} className="hover:bg-[var(--surface-hover)] transition-colors">
-                  <td className="px-6 py-4 font-medium text-[var(--text)]">
+                <tr key={a.id} className="group" style={{ borderBottom: '1px solid var(--border-default)' }}>
+                  <td className="px-6 py-4 font-medium" style={{ color: 'var(--text-primary)' }}>
                     {a.project?.name || `Project #${a.projectId}`}
                   </td>
                   <td className="px-6 py-4">
-                    <Badge variant="accent">{a.assessmentType}</Badge>
+                    <Badge variant="brand">{a.assessmentType}</Badge>
                   </td>
-                  <td className="px-6 py-4 font-bold text-[var(--text)]">
+                  <td className="px-6 py-4 font-bold" style={{ color: 'var(--text-primary)' }}>
                     {a.overallScore != null ? Number(a.overallScore).toFixed(1) : '—'}
                   </td>
                   <td className="px-6 py-4">
@@ -109,14 +84,14 @@ export default async function GovernanceDashboard() {
                       {a.riskClassification || 'Unclassified'}
                     </Badge>
                   </td>
-                  <td className="px-6 py-4 text-[var(--text-2)]">
+                  <td className="px-6 py-4" style={{ color: 'var(--text-secondary)' }}>
                     {a.riskItems?.filter(r => r.status === 'open').length || 0}
                   </td>
-                  <td className="px-6 py-4 text-[var(--text-3)]">
+                  <td className="px-6 py-4" style={{ color: 'var(--text-tertiary)' }}>
                     {new Date(a.assessedAt).toLocaleDateString()}
                   </td>
                   <td className="px-6 py-4">
-                    <Link href={`/governance/${a.id}`} className="text-[var(--accent)] hover:underline flex items-center gap-1 text-[13px] font-medium">
+                    <Link href={`/governance/${a.id}`} className="flex items-center gap-1 text-[13px] font-medium" style={{ color: 'var(--brand-primary)' }}>
                       View <ArrowRight size={14} />
                     </Link>
                   </td>
@@ -124,17 +99,17 @@ export default async function GovernanceDashboard() {
               ))}
               {assessments.length === 0 && (
                 <tr>
-                  <td colSpan={7} className="px-6 py-12 text-center text-[var(--text-3)]">
-                    <Shield size={32} className="mx-auto mb-3 text-[var(--text-4)]" />
+                  <td colSpan={7} className="px-6 py-12 text-center" style={{ color: 'var(--text-tertiary)' }}>
+                    <Shield size={32} className="mx-auto mb-3 opacity-40" />
                     <p className="font-medium">No assessments yet</p>
-                    <p className="text-[13px] text-[var(--text-4)] mt-1">Create your first TRiSM governance assessment to get started.</p>
+                    <p className="text-[13px] mt-1" style={{ color: 'var(--text-quaternary)' }}>Create your first TRiSM governance assessment to get started.</p>
                   </td>
                 </tr>
               )}
             </tbody>
           </table>
         </div>
-      </Card>
+      </SectionPanel>
     </div>
   );
 }

@@ -68,6 +68,11 @@ export default function EditableTable({
     return Array.from({ length: defaultRows }, () => createEmptyRow(columns));
   });
 
+  const [hoveredIcon, setHoveredIcon] = useState<string | null>(null);
+  const [hoveredButton, setHoveredButton] = useState<string | null>(null);
+  const [hoveredRow, setHoveredRow] = useState<number | null>(null);
+  const [focusedInput, setFocusedInput] = useState<string | null>(null);
+
   const emitChange = useCallback((newRows: RowData[]) => {
     setRows(newRows);
     onChange(JSON.stringify(newRows));
@@ -126,56 +131,85 @@ export default function EditableTable({
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-1.5">
-          <label className="text-sm font-medium text-[var(--text)]">
+          <label className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>
             {label}
-            {required && <span className="text-[var(--error)] ml-0.5">*</span>}
+            {required && <span className="ml-0.5" style={{ color: 'var(--status-error)' }}>*</span>}
           </label>
           {helpText && (
             <Tooltip content={helpText} position="top">
-              <HelpCircle size={14} className="text-[var(--text-4)] hover:text-[var(--accent)] cursor-help transition-colors" />
+              <HelpCircle
+                size={14}
+                className="cursor-help transition-colors"
+                style={{ color: hoveredIcon === 'help' ? 'var(--brand-primary)' : 'var(--text-quaternary)' }}
+                onMouseEnter={() => setHoveredIcon('help')}
+                onMouseLeave={() => setHoveredIcon(null)}
+              />
             </Tooltip>
           )}
         </div>
-        <span className="text-xs text-[var(--text-4)]">{rows.length} row{rows.length !== 1 ? 's' : ''}</span>
+        <span className="text-xs" style={{ color: 'var(--text-quaternary)' }}>{rows.length} row{rows.length !== 1 ? 's' : ''}</span>
       </div>
 
       {/* Table */}
-      <div className="border border-[var(--border)] rounded-lg overflow-hidden">
+      <div className="rounded-lg overflow-hidden" style={{ border: '1px solid var(--border-default)' }}>
         <div className="overflow-x-auto">
           <table className="text-sm" style={{ minWidth: `${totalMinWidth}px`, width: '100%' }}>
             <thead>
-              <tr className="bg-[var(--surface)]">
-                <th className="px-2 py-2.5 text-[10px] font-bold uppercase tracking-wider text-[var(--text-4)] text-center border-b border-[var(--border)]" style={{ width: '40px', minWidth: '40px' }}>#</th>
+              <tr style={{ backgroundColor: 'var(--surface-1)' }}>
+                <th className="px-2 py-2.5 text-[10px] font-bold uppercase tracking-wider text-center" style={{ width: '40px', minWidth: '40px', color: 'var(--text-quaternary)', borderBottom: '1px solid var(--border-default)' }}>#</th>
                 {columns.map(col => (
                   <th
                     key={col.key}
-                    className="px-2 py-2.5 text-[10px] font-bold uppercase tracking-wider text-[var(--text-4)] text-left border-b border-[var(--border)]"
-                    style={{ minWidth: getColumnMinWidth(col), width: col.width || undefined }}
+                    className="px-2 py-2.5 text-[10px] font-bold uppercase tracking-wider text-left"
+                    style={{ minWidth: getColumnMinWidth(col), width: col.width || undefined, color: 'var(--text-quaternary)', borderBottom: '1px solid var(--border-default)' }}
                   >
                     <div className="flex items-center gap-1">
                       {col.header}
                       {col.helpText && (
                         <Tooltip content={col.helpText} position="top">
-                          <HelpCircle size={11} className="text-[var(--text-4)] hover:text-[var(--accent)] cursor-help" />
+                          <HelpCircle
+                            size={11}
+                            className="cursor-help"
+                            style={{ color: hoveredIcon === `col-${col.key}` ? 'var(--brand-primary)' : 'var(--text-quaternary)' }}
+                            onMouseEnter={() => setHoveredIcon(`col-${col.key}`)}
+                            onMouseLeave={() => setHoveredIcon(null)}
+                          />
                         </Tooltip>
                       )}
                     </div>
                   </th>
                 ))}
-                <th className="px-2 py-2.5 text-[10px] font-bold uppercase tracking-wider text-[var(--text-4)] text-center border-b border-[var(--border)]" style={{ width: '100px', minWidth: '100px' }}>Actions</th>
+                <th className="px-2 py-2.5 text-[10px] font-bold uppercase tracking-wider text-center" style={{ width: '100px', minWidth: '100px', color: 'var(--text-quaternary)', borderBottom: '1px solid var(--border-default)' }}>Actions</th>
               </tr>
             </thead>
             <tbody>
               {rows.map((row, rowIndex) => (
-                <tr key={rowIndex} className="border-b border-[var(--border)] last:border-b-0 hover:bg-[var(--surface-hover)] transition-colors">
-                  <td className="px-2 py-2 text-center text-xs text-[var(--text-4)] font-mono">{rowIndex + 1}</td>
+                <tr
+                  key={rowIndex}
+                  className="transition-colors"
+                  style={{
+                    borderBottom: rowIndex === rows.length - 1 ? 'none' : '1px solid var(--border-default)',
+                    backgroundColor: hoveredRow === rowIndex ? 'var(--surface-1)' : 'transparent'
+                  }}
+                  onMouseEnter={() => setHoveredRow(rowIndex)}
+                  onMouseLeave={() => setHoveredRow(null)}
+                >
+                  <td className="px-2 py-2 text-center text-xs font-mono" style={{ color: 'var(--text-quaternary)' }}>{rowIndex + 1}</td>
                   {columns.map(col => (
                     <td key={col.key} className="px-1.5 py-1.5" style={{ minWidth: getColumnMinWidth(col) }}>
                       {col.type === 'select' ? (
                         <select
                           value={row[col.key] || ''}
                           onChange={e => updateCell(rowIndex, col.key, e.target.value)}
-                          className="w-full px-2.5 py-2 text-[12px] border border-[var(--border)] rounded bg-[var(--bg)] text-[var(--text)] focus:border-[var(--accent)] focus:outline-none transition-all"
+                          className="w-full px-2.5 py-2 text-[12px] rounded transition-all focus:outline-none"
+                          style={{
+                            border: focusedInput === `${rowIndex}-${col.key}` ? '1px solid var(--border-focus)' : '1px solid var(--border-default)',
+                            backgroundColor: 'var(--surface-0)',
+                            color: 'var(--text-primary)',
+                            boxShadow: focusedInput === `${rowIndex}-${col.key}` ? '0 0 0 2px var(--brand-soft)' : 'none'
+                          }}
+                          onFocus={() => setFocusedInput(`${rowIndex}-${col.key}`)}
+                          onBlur={() => setFocusedInput(null)}
                           title={col.helpText || `Select ${col.header}`}
                         >
                           <option value="">Select {col.header}</option>
@@ -186,7 +220,15 @@ export default function EditableTable({
                           type="number"
                           value={row[col.key] || ''}
                           onChange={e => updateCell(rowIndex, col.key, e.target.value)}
-                          className="w-full px-2.5 py-2 text-[12px] border border-[var(--border)] rounded bg-[var(--bg)] text-[var(--text)] focus:border-[var(--accent)] focus:outline-none transition-all"
+                          className="w-full px-2.5 py-2 text-[12px] rounded transition-all focus:outline-none"
+                          style={{
+                            border: focusedInput === `${rowIndex}-${col.key}` ? '1px solid var(--border-focus)' : '1px solid var(--border-default)',
+                            backgroundColor: 'var(--surface-0)',
+                            color: 'var(--text-primary)',
+                            boxShadow: focusedInput === `${rowIndex}-${col.key}` ? '0 0 0 2px var(--brand-soft)' : 'none'
+                          }}
+                          onFocus={() => setFocusedInput(`${rowIndex}-${col.key}`)}
+                          onBlur={() => setFocusedInput(null)}
                           title={col.helpText || `Enter ${col.header}`}
                           min="0"
                         />
@@ -195,7 +237,15 @@ export default function EditableTable({
                           type="text"
                           value={row[col.key] || ''}
                           onChange={e => updateCell(rowIndex, col.key, e.target.value)}
-                          className="w-full px-2.5 py-2 text-[12px] border border-[var(--border)] rounded bg-[var(--bg)] text-[var(--text)] focus:border-[var(--accent)] focus:outline-none transition-all"
+                          className="w-full px-2.5 py-2 text-[12px] rounded transition-all focus:outline-none"
+                          style={{
+                            border: focusedInput === `${rowIndex}-${col.key}` ? '1px solid var(--border-focus)' : '1px solid var(--border-default)',
+                            backgroundColor: 'var(--surface-0)',
+                            color: 'var(--text-primary)',
+                            boxShadow: focusedInput === `${rowIndex}-${col.key}` ? '0 0 0 2px var(--brand-soft)' : 'none'
+                          }}
+                          onFocus={() => setFocusedInput(`${rowIndex}-${col.key}`)}
+                          onBlur={() => setFocusedInput(null)}
                           placeholder={col.header}
                           title={row[col.key] || col.helpText || `Enter ${col.header}`}
                         />
@@ -208,39 +258,62 @@ export default function EditableTable({
                         <button
                           onClick={() => moveRow(rowIndex, 'up')}
                           disabled={rowIndex === 0}
-                          className="p-1 rounded hover:bg-[var(--surface)] disabled:opacity-30 transition-colors"
+                          className="p-1 rounded transition-colors"
+                          style={{
+                            backgroundColor: hoveredButton === `up-${rowIndex}` ? 'var(--surface-1)' : 'transparent',
+                            opacity: rowIndex === 0 ? 0.3 : 1
+                          }}
+                          onMouseEnter={() => setHoveredButton(`up-${rowIndex}`)}
+                          onMouseLeave={() => setHoveredButton(null)}
                           title="Move up"
                         >
-                          <ChevronUp size={13} className="text-[var(--text-3)]" />
+                          <ChevronUp size={13} style={{ color: 'var(--text-tertiary)' }} />
                         </button>
                       </Tooltip>
                       <Tooltip content="Move row down">
                         <button
                           onClick={() => moveRow(rowIndex, 'down')}
                           disabled={rowIndex === rows.length - 1}
-                          className="p-1 rounded hover:bg-[var(--surface)] disabled:opacity-30 transition-colors"
+                          className="p-1 rounded transition-colors"
+                          style={{
+                            backgroundColor: hoveredButton === `down-${rowIndex}` ? 'var(--surface-1)' : 'transparent',
+                            opacity: rowIndex === rows.length - 1 ? 0.3 : 1
+                          }}
+                          onMouseEnter={() => setHoveredButton(`down-${rowIndex}`)}
+                          onMouseLeave={() => setHoveredButton(null)}
                           title="Move down"
                         >
-                          <ChevronDown size={13} className="text-[var(--text-3)]" />
+                          <ChevronDown size={13} style={{ color: 'var(--text-tertiary)' }} />
                         </button>
                       </Tooltip>
                       <Tooltip content="Duplicate row">
                         <button
                           onClick={() => duplicateRow(rowIndex)}
-                          className="p-1 rounded hover:bg-[var(--info-soft)] transition-colors"
+                          className="p-1 rounded transition-colors"
+                          style={{
+                            backgroundColor: hoveredButton === `duplicate-${rowIndex}` ? 'var(--status-info-soft)' : 'transparent'
+                          }}
+                          onMouseEnter={() => setHoveredButton(`duplicate-${rowIndex}`)}
+                          onMouseLeave={() => setHoveredButton(null)}
                           title="Duplicate"
                         >
-                          <Copy size={13} className="text-[var(--info)]" />
+                          <Copy size={13} style={{ color: 'var(--status-info)' }} />
                         </button>
                       </Tooltip>
                       <Tooltip content={rows.length <= 1 ? 'Cannot delete the last row' : 'Delete row'}>
                         <button
                           onClick={() => removeRow(rowIndex)}
                           disabled={rows.length <= 1}
-                          className="p-1 rounded hover:bg-[var(--error-soft)] disabled:opacity-30 transition-colors"
+                          className="p-1 rounded transition-colors"
+                          style={{
+                            backgroundColor: hoveredButton === `delete-${rowIndex}` ? 'var(--status-error-soft)' : 'transparent',
+                            opacity: rows.length <= 1 ? 0.3 : 1
+                          }}
+                          onMouseEnter={() => setHoveredButton(`delete-${rowIndex}`)}
+                          onMouseLeave={() => setHoveredButton(null)}
                           title="Delete"
                         >
-                          <Trash2 size={13} className="text-[var(--error)]" />
+                          <Trash2 size={13} style={{ color: 'var(--status-error)' }} />
                         </button>
                       </Tooltip>
                     </div>
@@ -252,10 +325,16 @@ export default function EditableTable({
         </div>
 
         {/* Add Row Button */}
-        <div className="px-3 py-2.5 bg-[var(--surface)] border-t border-[var(--border)]">
+        <div className="px-3 py-2.5" style={{ backgroundColor: 'var(--surface-1)', borderTop: '1px solid var(--border-default)' }}>
           <button
             onClick={addRow}
-            className="flex items-center gap-1.5 text-xs font-medium text-[var(--accent)] hover:text-[var(--accent-hover)] transition-colors"
+            className="flex items-center gap-1.5 text-xs font-medium transition-colors"
+            style={{
+              color: hoveredButton === 'add-row' ? 'var(--brand-primary)' : 'var(--brand-primary)',
+              opacity: hoveredButton === 'add-row' ? 0.8 : 1
+            }}
+            onMouseEnter={() => setHoveredButton('add-row')}
+            onMouseLeave={() => setHoveredButton(null)}
             title="Add a new row to the table"
           >
             <Plus size={14} /> Add Row

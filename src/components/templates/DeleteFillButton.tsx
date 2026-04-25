@@ -36,14 +36,18 @@ export default function DeleteFillButton({ fillId, templateSlug }: DeleteFillBut
         <button
           onClick={handleDelete}
           disabled={deleting}
-          className="px-3 py-2 text-sm font-semibold bg-[var(--error)] text-white rounded-[var(--radius-sm)] hover:opacity-90 flex items-center gap-1.5 disabled:opacity-50"
+          className="px-3 py-2 text-sm font-semibold text-white rounded-lg hover:opacity-90 flex items-center gap-1.5 disabled:opacity-50"
+          style={{ background: 'var(--status-error)' }}
         >
           {deleting ? <Loader2 size={14} className="animate-spin" /> : <Trash2 size={14} />}
           {deleting ? 'Deleting...' : 'Confirm Delete'}
         </button>
         <button
           onClick={() => setConfirming(false)}
-          className="px-3 py-2 text-sm font-medium border border-[var(--border)] rounded-[var(--radius-sm)] hover:border-[var(--text-3)] text-[var(--text-3)]"
+          className="px-3 py-2 text-sm font-medium rounded-lg"
+          style={{ border: '1px solid var(--border-default)', color: 'var(--text-tertiary)' }}
+          onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--text-tertiary)'; }}
+          onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--border-default)'; }}
         >
           Cancel
         </button>
@@ -54,7 +58,10 @@ export default function DeleteFillButton({ fillId, templateSlug }: DeleteFillBut
   return (
     <button
       onClick={() => setConfirming(true)}
-      className="px-3 py-2 text-sm font-medium border border-[var(--border)] rounded-[var(--radius-sm)] hover:border-[var(--error)] hover:text-[var(--error)] flex items-center gap-1.5 text-[var(--text-3)] transition-colors"
+      className="px-3 py-2 text-sm font-medium rounded-lg flex items-center gap-1.5 transition-colors"
+      style={{ border: '1px solid var(--border-default)', color: 'var(--text-tertiary)' }}
+      onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--status-error)'; e.currentTarget.style.color = 'var(--status-error)'; }}
+      onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--border-default)'; e.currentTarget.style.color = 'var(--text-tertiary)'; }}
       title="Delete this document"
     >
       <Trash2 size={14} />

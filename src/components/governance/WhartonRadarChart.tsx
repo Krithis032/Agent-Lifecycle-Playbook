@@ -24,12 +24,12 @@ export default function WhartonRadarChart({ scores, title = 'Wharton 10-Domain G
     datasets: [{
       label: 'Domain Score',
       data: scores.map(s => s.score),
-      backgroundColor: 'rgba(0, 82, 204, 0.1)',
-      borderColor: '#0052cc',
+      backgroundColor: 'rgba(99, 91, 255, 0.1)',
+      borderColor: 'rgb(99, 91, 255)',
       borderWidth: 2,
-      pointBackgroundColor: '#0052cc',
+      pointBackgroundColor: 'rgb(99, 91, 255)',
       pointBorderColor: '#fff',
-      pointHoverBackgroundColor: '#0052cc',
+      pointHoverBackgroundColor: 'rgb(99, 91, 255)',
       pointRadius: 5,
     }],
   };
@@ -43,7 +43,7 @@ export default function WhartonRadarChart({ scores, title = 'Wharton 10-Domain G
         min: 0,
         max: 1,
         ticks: { stepSize: 0.25, font: { size: 10 }, backdropColor: 'transparent' },
-        pointLabels: { font: { size: 11, family: 'Inter' } },
+        pointLabels: { font: { size: 11, family: 'Urbanist' } },
         grid: { color: 'rgba(0,0,0,0.06)' },
         angleLines: { color: 'rgba(0,0,0,0.06)' },
       },
@@ -60,8 +60,8 @@ export default function WhartonRadarChart({ scores, title = 'Wharton 10-Domain G
   };
 
   return (
-    <div className="bg-[var(--surface)] rounded-lg border border-[var(--border)] p-6">
-      {title && <h3 className="text-[15px] font-semibold mb-4 text-[var(--text)]">{title}</h3>}
+    <div className="rounded-lg p-6" style={{ background: 'var(--surface-elevated)', border: '1px solid var(--border-default)' }}>
+      {title && <h3 className="text-[15px] font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>{title}</h3>}
       <Radar data={data} options={options} />
     </div>
   );

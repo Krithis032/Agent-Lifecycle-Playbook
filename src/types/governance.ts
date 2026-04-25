@@ -94,3 +94,32 @@ export interface WhartonDomainScore {
   actions: string[] | null;
   questionScores: Record<string, number> | null;
 }
+
+// =============================================================================
+// PERIODIC TABLE TYPES
+// =============================================================================
+
+/** Score for a single element in the periodic table (0–4 scale) */
+export interface PeriodicElementScore {
+  code: string;           // e.g. 'RBAC', 'BIAS'
+  score: number;          // 0–4
+  notes: string;
+  checklist: boolean[];   // checklist item completion (maps to implementation_checklist)
+}
+
+/** Aggregated category score */
+export interface PeriodicCategoryScore {
+  categoryId: string;     // e.g. 'iac', 'dp'
+  categoryName: string;
+  weight: number;
+  avgScore: number;       // avg of element scores (0–4)
+  percentage: number;     // (avgScore / 4) * 100
+  elementScores: PeriodicElementScore[];
+}
+
+/** Full periodic table assessment state */
+export interface PeriodicTableAssessment {
+  categories: PeriodicCategoryScore[];
+  weightedScore: number;  // 0–100, weighted across categories
+  riskLabel: string;      // STRONG | MODERATE | WEAK | CRITICAL
+}

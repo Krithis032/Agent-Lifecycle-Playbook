@@ -59,6 +59,8 @@ export default function RepeatableField({
     return parsed.length > 0 ? parsed : [createEmptyEntry(subFields)];
   });
   const [expandedEntries, setExpandedEntries] = useState<Record<number, boolean>>({ 0: true });
+  const [hoveredButton, setHoveredButton] = useState<string | null>(null);
+  const [focusedInput, setFocusedInput] = useState<string | null>(null);
 
   const emitChange = useCallback((newEntries: EntryData[]) => {
     setEntries(newEntries);
@@ -134,17 +136,23 @@ export default function RepeatableField({
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-1.5">
-          <label className="text-sm font-medium text-[var(--text)]">
+          <label className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>
             {label}
-            {required && <span className="text-[var(--error)] ml-0.5">*</span>}
+            {required && <span style={{ color: 'var(--status-error)' }} className="ml-0.5">*</span>}
           </label>
           {helpText && (
             <Tooltip content={helpText} position="top">
-              <HelpCircle size={14} className="text-[var(--text-4)] hover:text-[var(--accent)] cursor-help transition-colors" />
+              <HelpCircle
+                size={14}
+                className="cursor-help transition-colors"
+                style={{ color: hoveredButton === 'help-icon' ? 'var(--brand-primary)' : 'var(--text-quaternary)' }}
+                onMouseEnter={() => setHoveredButton('help-icon')}
+                onMouseLeave={() => setHoveredButton(null)}
+              />
             </Tooltip>
           )}
         </div>
-        <span className="text-xs text-[var(--text-4)]">{entries.length} entr{entries.length !== 1 ? 'ies' : 'y'}</span>
+        <span className="text-xs" style={{ color: 'var(--text-quaternary)' }}>{entries.length} entr{entries.length !== 1 ? 'ies' : 'y'}</span>
       </div>
 
       {/* Entries */}
@@ -154,22 +162,29 @@ export default function RepeatableField({
           return (
             <div
               key={entryIndex}
-              className="border border-[var(--border)] rounded-lg overflow-hidden"
+              className="border rounded-lg overflow-hidden"
+              style={{ borderColor: 'var(--border-default)' }}
             >
               {/* Entry Header */}
-              <div className="flex items-center justify-between px-3 py-2 bg-[var(--surface)] cursor-pointer hover:bg-[var(--surface-hover)] transition-colors"
+              <div
+                className="flex items-center justify-between px-3 py-2 cursor-pointer transition-colors"
+                style={{
+                  backgroundColor: hoveredButton === `header-${entryIndex}` ? 'var(--surface-1)' : 'var(--surface-elevated)'
+                }}
                 onClick={() => toggleExpanded(entryIndex)}
+                onMouseEnter={() => setHoveredButton(`header-${entryIndex}`)}
+                onMouseLeave={() => setHoveredButton(null)}
               >
                 <div className="flex items-center gap-2">
                   {isExpanded
-                    ? <ChevronDown size={14} className="text-[var(--text-3)]" />
-                    : <ChevronRight size={14} className="text-[var(--text-3)]" />
+                    ? <ChevronDown size={14} style={{ color: 'var(--text-tertiary)' }} />
+                    : <ChevronRight size={14} style={{ color: 'var(--text-tertiary)' }} />
                   }
-                  <span className="text-xs font-semibold text-[var(--text-2)]">
+                  <span className="text-xs font-semibold" style={{ color: 'var(--text-secondary)' }}>
                     #{entryIndex + 1}
                   </span>
                   {!isExpanded && (
-                    <span className="text-xs text-[var(--text-4)] italic truncate max-w-[200px]">
+                    <span className="text-xs italic truncate max-w-[200px]" style={{ color: 'var(--text-quaternary)' }}>
                       {getEntryPreview(entry)}
                     </span>
                   )}
@@ -179,35 +194,55 @@ export default function RepeatableField({
                     <button
                       onClick={() => moveEntry(entryIndex, 'up')}
                       disabled={entryIndex === 0}
-                      className="p-1 rounded hover:bg-[var(--surface)] disabled:opacity-30 transition-colors"
+                      className="p-1 rounded disabled:opacity-30 transition-colors"
+                      style={{
+                        backgroundColor: hoveredButton === `up-${entryIndex}` ? 'var(--surface-elevated)' : 'transparent'
+                      }}
+                      onMouseEnter={() => setHoveredButton(`up-${entryIndex}`)}
+                      onMouseLeave={() => setHoveredButton(null)}
                     >
-                      <ChevronUp size={13} className="text-[var(--text-3)]" />
+                      <ChevronUp size={13} style={{ color: 'var(--text-tertiary)' }} />
                     </button>
                   </Tooltip>
                   <Tooltip content="Move down">
                     <button
                       onClick={() => moveEntry(entryIndex, 'down')}
                       disabled={entryIndex === entries.length - 1}
-                      className="p-1 rounded hover:bg-[var(--surface)] disabled:opacity-30 transition-colors"
+                      className="p-1 rounded disabled:opacity-30 transition-colors"
+                      style={{
+                        backgroundColor: hoveredButton === `down-${entryIndex}` ? 'var(--surface-elevated)' : 'transparent'
+                      }}
+                      onMouseEnter={() => setHoveredButton(`down-${entryIndex}`)}
+                      onMouseLeave={() => setHoveredButton(null)}
                     >
-                      <ChevronDown size={13} className="text-[var(--text-3)]" />
+                      <ChevronDown size={13} style={{ color: 'var(--text-tertiary)' }} />
                     </button>
                   </Tooltip>
                   <Tooltip content="Duplicate">
                     <button
                       onClick={() => duplicateEntry(entryIndex)}
-                      className="p-1 rounded hover:bg-[var(--info-soft)] transition-colors"
+                      className="p-1 rounded transition-colors"
+                      style={{
+                        backgroundColor: hoveredButton === `duplicate-${entryIndex}` ? 'var(--status-info-soft)' : 'transparent'
+                      }}
+                      onMouseEnter={() => setHoveredButton(`duplicate-${entryIndex}`)}
+                      onMouseLeave={() => setHoveredButton(null)}
                     >
-                      <Copy size={13} className="text-[var(--info)]" />
+                      <Copy size={13} style={{ color: 'var(--status-info)' }} />
                     </button>
                   </Tooltip>
                   <Tooltip content={entries.length <= 1 ? 'Cannot delete the last entry' : 'Delete'}>
                     <button
                       onClick={() => removeEntry(entryIndex)}
                       disabled={entries.length <= 1}
-                      className="p-1 rounded hover:bg-[var(--error-soft)] disabled:opacity-30 transition-colors"
+                      className="p-1 rounded disabled:opacity-30 transition-colors"
+                      style={{
+                        backgroundColor: hoveredButton === `delete-${entryIndex}` ? 'var(--error-soft)' : 'transparent'
+                      }}
+                      onMouseEnter={() => setHoveredButton(`delete-${entryIndex}`)}
+                      onMouseLeave={() => setHoveredButton(null)}
                     >
-                      <Trash2 size={13} className="text-[var(--error)]" />
+                      <Trash2 size={13} style={{ color: 'var(--status-error)' }} />
                     </button>
                   </Tooltip>
                 </div>
@@ -215,17 +250,23 @@ export default function RepeatableField({
 
               {/* Entry Fields */}
               {isExpanded && (
-                <div className="px-4 py-3 space-y-3 bg-[var(--surface-active)]">
+                <div className="px-4 py-3 space-y-3" style={{ backgroundColor: 'var(--surface-elevated)' }}>
                   {subFields.map(sf => (
                     <div key={sf.key} className="space-y-1">
                       <div className="flex items-center gap-1">
-                        <label className="text-xs font-medium text-[var(--text-2)]">
+                        <label className="text-xs font-medium" style={{ color: 'var(--text-secondary)' }}>
                           {sf.label}
-                          {sf.required && <span className="text-[var(--error)] ml-0.5">*</span>}
+                          {sf.required && <span style={{ color: 'var(--status-error)' }} className="ml-0.5">*</span>}
                         </label>
                         {sf.helpText && (
                           <Tooltip content={sf.helpText} position="top">
-                            <HelpCircle size={12} className="text-[var(--text-4)] hover:text-[var(--accent)] cursor-help" />
+                            <HelpCircle
+                              size={12}
+                              className="cursor-help"
+                              style={{ color: hoveredButton === `help-${entryIndex}-${sf.key}` ? 'var(--brand-primary)' : 'var(--text-quaternary)' }}
+                              onMouseEnter={() => setHoveredButton(`help-${entryIndex}-${sf.key}`)}
+                              onMouseLeave={() => setHoveredButton(null)}
+                            />
                           </Tooltip>
                         )}
                       </div>
@@ -236,14 +277,29 @@ export default function RepeatableField({
                           placeholder={sf.placeholder || ''}
                           title={sf.helpText || `Enter ${sf.label.toLowerCase()}`}
                           rows={3}
-                          className="w-full px-3 py-2 text-xs border border-[var(--border)] rounded-lg bg-[var(--bg)] text-[var(--text)] focus:border-[var(--accent)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-soft)] resize-y transition-all"
+                          className="w-full px-3 py-2 text-xs border rounded-lg focus:outline-none resize-y transition-all"
+                          style={{
+                            borderColor: focusedInput === `textarea-${entryIndex}-${sf.key}` ? 'var(--border-focus)' : 'var(--border-default)',
+                            backgroundColor: 'var(--surface-0)',
+                            color: 'var(--text-primary)',
+                            boxShadow: focusedInput === `textarea-${entryIndex}-${sf.key}` ? '0 0 0 2px var(--brand-soft)' : 'none'
+                          }}
+                          onFocus={() => setFocusedInput(`textarea-${entryIndex}-${sf.key}`)}
+                          onBlur={() => setFocusedInput(null)}
                         />
                       ) : sf.type === 'select' ? (
                         <select
                           value={entry[sf.key] || ''}
                           onChange={e => updateField(entryIndex, sf.key, e.target.value)}
                           title={sf.helpText || `Select ${sf.label.toLowerCase()}`}
-                          className="w-full px-3 py-2 text-xs border border-[var(--border)] rounded-lg bg-[var(--bg)] text-[var(--text)] focus:border-[var(--accent)] focus:outline-none transition-all"
+                          className="w-full px-3 py-2 text-xs border rounded-lg focus:outline-none transition-all"
+                          style={{
+                            borderColor: focusedInput === `select-${entryIndex}-${sf.key}` ? 'var(--border-focus)' : 'var(--border-default)',
+                            backgroundColor: 'var(--surface-0)',
+                            color: 'var(--text-primary)'
+                          }}
+                          onFocus={() => setFocusedInput(`select-${entryIndex}-${sf.key}`)}
+                          onBlur={() => setFocusedInput(null)}
                         >
                           <option value="">Select...</option>
                           {sf.options?.map(opt => <option key={opt} value={opt}>{opt}</option>)}
@@ -254,9 +310,10 @@ export default function RepeatableField({
                             type="checkbox"
                             checked={entry[sf.key] === 'true'}
                             onChange={e => updateField(entryIndex, sf.key, e.target.checked ? 'true' : 'false')}
-                            className="w-4 h-4 accent-[var(--accent)] rounded"
+                            className="w-4 h-4 rounded"
+                            style={{ accentColor: 'var(--brand-primary)' }}
                           />
-                          <span className="text-xs text-[var(--text-2)]">{sf.label}</span>
+                          <span className="text-xs" style={{ color: 'var(--text-secondary)' }}>{sf.label}</span>
                         </label>
                       ) : sf.type === 'date' ? (
                         <input
@@ -264,7 +321,14 @@ export default function RepeatableField({
                           value={entry[sf.key] || ''}
                           onChange={e => updateField(entryIndex, sf.key, e.target.value)}
                           title={sf.helpText || `Select ${sf.label.toLowerCase()}`}
-                          className="w-full px-3 py-2 text-xs border border-[var(--border)] rounded-lg bg-[var(--bg)] text-[var(--text)] focus:border-[var(--accent)] focus:outline-none transition-all"
+                          className="w-full px-3 py-2 text-xs border rounded-lg focus:outline-none transition-all"
+                          style={{
+                            borderColor: focusedInput === `date-${entryIndex}-${sf.key}` ? 'var(--border-focus)' : 'var(--border-default)',
+                            backgroundColor: 'var(--surface-0)',
+                            color: 'var(--text-primary)'
+                          }}
+                          onFocus={() => setFocusedInput(`date-${entryIndex}-${sf.key}`)}
+                          onBlur={() => setFocusedInput(null)}
                         />
                       ) : (
                         <input
@@ -273,7 +337,15 @@ export default function RepeatableField({
                           onChange={e => updateField(entryIndex, sf.key, e.target.value)}
                           placeholder={sf.placeholder || ''}
                           title={sf.helpText || `Enter ${sf.label.toLowerCase()}`}
-                          className="w-full px-3 py-2 text-xs border border-[var(--border)] rounded-lg bg-[var(--bg)] text-[var(--text)] focus:border-[var(--accent)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-soft)] transition-all"
+                          className="w-full px-3 py-2 text-xs border rounded-lg focus:outline-none transition-all"
+                          style={{
+                            borderColor: focusedInput === `input-${entryIndex}-${sf.key}` ? 'var(--border-focus)' : 'var(--border-default)',
+                            backgroundColor: 'var(--surface-0)',
+                            color: 'var(--text-primary)',
+                            boxShadow: focusedInput === `input-${entryIndex}-${sf.key}` ? '0 0 0 2px var(--brand-soft)' : 'none'
+                          }}
+                          onFocus={() => setFocusedInput(`input-${entryIndex}-${sf.key}`)}
+                          onBlur={() => setFocusedInput(null)}
                         />
                       )}
                     </div>
@@ -288,7 +360,14 @@ export default function RepeatableField({
       {/* Add Entry Button */}
       <button
         onClick={addEntry}
-        className="flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-[var(--accent)] border border-dashed border-[var(--accent)] rounded-lg hover:bg-[var(--info-soft)] transition-colors w-full justify-center"
+        className="flex items-center gap-1.5 px-3 py-2 text-xs font-medium border border-dashed rounded-lg transition-colors w-full justify-center"
+        style={{
+          color: 'var(--brand-primary)',
+          borderColor: 'var(--brand-primary)',
+          backgroundColor: hoveredButton === 'add-button' ? 'var(--status-info-soft)' : 'transparent'
+        }}
+        onMouseEnter={() => setHoveredButton('add-button')}
+        onMouseLeave={() => setHoveredButton(null)}
         title={`Add another ${label.toLowerCase()}`}
       >
         <Plus size={14} /> Add {label.replace(/s$/, '').replace(/ies$/, 'y')}

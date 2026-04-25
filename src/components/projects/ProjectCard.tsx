@@ -13,10 +13,10 @@ interface ProjectCardProps {
   gateCompletion: number;
 }
 
-const statusVariant: Record<string, 'green' | 'amber' | 'accent' | 'default'> = {
-  active: 'green',
-  paused: 'amber',
-  completed: 'accent',
+const statusVariant: Record<string, 'success' | 'warning' | 'brand' | 'default'> = {
+  active: 'success',
+  paused: 'warning',
+  completed: 'brand',
   archived: 'default',
 };
 
@@ -51,30 +51,30 @@ export default function ProjectCard({
     <Link href={`/projects/${id}`} title={`Click to open project: ${name}`}>
       <Card hover>
         <div className="flex items-start justify-between mb-3">
-          <h3 className="text-[15px] font-bold tracking-tight text-[var(--text)]">{name}</h3>
+          <h3 className="text-[15px] font-bold tracking-tight" style={{ color: 'var(--text-primary)' }}>{name}</h3>
           <span title={statusTip[status] || `Status: ${status}`}>
             <Badge variant={statusVariant[status] || 'default'}>{status}</Badge>
           </span>
         </div>
         {currentPhase && (
-          <p className="text-[13px] text-[var(--text-3)] mb-2" title={`Current lifecycle phase: ${currentPhase.name}`}>
+          <p className="text-[13px] mb-2" style={{ color: 'var(--text-tertiary)' }} title={`Current lifecycle phase: ${currentPhase.name}`}>
             {currentPhase.icon} {currentPhase.name}
           </p>
         )}
         <div className="flex flex-wrap gap-1.5 mb-3">
           {framework && (
             <span title={frameworkTip[framework] || `Framework: ${framework}`}>
-              <Badge variant="purple">{framework}</Badge>
+              <Badge variant="info">{framework}</Badge>
             </span>
           )}
           {architecturePattern && (
             <span title={patternTip[architecturePattern] || `Architecture: ${architecturePattern}`}>
-              <Badge variant="cyan">{architecturePattern}</Badge>
+              <Badge variant="info">{architecturePattern}</Badge>
             </span>
           )}
         </div>
         <span title={`${gateCompletion}% of lifecycle phase gates completed`}>
-          <Progress value={gateCompletion} label="Gate Completion" color="var(--green)" size="sm" />
+          <Progress value={gateCompletion} label="Gate Completion" color="var(--module-projects)" size="sm" />
         </span>
       </Card>
     </Link>

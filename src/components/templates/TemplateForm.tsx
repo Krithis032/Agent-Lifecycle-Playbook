@@ -214,21 +214,39 @@ export default function TemplateForm({
     }
   };
 
+  // Hover and focus state management
+  const [discardHovered, setDiscardHovered] = useState(false);
+  const [cancelHovered, setCancelHovered] = useState(false);
+  const [saveHovered, setSaveHovered] = useState(false);
+  const [titleFocused, setTitleFocused] = useState(false);
+
   return (
     <div className="space-y-6">
       {/* Draft status banner */}
       {hasDraft && (
-        <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[var(--warning-soft)] border border-[rgba(212,168,83,0.15)] text-[var(--warning)] text-[13px]">
+        <div
+          className="flex items-center gap-2 px-4 py-2 rounded-lg text-[13px]"
+          style={{
+            backgroundColor: 'var(--status-warning-soft)',
+            borderWidth: '1px',
+            borderStyle: 'solid',
+            borderColor: 'rgba(212,168,83,0.15)',
+            color: 'var(--status-warning)',
+          }}
+        >
           <CloudOff size={14} />
           <span className="font-medium">Draft auto-saved locally.</span>
-          <span className="text-[var(--warning)]">Your progress is preserved even if you leave the page.</span>
+          <span style={{ color: 'var(--status-warning)' }}>Your progress is preserved even if you leave the page.</span>
           <button
             onClick={() => {
               clearDraft();
               setTitle(initialTitle);
               setValues(initialValues);
             }}
-            className="ml-auto text-[12px] font-semibold underline hover:text-[var(--warning)]"
+            className="ml-auto text-[12px] font-semibold underline"
+            style={{ color: discardHovered ? 'var(--status-warning)' : 'inherit' }}
+            onMouseEnter={() => setDiscardHovered(true)}
+            onMouseLeave={() => setDiscardHovered(false)}
           >
             Discard Draft
           </button>
@@ -239,33 +257,58 @@ export default function TemplateForm({
       <div className="flex items-end gap-4">
         <div className="flex-1">
           <Tooltip content="A descriptive title for this document instance. This will be shown in the document list.">
-            <label className="block text-sm font-medium text-[var(--text)] mb-1 cursor-help">Document Title</label>
+            <label
+              className="block text-sm font-medium mb-1 cursor-help"
+              style={{ color: 'var(--text-primary)' }}
+            >
+              Document Title
+            </label>
           </Tooltip>
           <input
             type="text"
             value={title}
             onChange={e => setTitle(e.target.value)}
+            onFocus={() => setTitleFocused(true)}
+            onBlur={() => setTitleFocused(false)}
             placeholder={`e.g., ${templateName} — Q4 2024`}
             title="Enter a descriptive title for this document"
-            className="w-full px-3 py-2 text-sm border border-[var(--border)] rounded-lg focus:outline-none focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent-soft)] bg-[var(--bg)] transition-all"
+            className="w-full px-3 py-2 text-sm rounded-lg focus:outline-none transition-all"
+            style={{
+              borderWidth: '1px',
+              borderStyle: 'solid',
+              borderColor: titleFocused ? 'var(--border-focus)' : 'var(--border-default)',
+              backgroundColor: 'var(--surface-0)',
+              boxShadow: titleFocused ? '0 0 0 2px var(--brand-soft)' : 'none',
+            }}
           />
         </div>
         <div className="text-right shrink-0">
           <div className="flex items-center gap-2 justify-end mb-1">
             {draftStatus === 'saved' && (
-              <span className="flex items-center gap-1 text-[11px] text-[var(--success)] font-medium">
+              <span
+                className="flex items-center gap-1 text-[11px] font-medium"
+                style={{ color: 'var(--status-success)' }}
+              >
                 <CheckCircle size={12} /> Draft saved
               </span>
             )}
-            <span className="text-xs text-[var(--text-4)]">{filledRequired.length}/{requiredFields.length} required</span>
+            <span
+              className="text-xs"
+              style={{ color: 'var(--text-quaternary)' }}
+            >
+              {filledRequired.length}/{requiredFields.length} required
+            </span>
           </div>
           <Tooltip content={`${progress}% of required fields completed`}>
-            <div className="w-32 h-2 bg-[var(--surface)] rounded-full overflow-hidden cursor-help">
+            <div
+              className="w-32 h-2 rounded-full overflow-hidden cursor-help"
+              style={{ backgroundColor: 'var(--surface-1)' }}
+            >
               <div
                 className="h-full rounded-full transition-all duration-300"
                 style={{
                   width: `${progress}%`,
-                  backgroundColor: progress === 100 ? 'var(--success)' : 'var(--accent)',
+                  backgroundColor: progress === 100 ? 'var(--status-success)' : 'var(--brand-primary)',
                 }}
               />
             </div>
@@ -291,7 +334,15 @@ export default function TemplateForm({
         <Tooltip content="Discard changes and go back">
           <button
             onClick={() => router.back()}
-            className="px-4 py-2 text-sm font-medium border border-[var(--border)] rounded-lg hover:border-[var(--accent)] transition-colors text-[var(--text-2)]"
+            className="px-4 py-2 text-sm font-medium rounded-lg transition-colors"
+            style={{
+              borderWidth: '1px',
+              borderStyle: 'solid',
+              borderColor: cancelHovered ? 'var(--brand-primary)' : 'var(--border-default)',
+              color: 'var(--text-secondary)',
+            }}
+            onMouseEnter={() => setCancelHovered(true)}
+            onMouseLeave={() => setCancelHovered(false)}
           >
             Cancel
           </button>
@@ -300,7 +351,14 @@ export default function TemplateForm({
           <button
             onClick={handleSave}
             disabled={saving}
-            className="px-5 py-2 text-sm font-semibold bg-[var(--accent)] text-white rounded-lg hover:opacity-90 disabled:opacity-40 flex items-center gap-2"
+            className="px-5 py-2 text-sm font-semibold rounded-lg disabled:opacity-40 flex items-center gap-2"
+            style={{
+              backgroundColor: 'var(--brand-primary)',
+              color: 'white',
+              opacity: saving ? 0.4 : (saveHovered ? 0.9 : 1),
+            }}
+            onMouseEnter={() => setSaveHovered(true)}
+            onMouseLeave={() => setSaveHovered(false)}
           >
             {saving ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />}
             {saving ? 'Saving...' : fillId ? 'Update' : 'Save'}

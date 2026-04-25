@@ -1,11 +1,12 @@
 'use client';
 
 import { useState } from 'react';
-import { Plus } from 'lucide-react';
+import { Plus, FolderKanban } from 'lucide-react';
 import { useProjects } from '@/hooks/useProject';
 import ProjectCard from '@/components/projects/ProjectCard';
 import Button from '@/components/ui/Button';
 import Modal from '@/components/ui/Modal';
+import PageHeader from '@/components/ui/PageHeader';
 import Tooltip from '@/components/ui/Tooltip';
 
 export default function ProjectsPage() {
@@ -27,27 +28,26 @@ export default function ProjectsPage() {
 
   return (
     <div className="animate-fade-in">
-      <div className="flex items-start justify-between mb-8">
-        <div>
-          <div className="eyebrow mb-2">Project Tracker</div>
-          <h1 className="text-3xl font-bold tracking-tight text-[var(--text)]">
-            Agent <span className="text-[var(--accent)] font-light italic">Projects</span>
-          </h1>
-        </div>
-        <Button onClick={() => setShowModal(true)}>
-          <Plus size={16} /> New Project
-        </Button>
-      </div>
+      <PageHeader
+        eyebrow="PROJECTS"
+        title="Agent Deployments"
+        subtitle="Track and manage your agent projects through the deployment lifecycle."
+        action={
+          <Button onClick={() => setShowModal(true)}>
+            <Plus size={16} /> New Project
+          </Button>
+        }
+      />
 
-      <div className="flex gap-2 mb-6">
+      <div className="flex gap-2 mb-6 mt-6">
         {['all', 'active', 'paused', 'completed', 'archived'].map((s) => (
           <Tooltip key={s} content={`Show ${s === 'all' ? 'all projects' : s + ' projects only'}`}>
             <button
               onClick={() => setFilter(s)}
               className={`px-3 py-1.5 rounded-[var(--radius-sm)] text-[12px] font-semibold transition-all ${
                 filter === s
-                  ? 'bg-[var(--accent-soft)] text-[var(--accent)]'
-                  : 'text-[var(--text-3)] hover:bg-[var(--surface-hover)]'
+                  ? 'bg-[var(--brand-soft)] text-[var(--brand-primary)]'
+                  : 'text-[var(--text-tertiary)] hover:bg-[var(--surface-0)]'
               }`}
             >
               {s.charAt(0).toUpperCase() + s.slice(1)}
@@ -57,14 +57,15 @@ export default function ProjectsPage() {
       </div>
 
       {loading ? (
-        <p className="text-[var(--text-3)]">Loading...</p>
+        <p className="text-[var(--text-tertiary)]">Loading...</p>
       ) : filtered.length === 0 ? (
-        <div className="text-center py-16 text-[var(--text-3)]">
+        <div className="text-center py-16" style={{ color: 'var(--text-tertiary)' }}>
+          <FolderKanban size={40} className="mx-auto mb-3 opacity-40" />
           <p className="text-lg font-semibold mb-2">No projects yet</p>
           <p className="text-sm">Create your first agent project to get started.</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 stagger-grid">
           {filtered.map((project) => {
             const totalGates = project.gateChecks?.length || 0;
             const checkedGates = project.gateChecks?.filter((g) => g.checked).length || 0;
@@ -89,10 +90,17 @@ export default function ProjectsPage() {
         <div className="space-y-4">
           <div>
             <Tooltip content="A clear, descriptive name for the agent project (e.g., Customer Support Triage Agent)">
-              <label className="block text-[12px] font-semibold text-[var(--text-3)] mb-1 cursor-help">Project Name *</label>
+              <label className="block text-[12px] font-semibold mb-1 cursor-help" style={{ color: 'var(--text-tertiary)' }}>Project Name *</label>
             </Tooltip>
             <input
-              className="w-full px-3 py-2 border border-[var(--border)] rounded-[var(--radius-sm)] text-[14px] bg-[var(--bg)] text-[var(--text)] focus:border-[var(--accent)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-soft)] transition-all"
+              className="w-full px-3 py-2 rounded-[var(--radius-sm)] text-[14px] transition-all focus:outline-none focus:ring-2"
+              style={{
+                border: '1px solid var(--border-default)',
+                background: 'var(--surface-0)',
+                color: 'var(--text-primary)',
+              }}
+              onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--border-focus)'; e.currentTarget.style.boxShadow = '0 0 0 2px color-mix(in srgb, var(--brand-primary) 15%, transparent)'; }}
+              onBlur={(e) => { e.currentTarget.style.borderColor = 'var(--border-default)'; e.currentTarget.style.boxShadow = 'none'; }}
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
               placeholder="e.g., Customer Support Triage Agent"
@@ -101,10 +109,17 @@ export default function ProjectsPage() {
           </div>
           <div>
             <Tooltip content="Briefly describe what this agent does, who it serves, and its primary objective">
-              <label className="block text-[12px] font-semibold text-[var(--text-3)] mb-1 cursor-help">Description</label>
+              <label className="block text-[12px] font-semibold mb-1 cursor-help" style={{ color: 'var(--text-tertiary)' }}>Description</label>
             </Tooltip>
             <textarea
-              className="w-full px-3 py-2 border border-[var(--border)] rounded-[var(--radius-sm)] text-[14px] bg-[var(--bg)] text-[var(--text)] focus:border-[var(--accent)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-soft)] h-24 transition-all"
+              className="w-full px-3 py-2 rounded-[var(--radius-sm)] text-[14px] h-24 transition-all focus:outline-none focus:ring-2"
+              style={{
+                border: '1px solid var(--border-default)',
+                background: 'var(--surface-0)',
+                color: 'var(--text-primary)',
+              }}
+              onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--border-focus)'; e.currentTarget.style.boxShadow = '0 0 0 2px color-mix(in srgb, var(--brand-primary) 15%, transparent)'; }}
+              onBlur={(e) => { e.currentTarget.style.borderColor = 'var(--border-default)'; e.currentTarget.style.boxShadow = 'none'; }}
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
               title="Describe what this agent does and who it serves"
@@ -113,10 +128,17 @@ export default function ProjectsPage() {
           <div className="grid grid-cols-2 gap-4">
             <div>
               <Tooltip content="The multi-agent topology. Single Agent for simple tasks, Pipeline for sequential, Supervisor-Workers for delegated workflows.">
-                <label className="block text-[12px] font-semibold text-[var(--text-3)] mb-1 cursor-help">Architecture Pattern</label>
+                <label className="block text-[12px] font-semibold mb-1 cursor-help" style={{ color: 'var(--text-tertiary)' }}>Architecture Pattern</label>
               </Tooltip>
               <select
-                className="w-full px-3 py-2 border border-[var(--border)] rounded-[var(--radius-sm)] text-[14px] bg-[var(--bg)] text-[var(--text)] focus:border-[var(--accent)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-soft)] transition-all"
+                className="w-full px-3 py-2 rounded-[var(--radius-sm)] text-[14px] transition-all focus:outline-none focus:ring-2"
+                style={{
+                  border: '1px solid var(--border-default)',
+                  background: 'var(--surface-0)',
+                  color: 'var(--text-primary)',
+                }}
+                onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--border-focus)'; e.currentTarget.style.boxShadow = '0 0 0 2px color-mix(in srgb, var(--brand-primary) 15%, transparent)'; }}
+                onBlur={(e) => { e.currentTarget.style.borderColor = 'var(--border-default)'; e.currentTarget.style.boxShadow = 'none'; }}
                 value={formData.architecturePattern}
                 onChange={(e) => setFormData({ ...formData, architecturePattern: e.target.value })}
                 title="Select the multi-agent topology for this project"
@@ -131,10 +153,17 @@ export default function ProjectsPage() {
             </div>
             <div>
               <Tooltip content="The agent orchestration framework to build with. Use the Evaluate module to compare options.">
-                <label className="block text-[12px] font-semibold text-[var(--text-3)] mb-1 cursor-help">Framework</label>
+                <label className="block text-[12px] font-semibold mb-1 cursor-help" style={{ color: 'var(--text-tertiary)' }}>Framework</label>
               </Tooltip>
               <select
-                className="w-full px-3 py-2 border border-[var(--border)] rounded-[var(--radius-sm)] text-[14px] bg-[var(--bg)] text-[var(--text)] focus:border-[var(--accent)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-soft)] transition-all"
+                className="w-full px-3 py-2 rounded-[var(--radius-sm)] text-[14px] transition-all focus:outline-none focus:ring-2"
+                style={{
+                  border: '1px solid var(--border-default)',
+                  background: 'var(--surface-0)',
+                  color: 'var(--text-primary)',
+                }}
+                onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--border-focus)'; e.currentTarget.style.boxShadow = '0 0 0 2px color-mix(in srgb, var(--brand-primary) 15%, transparent)'; }}
+                onBlur={(e) => { e.currentTarget.style.borderColor = 'var(--border-default)'; e.currentTarget.style.boxShadow = 'none'; }}
                 value={formData.framework}
                 onChange={(e) => setFormData({ ...formData, framework: e.target.value })}
                 title="Select the framework for agent orchestration"

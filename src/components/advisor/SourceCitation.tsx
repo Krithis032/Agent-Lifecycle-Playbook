@@ -28,7 +28,7 @@ const SOURCE_META: Record<
   { label: string; color: string; bg: string; Icon: React.ElementType }
 > = {
   linkedin: {
-    label: 'LinkedIn Learning',
+    label: 'Agents & Tools',
     color: '#0077b5',
     bg: '#e8f4fb',
     Icon: Link2,
@@ -51,8 +51,8 @@ export default function SourceCitation({ concepts }: SourceCitationProps) {
   return (
     <div>
       <div className="flex items-center gap-1.5 mb-2">
-        <BookOpen size={12} className="text-[var(--text-4)]" />
-        <span className="text-[10px] font-bold text-[var(--text-4)] uppercase tracking-wider">
+        <BookOpen size={12} style={{ color: 'var(--text-quaternary)' }} />
+        <span className="text-[10px] font-bold uppercase tracking-wider" style={{ color: 'var(--text-quaternary)' }}>
           Sources
         </span>
       </div>
@@ -70,7 +70,7 @@ export default function SourceCitation({ concepts }: SourceCitationProps) {
                 <Icon size={8} />
                 {meta.label}
               </span>
-              <span className="text-[11px] text-[var(--text-3)]">
+              <span className="text-[11px]" style={{ color: 'var(--text-tertiary)' }}>
                 <strong>{c.name}</strong> ({c.domain}){c.source ? ` — ${c.source}` : ''}
               </span>
             </div>

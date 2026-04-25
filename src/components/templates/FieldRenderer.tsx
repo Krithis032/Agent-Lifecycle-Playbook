@@ -71,17 +71,19 @@ export default function FieldRenderer({ field, value, onChange, templateName, al
     );
   }
 
+  const inputClassName = "w-full px-3 py-2 text-sm rounded-lg focus:outline-none transition-all";
+
   return (
     <div className="space-y-1.5">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-1.5">
-          <label className="text-sm font-medium text-[var(--text)]">
+          <label className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>
             {field.label}
-            {field.required && <span className="text-[var(--error)] ml-0.5">*</span>}
+            {field.required && <span style={{ color: 'var(--status-error)' }} className="ml-0.5">*</span>}
           </label>
           {field.helpText && (
             <Tooltip content={field.helpText} position="top">
-              <HelpCircle size={14} className="text-[var(--text-4)] hover:text-[var(--accent)] cursor-help transition-colors" />
+              <HelpCircle size={14} className="cursor-help transition-colors" style={{ color: 'var(--text-quaternary)' }} />
             </Tooltip>
           )}
         </div>
@@ -103,14 +105,20 @@ export default function FieldRenderer({ field, value, onChange, templateName, al
           placeholder={field.placeholder}
           title={field.helpText || `Enter ${field.label.toLowerCase()}`}
           rows={4}
-          className="w-full px-3 py-2 text-sm border border-[var(--border)] rounded-lg focus:outline-none focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent-soft)] bg-[var(--bg)] resize-y transition-all"
+          className={`${inputClassName} resize-y`}
+          style={{ border: '1px solid var(--border-default)', background: 'var(--surface-0)', color: 'var(--text-primary)' }}
+          onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--border-focus)'; e.currentTarget.style.boxShadow = '0 0 0 2px var(--brand-soft)'; }}
+          onBlur={(e) => { e.currentTarget.style.borderColor = 'var(--border-default)'; e.currentTarget.style.boxShadow = 'none'; }}
         />
       ) : field.type === 'select' ? (
         <select
           value={value}
           onChange={e => onChange(e.target.value)}
           title={field.helpText || `Select ${field.label.toLowerCase()}`}
-          className="w-full px-3 py-2 text-sm border border-[var(--border)] rounded-lg focus:outline-none focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent-soft)] bg-[var(--bg)] transition-all"
+          className={inputClassName}
+          style={{ border: '1px solid var(--border-default)', background: 'var(--surface-0)', color: 'var(--text-primary)' }}
+          onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--border-focus)'; e.currentTarget.style.boxShadow = '0 0 0 2px var(--brand-soft)'; }}
+          onBlur={(e) => { e.currentTarget.style.borderColor = 'var(--border-default)'; e.currentTarget.style.boxShadow = 'none'; }}
         >
           <option value="">Select...</option>
           {field.options?.map(opt => <option key={opt} value={opt}>{opt}</option>)}
@@ -121,9 +129,10 @@ export default function FieldRenderer({ field, value, onChange, templateName, al
             type="checkbox"
             checked={value === 'true'}
             onChange={e => onChange(e.target.checked ? 'true' : 'false')}
-            className="w-4 h-4 accent-[var(--accent)] rounded"
+            className="w-4 h-4 rounded"
+            style={{ accentColor: 'var(--brand-primary)' }}
           />
-          <span className="text-sm text-[var(--text-2)]">{field.label}</span>
+          <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>{field.label}</span>
         </label>
       ) : field.type === 'date' ? (
         <input
@@ -131,7 +140,10 @@ export default function FieldRenderer({ field, value, onChange, templateName, al
           value={value}
           onChange={e => onChange(e.target.value)}
           title={field.helpText || `Select ${field.label.toLowerCase()}`}
-          className="w-full px-3 py-2 text-sm border border-[var(--border)] rounded-lg focus:outline-none focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent-soft)] bg-[var(--bg)] transition-all"
+          className={inputClassName}
+          style={{ border: '1px solid var(--border-default)', background: 'var(--surface-0)', color: 'var(--text-primary)' }}
+          onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--border-focus)'; e.currentTarget.style.boxShadow = '0 0 0 2px var(--brand-soft)'; }}
+          onBlur={(e) => { e.currentTarget.style.borderColor = 'var(--border-default)'; e.currentTarget.style.boxShadow = 'none'; }}
         />
       ) : (
         <input
@@ -140,7 +152,10 @@ export default function FieldRenderer({ field, value, onChange, templateName, al
           onChange={e => onChange(e.target.value)}
           placeholder={field.placeholder}
           title={field.helpText || `Enter ${field.label.toLowerCase()}`}
-          className="w-full px-3 py-2 text-sm border border-[var(--border)] rounded-lg focus:outline-none focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent-soft)] bg-[var(--bg)] transition-all"
+          className={inputClassName}
+          style={{ border: '1px solid var(--border-default)', background: 'var(--surface-0)', color: 'var(--text-primary)' }}
+          onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--border-focus)'; e.currentTarget.style.boxShadow = '0 0 0 2px var(--brand-soft)'; }}
+          onBlur={(e) => { e.currentTarget.style.borderColor = 'var(--border-default)'; e.currentTarget.style.boxShadow = 'none'; }}
         />
       )}
     </div>

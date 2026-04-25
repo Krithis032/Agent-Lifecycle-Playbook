@@ -31,7 +31,7 @@ const SOURCE_BADGE: Record<
   SourceType,
   { label: string; color: string; bg: string; Icon: React.ElementType }
 > = {
-  linkedin: { label: 'LinkedIn Learning', color: '#0077b5', bg: '#e8f4fb', Icon: Link2 },
+  linkedin: { label: 'Agents & Tools', color: '#0077b5', bg: '#e8f4fb', Icon: Link2 },
   strategy: { label: 'Strategy KB', color: '#15803d', bg: '#f0fdf4', Icon: TrendingUp },
   book: { label: 'Book Source', color: '#b45309', bg: '#fef3c7', Icon: BookOpen },
 };
@@ -46,15 +46,15 @@ export default function ConceptCard({
   return (
     <Card hover={!!onClick} onClick={onClick}>
       <div className="flex items-start justify-between mb-2">
-        <h3 className="text-[14px] font-bold tracking-tight text-[var(--text)]">{conceptName}</h3>
+        <h3 className="text-[14px] font-bold tracking-tight" style={{ color: 'var(--text-primary)' }}>{conceptName}</h3>
         {relevance !== undefined && (
-          <span className="text-[10px] font-bold text-[var(--text-4)]">
+          <span className="text-[10px] font-bold" style={{ color: 'var(--text-quaternary)' }}>
             {Math.round(relevance * 100)}%
           </span>
         )}
       </div>
       <div className="flex flex-wrap gap-1.5 mb-2">
-        <Badge variant="accent">{domainName}</Badge>
+        <Badge variant="brand">{domainName}</Badge>
         {/* Source-type badge */}
         <span
           className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold"
@@ -64,11 +64,11 @@ export default function ConceptCard({
           {srcMeta.label}
         </span>
       </div>
-      <p className="text-[13px] text-[var(--text-3)] line-clamp-3">{definition}</p>
+      <p className="text-[13px] line-clamp-3" style={{ color: 'var(--text-tertiary)' }}>{definition}</p>
       {sources && sources.length > 0 && (
         <div className="flex flex-wrap gap-1 mt-2">
           {sources.slice(0, 3).map((s, i) => (
-            <span key={i} className="text-[10px] text-[var(--text-4)] bg-[var(--surface)] px-2 py-0.5 rounded">
+            <span key={i} className="text-[10px] px-2 py-0.5 rounded" style={{ color: 'var(--text-quaternary)', background: 'var(--surface-1)' }}>
               {s}
             </span>
           ))}

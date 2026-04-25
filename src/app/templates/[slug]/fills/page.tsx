@@ -31,17 +31,18 @@ export default async function FillHistoryPage({ params }: { params: { slug: stri
     <div className="animate-fade-in flex flex-col gap-6">
       <div className="flex items-start justify-between">
         <div>
-          <Link href="/templates" className="text-[13px] text-[var(--accent)] hover:underline flex items-center gap-1 mb-3">
+          <Link href="/templates" className="text-[13px] hover:underline flex items-center gap-1 mb-3" style={{ color: 'var(--brand-primary)' }}>
             <ArrowLeft size={14} /> Back to Templates
           </Link>
-          <h1 className="text-2xl font-semibold tracking-tight text-[var(--text)]">
+          <h1 className="text-2xl font-semibold tracking-tight" style={{ color: 'var(--text-primary)' }}>
             {template.name} — Fill History
           </h1>
-          <p className="text-sm text-[var(--text-3)] mt-1">{fills.length} document{fills.length !== 1 ? 's' : ''} created</p>
+          <p className="text-sm mt-1" style={{ color: 'var(--text-tertiary)' }}>{fills.length} document{fills.length !== 1 ? 's' : ''} created</p>
         </div>
         <Link
           href={`/templates/${params.slug}`}
-          className="bg-[var(--accent)] text-white px-4 py-2 rounded-[var(--radius-sm)] text-sm font-semibold hover:opacity-90 flex items-center gap-2"
+          className="text-white px-4 py-2 text-sm font-semibold hover:opacity-90 flex items-center gap-2"
+          style={{ backgroundColor: 'var(--brand-primary)', borderRadius: 'var(--radius-sm)' }}
         >
           <Plus size={14} /> New Fill
         </Link>

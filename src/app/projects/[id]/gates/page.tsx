@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useProject } from '@/hooks/useProject';
 import GateTracker from '@/components/projects/GateTracker';
+import PageHeader from '@/components/ui/PageHeader';
 import Link from 'next/link';
 import Button from '@/components/ui/Button';
 
@@ -48,8 +49,8 @@ export default function ProjectGatesPage({ params }: { params: { id: string } })
       });
   }, [project]);
 
-  if (loading) return <p className="text-[var(--text-3)]">Loading...</p>;
-  if (!project) return <p className="text-[var(--text-3)]">Project not found</p>;
+  if (loading) return <p style={{ color: 'var(--text-tertiary)' }}>Loading...</p>;
+  if (!project) return <p style={{ color: 'var(--text-tertiary)' }}>Project not found</p>;
 
   const handleToggle = async (gateCheckId: number, itemIndex: number, checked: boolean) => {
     await toggleGate(gateCheckId, itemIndex, checked);
@@ -65,8 +66,14 @@ export default function ProjectGatesPage({ params }: { params: { id: string } })
       <Link href={`/projects/${id}`}>
         <Button variant="ghost" size="sm" className="mb-6">Back to Project</Button>
       </Link>
-      <h1 className="text-2xl font-bold tracking-tight mb-6">Gate Tracker: {project.name}</h1>
-      <GateTracker gates={gates} onToggle={handleToggle} />
+      <PageHeader
+        eyebrow="GATE TRACKER"
+        title={project.name}
+        subtitle="Review and track gate check completion across all deployment phases."
+      />
+      <div className="mt-6">
+        <GateTracker gates={gates} onToggle={handleToggle} />
+      </div>
     </div>
   );
 }

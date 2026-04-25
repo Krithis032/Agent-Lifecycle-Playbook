@@ -65,11 +65,15 @@ export default function Tooltip({ content, children, position = 'top', maxWidth 
       {visible && (
         <div
           ref={tooltipRef}
-          className="fixed z-[9999] px-3 py-2 text-[11px] leading-relaxed font-medium text-[var(--text)] bg-[var(--surface-active)] border border-[var(--border-hover)] rounded-[var(--radius-sm)] shadow-[var(--shadow-float)] pointer-events-none animate-fade-in"
+          className="fixed z-[9999] px-3 py-2 text-[11px] leading-relaxed font-medium rounded-lg pointer-events-none animate-fade-in"
           style={{
             top: coords.top,
             left: coords.left,
             maxWidth,
+            color: 'var(--text-primary)',
+            background: 'var(--surface-elevated)',
+            border: '1px solid var(--border-default)',
+            boxShadow: '0 4px 16px rgba(0,0,0,0.10)',
           }}
         >
           {content}

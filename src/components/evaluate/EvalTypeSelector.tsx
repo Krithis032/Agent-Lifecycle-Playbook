@@ -49,11 +49,12 @@ export default function EvalTypeSelector({ selected, onSelect }: EvalTypeSelecto
           <button
             key={et.type}
             onClick={() => onSelect(et.type)}
-            className={`text-left p-5 rounded-xl border-2 transition-all duration-200 ${
-              isSelected
-                ? 'border-[var(--accent)] bg-[var(--accent-soft)] shadow-sm'
-                : 'border-[var(--border)] bg-[var(--surface-active)] hover:border-[var(--accent)] hover:shadow-sm'
-            }`}
+            className="text-left p-5 rounded-xl border-2 transition-all duration-200"
+            style={{
+              borderColor: isSelected ? 'var(--brand-primary)' : 'var(--border-default)',
+              background: isSelected ? 'var(--brand-soft)' : 'var(--surface-elevated)',
+              boxShadow: isSelected ? '0 1px 4px rgba(0,0,0,0.06)' : 'none',
+            }}
           >
             <div className="flex items-start gap-4">
               <div
@@ -63,8 +64,8 @@ export default function EvalTypeSelector({ selected, onSelect }: EvalTypeSelecto
                 <Icon size={20} />
               </div>
               <div>
-                <div className="text-[15px] font-semibold text-[var(--text)]">{et.label}</div>
-                <div className="text-[13px] text-[var(--text-3)] mt-1">{et.description}</div>
+                <div className="text-[15px] font-semibold" style={{ color: 'var(--text-primary)' }}>{et.label}</div>
+                <div className="text-[13px] mt-1" style={{ color: 'var(--text-tertiary)' }}>{et.description}</div>
               </div>
             </div>
           </button>

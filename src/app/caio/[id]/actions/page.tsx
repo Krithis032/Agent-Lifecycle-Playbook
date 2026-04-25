@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Card from '@/components/ui/Card';
 import Badge from '@/components/ui/Badge';
+import PageHeader from '@/components/ui/PageHeader';
 import ActionPlanTracker from '@/components/caio/ActionPlanTracker';
 import type { CaioActionItem } from '@/types/caio';
 import { ChevronLeft, Filter } from 'lucide-react';
@@ -48,28 +49,47 @@ export default function CaioActionsPage({ params }: { params: { id: string } }) 
     (!filterStatus || a.status === filterStatus)
   );
 
-  if (loading) return <p className="text-[var(--text-3)] py-12 text-center">Loading actions...</p>;
+  if (loading) return <p className="py-12 text-center" style={{ color: 'var(--text-tertiary)' }}>Loading actions...</p>;
 
   return (
     <div className="flex flex-col gap-6 animate-fade-in">
       <div>
-        <Link href={`/caio/${params.id}`} className="text-[12px] font-semibold text-[var(--text-4)] hover:text-[var(--accent)] transition-colors mb-2 block">
+        <Link
+          href={`/caio/${params.id}`}
+          className="text-[12px] font-semibold transition-colors mb-2 block"
+          style={{ color: 'var(--text-quaternary)' }}
+          onMouseEnter={(e) => e.currentTarget.style.color = 'var(--brand-primary)'}
+          onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-quaternary)'}
+        >
           <ChevronLeft size={14} className="inline" /> Back to Assessment
         </Link>
-        <h1 className="text-2xl font-semibold tracking-tight text-[var(--text)]">Action Plan Tracker</h1>
-        <p className="text-sm text-[var(--text-3)] mt-1">Track and manage action items from the CAIO assessment.</p>
+        <PageHeader
+          eyebrow="CAIO"
+          title="Action Plan Tracker"
+          subtitle="Track and manage action items from the CAIO assessment."
+        />
       </div>
 
       {/* Filters */}
       <div className="flex items-center gap-3">
-        <Filter size={14} className="text-[var(--text-4)]" />
-        <select value={filterPhase} onChange={e => setFilterPhase(e.target.value)} className="px-2 py-1 border border-[var(--border)] rounded text-[12px] bg-[var(--surface)]">
+        <Filter size={14} style={{ color: 'var(--text-quaternary)' }} />
+        <select
+          value={filterPhase}
+          onChange={e => setFilterPhase(e.target.value)}
+          className="px-2 py-1 rounded text-[12px] transition-all"
+          style={{ border: '1px solid var(--border-default)', background: 'var(--surface-0)', color: 'var(--text-primary)' }}
+        >
           <option value="">All Phases</option>
           <option value="immediate">Immediate</option>
           <option value="short_term">Short Term</option>
           <option value="long_term">Long Term</option>
         </select>
-        <select value={filterStatus} onChange={e => setFilterStatus(e.target.value)} className="px-2 py-1 border border-[var(--border)] rounded text-[12px] bg-[var(--surface)]">
+        <select
+          value={filterStatus}
+          onChange={e => setFilterStatus(e.target.value)}
+          className="px-2 py-1 rounded text-[12px] transition-all"
+          style={{ border: '1px solid var(--border-default)', background: 'var(--surface-0)', color: 'var(--text-primary)' }}
+        >
           <option value="">All Statuses</option>
           <option value="pending">Pending</option>
           <option value="in_progress">In Progress</option>
@@ -87,7 +107,7 @@ export default function CaioActionsPage({ params }: { params: { id: string } }) 
         />
       ) : (
         <Card className="text-center py-12">
-          <p className="text-[var(--text-3)]">No action items found</p>
+          <p style={{ color: 'var(--text-tertiary)' }}>No action items found</p>
         </Card>
       )}
     </div>

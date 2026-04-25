@@ -42,7 +42,7 @@ export default function DomainBrowser() {
     setConcepts(data.concepts || []);
   };
 
-  if (loading) return <p className="text-[var(--text-3)]">Loading domains...</p>;
+  if (loading) return <p style={{ color: 'var(--text-tertiary)' }}>Loading domains...</p>;
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -52,16 +52,16 @@ export default function DomainBrowser() {
           <button
             key={d.id}
             onClick={() => loadConcepts(d.id)}
-            className={`w-full text-left px-4 py-3 rounded-lg transition-all ${
-              selectedDomain === d.id
-                ? 'bg-[var(--accent-soft)] border border-[var(--accent)]'
-                : 'bg-[var(--canvas)] border border-[var(--border)] hover:border-[var(--text-4)]'
-            }`}
+            className="w-full text-left px-4 py-3 rounded-lg transition-all"
+            style={{
+              background: selectedDomain === d.id ? 'var(--brand-soft)' : 'var(--surface-elevated)',
+              border: selectedDomain === d.id ? '1px solid var(--brand-primary)' : '1px solid var(--border-default)',
+            }}
           >
             <div className="text-[13px] font-bold">{d.domainName}</div>
             <div className="flex gap-1.5 mt-1">
               <Badge>{d.conceptCount} concepts</Badge>
-              <Badge variant={d.kbSource === 'core' ? 'default' : 'purple'}>{d.kbSource}</Badge>
+              <Badge variant={d.kbSource === 'core' ? 'default' : 'info'}>{d.kbSource}</Badge>
             </div>
           </button>
         ))}
@@ -69,7 +69,7 @@ export default function DomainBrowser() {
 
       <div className="md:col-span-2">
         {concepts.length === 0 ? (
-          <p className="text-[var(--text-3)] text-sm">Select a domain to browse concepts.</p>
+          <p className="text-sm" style={{ color: 'var(--text-tertiary)' }}>Select a domain to browse concepts.</p>
         ) : (
           <div>
             <h3 className="text-[14px] font-bold mb-3">Concepts ({concepts.length})</h3>
@@ -77,25 +77,25 @@ export default function DomainBrowser() {
               <Accordion key={c.id} title={c.conceptName}>
                 {c.definition && (
                   <div className="mb-3">
-                    <div className="text-[9px] font-bold tracking-[2.5px] uppercase text-[var(--accent)] mb-1">Definition</div>
-                    <p className="text-[13px] text-[var(--text-2)]">{c.definition}</p>
+                    <div className="text-[9px] font-bold tracking-[2.5px] uppercase mb-1" style={{ color: 'var(--brand-primary)' }}>Definition</div>
+                    <p className="text-[13px]" style={{ color: 'var(--text-secondary)' }}>{c.definition}</p>
                   </div>
                 )}
                 {c.explanation && (
                   <div className="mb-3">
-                    <div className="text-[9px] font-bold tracking-[2.5px] uppercase text-[var(--purple)] mb-1">Explanation</div>
-                    <p className="text-[13px] text-[var(--text-2)] whitespace-pre-line">{c.explanation}</p>
+                    <div className="text-[9px] font-bold tracking-[2.5px] uppercase mb-1" style={{ color: '#6b3fa0' }}>Explanation</div>
+                    <p className="text-[13px] whitespace-pre-line" style={{ color: 'var(--text-secondary)' }}>{c.explanation}</p>
                   </div>
                 )}
                 {c.codeScaffold && (
                   <div className="mb-3">
-                    <div className="text-[9px] font-bold tracking-[2.5px] uppercase text-[var(--cyan)] mb-1">Code Scaffold</div>
+                    <div className="text-[9px] font-bold tracking-[2.5px] uppercase mb-1" style={{ color: '#0e7490' }}>Code Scaffold</div>
                     <pre className="text-xs">{c.codeScaffold}</pre>
                   </div>
                 )}
                 {c.relationships && (
                   <div className="mb-3">
-                    <div className="text-[9px] font-bold tracking-[2.5px] uppercase text-[var(--green)] mb-1">Relationships</div>
+                    <div className="text-[9px] font-bold tracking-[2.5px] uppercase mb-1" style={{ color: '#15803d' }}>Relationships</div>
                     <div className="grid grid-cols-3 gap-2 text-[12px]">
                       <div><strong>Depends on:</strong> {c.relationships.depends_on.join(', ') || 'None'}</div>
                       <div><strong>Enables:</strong> {c.relationships.enables.join(', ') || 'None'}</div>
@@ -106,7 +106,7 @@ export default function DomainBrowser() {
                 {c.sources && c.sources.length > 0 && (
                   <div className="flex flex-wrap gap-1">
                     {c.sources.map((s, i) => (
-                      <span key={i} className="text-[10px] bg-[var(--surface)] px-2 py-0.5 rounded text-[var(--text-4)]">{s}</span>
+                      <span key={i} className="text-[10px] px-2 py-0.5 rounded" style={{ background: 'var(--surface-1)', color: 'var(--text-quaternary)' }}>{s}</span>
                     ))}
                   </div>
                 )}

@@ -20,8 +20,8 @@ interface EvalBarProps {
 
 export default function EvalBarChart({ results }: EvalBarProps) {
   return (
-    <div className="bg-[var(--surface-active)] rounded-xl border border-[var(--border)] p-6">
-      <h3 className="text-[15px] font-semibold text-[var(--text)] mb-4">Weighted Score Ranking</h3>
+    <div className="rounded-xl p-6" style={{ background: 'var(--surface-elevated)', border: '1px solid var(--border-default)' }}>
+      <h3 className="text-[15px] font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>Weighted Score Ranking</h3>
       <Bar
         data={{
           labels: results.map(r => r.optionName),
@@ -43,11 +43,11 @@ export default function EvalBarChart({ results }: EvalBarProps) {
             x: {
               min: 0,
               max: 5,
-              ticks: { stepSize: 1, font: { size: 11, family: 'Inter' } },
+              ticks: { stepSize: 1, font: { size: 11, family: 'Urbanist' } },
               grid: { color: 'rgba(226, 232, 240, 0.4)' },
             },
             y: {
-              ticks: { font: { size: 12, family: 'Inter', weight: 'bold' } },
+              ticks: { font: { size: 12, family: 'Urbanist', weight: 'bold' } },
               grid: { display: false },
             },
           },

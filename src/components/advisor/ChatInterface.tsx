@@ -53,17 +53,21 @@ export default function ChatInterface() {
       <div className="flex gap-2 mb-4">
         <button
           onClick={() => setMode('search')}
-          className={`px-3 py-1.5 rounded-lg text-[12px] font-semibold transition-all ${
-            mode === 'search' ? 'bg-[var(--accent-soft)] text-[var(--accent)]' : 'text-[var(--text-3)]'
-          }`}
+          className="px-3 py-1.5 rounded-lg text-[12px] font-semibold transition-all"
+          style={{
+            background: mode === 'search' ? 'var(--brand-soft)' : 'transparent',
+            color: mode === 'search' ? 'var(--brand-primary)' : 'var(--text-tertiary)',
+          }}
         >
           <Search size={14} className="inline mr-1" /> Search KB
         </button>
         <button
           onClick={() => setMode('ask')}
-          className={`px-3 py-1.5 rounded-lg text-[12px] font-semibold transition-all ${
-            mode === 'ask' ? 'bg-[var(--accent-soft)] text-[var(--accent)]' : 'text-[var(--text-3)]'
-          }`}
+          className="px-3 py-1.5 rounded-lg text-[12px] font-semibold transition-all"
+          style={{
+            background: mode === 'ask' ? 'var(--brand-soft)' : 'transparent',
+            color: mode === 'ask' ? 'var(--brand-primary)' : 'var(--text-tertiary)',
+          }}
         >
           <Send size={14} className="inline mr-1" /> Ask Advisor
         </button>
@@ -71,7 +75,14 @@ export default function ChatInterface() {
 
       <div className="flex gap-2 mb-6">
         <input
-          className="flex-1 px-4 py-2.5 border border-[var(--border)] rounded-lg text-[14px] bg-[var(--bg)] text-[var(--text)] focus:border-[var(--accent)] focus:outline-none"
+          className="flex-1 px-4 py-2.5 rounded-lg text-[14px] focus:outline-none"
+          style={{
+            border: '1px solid var(--border-default)',
+            background: 'var(--surface-0)',
+            color: 'var(--text-primary)',
+          }}
+          onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--border-focus)'; e.currentTarget.style.boxShadow = '0 0 0 2px var(--brand-soft)'; }}
+          onBlur={(e) => { e.currentTarget.style.borderColor = 'var(--border-default)'; e.currentTarget.style.boxShadow = 'none'; }}
           placeholder={mode === 'search' ? 'Search concepts...' : 'Ask a question about agentic AI...'}
           value={query}
           onChange={(e) => handleInput(e.target.value)}
@@ -86,7 +97,7 @@ export default function ChatInterface() {
 
       {mode === 'search' && (
         <div>
-          {searching && <p className="text-[var(--text-3)] text-sm">Searching...</p>}
+          {searching && <p className="text-sm" style={{ color: 'var(--text-tertiary)' }}>Searching...</p>}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {searchResults.map((r) => (
               <ConceptCard
@@ -108,15 +119,16 @@ export default function ChatInterface() {
           {messages.map((msg, i) => (
             <div key={i} className={`${msg.role === 'user' ? 'text-right' : ''}`}>
               <div
-                className={`inline-block max-w-[80%] px-4 py-3 rounded-[14px] text-[14px] ${
-                  msg.role === 'user'
-                    ? 'bg-[var(--accent)] text-white'
-                    : 'bg-[var(--canvas)] border border-[var(--border)] text-[var(--text-2)]'
-                }`}
+                className="inline-block max-w-[80%] px-4 py-3 rounded-[14px] text-[14px]"
+                style={{
+                  background: msg.role === 'user' ? 'var(--brand-primary)' : 'var(--surface-elevated)',
+                  color: msg.role === 'user' ? '#fff' : 'var(--text-secondary)',
+                  border: msg.role === 'assistant' ? '1px solid var(--border-default)' : undefined,
+                }}
               >
                 <p className="whitespace-pre-wrap">{msg.content}</p>
                 {msg.conceptsCited && msg.conceptsCited.length > 0 && (
-                  <div className="mt-3 pt-3 border-t border-[var(--border)]">
+                  <div className="mt-3 pt-3" style={{ borderTop: '1px solid var(--border-default)' }}>
                     <SourceCitation concepts={msg.conceptsCited} />
                   </div>
                 )}
@@ -124,7 +136,7 @@ export default function ChatInterface() {
             </div>
           ))}
           {asking && (
-            <div className="flex items-center gap-2 text-[var(--text-3)] text-sm">
+            <div className="flex items-center gap-2 text-sm" style={{ color: 'var(--text-tertiary)' }}>
               <Loader2 size={14} className="animate-spin" /> Thinking...
             </div>
           )}

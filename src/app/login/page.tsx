@@ -41,54 +41,87 @@ function LoginForm() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[var(--bg)] relative overflow-hidden">
-      {/* Subtle ambient glow */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-[var(--accent)] opacity-[0.02] blur-[120px] pointer-events-none" />
-
-      <div className="w-full max-w-[380px] mx-auto px-4 animate-fade-in-up">
+    <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--canvas)' }}>
+      <div className="w-full max-w-[400px] mx-auto px-4">
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-[var(--accent)] mb-5 animate-pulse-glow">
+          <div
+            className="inline-flex items-center justify-center w-12 h-12 rounded-[var(--radius-lg)] mb-5"
+            style={{ background: 'var(--brand-primary)' }}
+          >
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M12 2L2 7l10 5 10-5-10-5z" />
               <path d="M2 17l10 5 10-5" />
               <path d="M2 12l10 5 10-5" />
             </svg>
           </div>
-          <h1 className="text-xl font-bold tracking-tight text-[var(--text)]">
+          <h1 className="text-[22px] font-bold tracking-tight" style={{ color: 'var(--text-primary)' }}>
             Agent Deployment Playbook
           </h1>
-          <p className="text-[12px] text-[var(--text-4)] mt-1.5 tracking-wide">Sign in to continue</p>
+          <p className="text-[13px] mt-1.5" style={{ color: 'var(--text-tertiary)' }}>
+            Sign in to continue
+          </p>
         </div>
 
         {/* Card */}
-        <div className="bg-[var(--surface)] border border-[var(--border)] rounded-[var(--radius-lg)] p-7 shadow-[var(--shadow-card)]">
-          {/* Credentials Form */}
+        <div
+          className="rounded-[var(--radius-lg)] p-7"
+          style={{
+            background: 'var(--surface-elevated)',
+            border: '1px solid var(--border-default)',
+            boxShadow: 'var(--shadow-elevated)',
+          }}
+        >
           <form onSubmit={handleCredentialsLogin} className="space-y-5">
             {error && (
-              <div className="px-3 py-2.5 rounded-[var(--radius-sm)] bg-[var(--error-soft)] border border-[rgba(224,85,85,0.15)] text-[var(--error)] text-[12px] font-medium">
+              <div
+                className="px-3 py-2.5 rounded-[var(--radius-sm)] text-[12px] font-medium"
+                style={{
+                  background: 'var(--status-error-soft)',
+                  color: 'var(--status-error)',
+                  border: '1px solid rgba(220, 38, 38, 0.15)',
+                }}
+              >
                 {error}
               </div>
             )}
 
             <div>
-              <label className="block text-[11px] font-semibold text-[var(--text-3)] mb-2 tracking-wide uppercase">Email</label>
+              <label className="block text-[12px] font-semibold mb-2" style={{ color: 'var(--text-secondary)' }}>
+                Email
+              </label>
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="you@example.com"
                 required
-                className="w-full px-3.5 py-2.5 border border-[var(--border)] rounded-[var(--radius-sm)] text-[13px] bg-[var(--bg)] text-[var(--text)] placeholder:text-[var(--text-4)] focus:border-[var(--accent)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-soft)] transition-all"
+                className="w-full px-3.5 py-2.5 rounded-[var(--radius-md)] text-[14px] transition-all"
+                style={{
+                  border: '1px solid var(--border-default)',
+                  background: 'var(--canvas)',
+                  color: 'var(--text-primary)',
+                }}
+                onFocus={(e) => {
+                  e.currentTarget.style.borderColor = 'var(--border-focus)';
+                  e.currentTarget.style.boxShadow = '0 0 0 3px var(--brand-soft)';
+                }}
+                onBlur={(e) => {
+                  e.currentTarget.style.borderColor = 'var(--border-default)';
+                  e.currentTarget.style.boxShadow = 'none';
+                }}
               />
             </div>
 
             <div>
               <div className="flex items-center justify-between mb-2">
-                <label className="block text-[11px] font-semibold text-[var(--text-3)] tracking-wide uppercase">Password</label>
+                <label className="block text-[12px] font-semibold" style={{ color: 'var(--text-secondary)' }}>
+                  Password
+                </label>
                 <Link
                   href="/forgot-password"
-                  className="text-[10px] font-medium text-[var(--accent-muted)] hover:text-[var(--accent)] transition-colors"
+                  className="text-[11px] font-medium transition-colors"
+                  style={{ color: 'var(--brand-primary)' }}
                 >
                   Forgot password?
                 </Link>
@@ -100,12 +133,26 @@ function LoginForm() {
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Enter your password"
                   required
-                  className="w-full px-3.5 py-2.5 pr-10 border border-[var(--border)] rounded-[var(--radius-sm)] text-[13px] bg-[var(--bg)] text-[var(--text)] placeholder:text-[var(--text-4)] focus:border-[var(--accent)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-soft)] transition-all"
+                  className="w-full px-3.5 py-2.5 pr-10 rounded-[var(--radius-md)] text-[14px] transition-all"
+                  style={{
+                    border: '1px solid var(--border-default)',
+                    background: 'var(--canvas)',
+                    color: 'var(--text-primary)',
+                  }}
+                  onFocus={(e) => {
+                    e.currentTarget.style.borderColor = 'var(--border-focus)';
+                    e.currentTarget.style.boxShadow = '0 0 0 3px var(--brand-soft)';
+                  }}
+                  onBlur={(e) => {
+                    e.currentTarget.style.borderColor = 'var(--border-default)';
+                    e.currentTarget.style.boxShadow = 'none';
+                  }}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--text-4)] hover:text-[var(--text-3)] transition-colors"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 transition-colors"
+                  style={{ color: 'var(--text-tertiary)' }}
                   tabIndex={-1}
                 >
                   {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
@@ -116,14 +163,24 @@ function LoginForm() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full px-4 py-2.5 rounded-[var(--radius-sm)] text-[13px] font-semibold text-white bg-[var(--accent)] hover:bg-[var(--accent-hover)] disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-[0_1px_8px_rgba(196,154,60,0.2)]"
+              className="w-full px-4 py-2.5 rounded-[var(--radius-md)] text-[14px] font-semibold transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+              style={{
+                background: 'var(--brand-primary)',
+                color: 'var(--text-inverse)',
+              }}
+              onMouseEnter={(e) => {
+                if (!loading) e.currentTarget.style.background = 'var(--brand-primary-hover)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = 'var(--brand-primary)';
+              }}
             >
               {loading ? 'Signing in...' : 'Sign In'}
             </button>
           </form>
         </div>
 
-        <p className="text-center text-[10px] text-[var(--text-4)] mt-6 tracking-wide">
+        <p className="text-center text-[11px] mt-6" style={{ color: 'var(--text-tertiary)' }}>
           &copy; 2026 Padmasani Srimadhan. All rights reserved.
         </p>
       </div>
@@ -134,8 +191,8 @@ function LoginForm() {
 export default function LoginPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center bg-[var(--bg)]">
-        <div className="text-[var(--text-4)] text-[13px]">Loading...</div>
+      <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--canvas)' }}>
+        <div className="text-[13px]" style={{ color: 'var(--text-tertiary)' }}>Loading...</div>
       </div>
     }>
       <LoginForm />

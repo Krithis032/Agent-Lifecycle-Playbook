@@ -29,14 +29,14 @@ export default function ProjectDashboard({ project, phases }: ProjectDashboardPr
     <div>
       <div className="flex items-start justify-between mb-6">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-[var(--text)]">{project.name}</h1>
+          <h1 className="text-3xl font-bold tracking-tight" style={{ color: 'var(--text-primary)' }}>{project.name}</h1>
           {project.description && (
-            <p className="text-[14px] text-[var(--text-3)] mt-1 max-w-[500px]">{project.description}</p>
+            <p className="text-[14px] mt-1 max-w-[500px]" style={{ color: 'var(--text-tertiary)' }}>{project.description}</p>
           )}
           <div className="flex gap-2 mt-3">
-            <Badge variant={project.status === 'active' ? 'green' : 'default'}>{project.status}</Badge>
-            {project.framework && <Badge variant="purple">{project.framework}</Badge>}
-            {project.architecturePattern && <Badge variant="cyan">{project.architecturePattern}</Badge>}
+            <Badge variant={project.status === 'active' ? 'success' : 'default'}>{project.status}</Badge>
+            {project.framework && <Badge variant="info">{project.framework}</Badge>}
+            {project.architecturePattern && <Badge variant="info">{project.architecturePattern}</Badge>}
           </div>
         </div>
       </div>
@@ -48,18 +48,18 @@ export default function ProjectDashboard({ project, phases }: ProjectDashboardPr
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         <Card>
-          <div className="text-[32px] font-bold text-[var(--accent)] leading-none">{overallProgress}%</div>
-          <div className="text-[11px] font-semibold text-[var(--text-4)] uppercase tracking-wider mt-1">Overall Progress</div>
+          <div className="text-[32px] font-bold leading-none" style={{ color: 'var(--brand-primary)' }}>{overallProgress}%</div>
+          <div className="text-[11px] font-semibold uppercase tracking-wider mt-1" style={{ color: 'var(--text-quaternary)' }}>Overall Progress</div>
         </Card>
         <Card>
-          <div className="text-[32px] font-bold text-[var(--green)] leading-none">{completedPhases}/{phases.length}</div>
-          <div className="text-[11px] font-semibold text-[var(--text-4)] uppercase tracking-wider mt-1">Phases Complete</div>
+          <div className="text-[32px] font-bold leading-none" style={{ color: '#15803d' }}>{completedPhases}/{phases.length}</div>
+          <div className="text-[11px] font-semibold uppercase tracking-wider mt-1" style={{ color: 'var(--text-quaternary)' }}>Phases Complete</div>
         </Card>
         <Card>
-          <div className="text-[32px] font-bold text-[var(--purple)] leading-none">
+          <div className="text-[32px] font-bold leading-none" style={{ color: '#6b3fa0' }}>
             {project.currentPhase?.icon || '--'}
           </div>
-          <div className="text-[11px] font-semibold text-[var(--text-4)] uppercase tracking-wider mt-1">
+          <div className="text-[11px] font-semibold uppercase tracking-wider mt-1" style={{ color: 'var(--text-quaternary)' }}>
             {project.currentPhase?.name || 'Not started'}
           </div>
         </Card>
@@ -72,11 +72,11 @@ export default function ProjectDashboard({ project, phases }: ProjectDashboardPr
               <span>{phase.icon}</span>
               <span className="text-[13px] font-bold">{phase.name}</span>
             </div>
-            <Badge variant={phase.status === 'completed' ? 'green' : phase.status === 'in_progress' ? 'accent' : 'default'}>
+            <Badge variant={phase.status === 'completed' ? 'success' : phase.status === 'in_progress' ? 'brand' : 'default'}>
               {phase.status.replace('_', ' ')}
             </Badge>
             <div className="mt-3">
-              <Progress value={phase.gateCompletion} label="Gates" color="var(--green)" size="sm" />
+              <Progress value={phase.gateCompletion} label="Gates" color="var(--status-success)" size="sm" />
             </div>
           </Card>
         ))}

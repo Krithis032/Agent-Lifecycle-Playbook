@@ -55,13 +55,13 @@ export default async function TemplateFillPage({
   return (
     <div className="animate-fade-in flex flex-col gap-6">
       <div>
-        <Link href="/templates" className="text-[13px] text-[var(--accent)] hover:underline flex items-center gap-1 mb-3">
+        <Link href="/templates" className="text-[13px] hover:underline flex items-center gap-1 mb-3" style={{ color: 'var(--brand-primary)' }}>
           <ArrowLeft size={14} /> Back to Templates
         </Link>
-        <h1 className="text-2xl font-semibold tracking-tight text-[var(--text)]">
+        <h1 className="text-2xl font-semibold tracking-tight" style={{ color: 'var(--text-primary)' }}>
           {existingFill ? `Edit: ${existingFill.title}` : template.name}
         </h1>
-        <p className="text-sm text-[var(--text-3)] mt-1">{template.description}</p>
+        <p className="text-sm mt-1" style={{ color: 'var(--text-tertiary)' }}>{template.description}</p>
       </div>
       <TemplateForm
         templateSlug={template.slug}

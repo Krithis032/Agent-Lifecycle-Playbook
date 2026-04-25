@@ -57,29 +57,33 @@ export default function CheckboxWithRationale({
             type="checkbox"
             checked={data.checked}
             onChange={e => emitChange({ ...data, checked: e.target.checked })}
-            className="w-4 h-4 accent-[var(--accent)] rounded"
+            className="w-4 h-4 rounded"
+            style={{ accentColor: 'var(--brand-primary)' }}
           />
-          <span className="text-sm font-medium text-[var(--text)]">
+          <span className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>
             {label}
-            {required && <span className="text-[var(--error)] ml-0.5">*</span>}
+            {required && <span style={{ color: 'var(--status-error)' }} className="ml-0.5">*</span>}
           </span>
         </label>
         {helpText && (
           <Tooltip content={helpText} position="top">
-            <HelpCircle size={14} className="text-[var(--text-4)] hover:text-[var(--accent)] cursor-help transition-colors" />
+            <HelpCircle size={14} className="cursor-help transition-colors" style={{ color: 'var(--text-quaternary)' }} />
           </Tooltip>
         )}
       </div>
       <div className="ml-6">
-        <label className="text-[11px] font-medium text-[var(--text-3)] block mb-1">
-          Rationale <span className="text-[var(--text-4)] font-normal">(explain your assessment)</span>
+        <label className="text-[11px] font-medium block mb-1" style={{ color: 'var(--text-tertiary)' }}>
+          Rationale <span className="font-normal" style={{ color: 'var(--text-quaternary)' }}>(explain your assessment)</span>
         </label>
         <textarea
           value={data.rationale}
           onChange={e => emitChange({ ...data, rationale: e.target.value })}
           placeholder="Explain why you checked or unchecked this criteria..."
           rows={2}
-          className="w-full px-3 py-2 text-xs border border-[var(--border)] rounded-lg bg-[var(--bg)] text-[var(--text)] focus:border-[var(--accent)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-soft)] resize-y transition-all"
+          className="w-full px-3 py-2 text-xs rounded-lg focus:outline-none resize-y transition-all"
+          style={{ border: '1px solid var(--border-default)', background: 'var(--surface-0)', color: 'var(--text-primary)' }}
+          onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--border-focus)'; e.currentTarget.style.boxShadow = '0 0 0 2px var(--brand-soft)'; }}
+          onBlur={(e) => { e.currentTarget.style.borderColor = 'var(--border-default)'; e.currentTarget.style.boxShadow = 'none'; }}
         />
       </div>
     </div>

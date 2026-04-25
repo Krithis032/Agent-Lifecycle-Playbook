@@ -10,19 +10,19 @@ interface ActionPlanTrackerProps {
   onOwnerChange?: (actionId: number, owner: string) => Promise<void>;
 }
 
-const phaseLabels: Record<string, { label: string; icon: string }> = {
-  immediate: { label: 'Immediate (0-30 days)', icon: '⚡' },
-  short_term: { label: 'Short Term (1-3 months)', icon: '📅' },
-  long_term: { label: 'Long Term (3-12 months)', icon: '🎯' },
+const phaseLabels: Record<string, { label: string; dotColor: string }> = {
+  immediate: { label: 'Immediate (0-30 days)', dotColor: 'var(--status-error)' },
+  short_term: { label: 'Short Term (1-3 months)', dotColor: 'var(--status-warning)' },
+  long_term: { label: 'Long Term (3-12 months)', dotColor: 'var(--brand-primary)' },
 };
 
-const ownerColors: Record<string, string> = {
-  CAIO: 'bg-[var(--info-soft)] text-[var(--info)]',
-  CTO: 'bg-[rgba(139,92,246,0.1)] text-[#7c3aed]',
-  CDO: 'bg-[rgba(99,102,241,0.1)] text-[#818cf8]',
-  Legal: 'bg-[var(--warning-soft)] text-[var(--warning)]',
-  HR: 'bg-[rgba(236,72,153,0.1)] text-[#f472b6]',
-  PM: 'bg-[rgba(20,184,166,0.1)] text-[#5eead4]',
+const ownerStyles: Record<string, { bg: string; color: string }> = {
+  CAIO: { bg: 'var(--status-info-soft)', color: 'var(--status-info)' },
+  CTO: { bg: 'rgba(139,92,246,0.1)', color: '#7c3aed' },
+  CDO: { bg: 'rgba(99,102,241,0.1)', color: '#818cf8' },
+  Legal: { bg: 'var(--status-warning-soft)', color: 'var(--status-warning)' },
+  HR: { bg: 'rgba(236,72,153,0.1)', color: '#f472b6' },
+  PM: { bg: 'rgba(20,184,166,0.1)', color: '#5eead4' },
 };
 
 export default function ActionPlanTracker({ actions, onStatusChange, onOwnerChange }: ActionPlanTrackerProps) {
@@ -56,11 +56,11 @@ export default function ActionPlanTracker({ actions, onStatusChange, onOwnerChan
     <div className="space-y-6">
       {/* Progress */}
       <div className="flex items-center gap-4">
-        <div className="flex-1 h-2 bg-[var(--surface)] rounded-full overflow-hidden">
-          <div className="h-full bg-[var(--accent)] rounded-full transition-all duration-500" style={{ width: `${progressPct}%` }} />
+        <div className="flex-1 h-2 rounded-full overflow-hidden" style={{ background: 'var(--surface-1)' }}>
+          <div className="h-full rounded-full transition-all duration-500" style={{ width: `${progressPct}%`, background: 'var(--brand-primary)' }} />
         </div>
-        <span className="text-[13px] font-bold text-[var(--text)]">{progressPct}%</span>
-        <span className="text-[12px] text-[var(--text-3)]">{completed}/{total} complete</span>
+        <span className="text-[13px] font-bold" style={{ color: 'var(--text-primary)' }}>{progressPct}%</span>
+        <span className="text-[12px]" style={{ color: 'var(--text-tertiary)' }}>{completed}/{total} complete</span>
       </div>
 
       {(['immediate', 'short_term', 'long_term'] as const).map(phase => {
@@ -70,31 +70,45 @@ export default function ActionPlanTracker({ actions, onStatusChange, onOwnerChan
 
         return (
           <div key={phase}>
-            <h3 className="text-[13px] font-bold text-[var(--text)] flex items-center gap-2 mb-3">
-              {p.icon} {p.label} ({items.length})
+            <h3 className="text-[13px] font-bold flex items-center gap-2 mb-3 uppercase tracking-wider" style={{ color: 'var(--text-primary)' }}>
+              <span className="w-2.5 h-2.5 rounded-full" style={{ background: p.dotColor }} />
+              {p.label} ({items.length})
             </h3>
             <div className="space-y-2">
               {items.map((action) => (
-                <div key={action.id} className={`border border-[var(--border)] rounded-lg p-4 bg-[var(--surface)] ${updating === action.id ? 'opacity-50' : ''}`}>
+                <div
+                  key={action.id}
+                  className={`rounded-lg p-4 ${updating === action.id ? 'opacity-50' : ''}`}
+                  style={{ border: '1px solid var(--border-default)', background: 'var(--surface-elevated)' }}
+                >
                   <div className="flex items-start justify-between mb-2">
-                    <p className="text-[13px] text-[var(--text)] flex-1">{action.action}</p>
+                    <p className="text-[13px] flex-1" style={{ color: 'var(--text-primary)' }}>{action.action}</p>
                     <div className="flex gap-1.5 shrink-0 ml-2">
                       {action.owner && (
-                        <span className={`inline-block text-[10px] font-bold px-2 py-0.5 rounded ${ownerColors[action.owner] || 'bg-gray-50 text-gray-700'}`}>
+                        <span
+                          className="inline-block text-[10px] font-bold px-2 py-0.5 rounded"
+                          style={{
+                            background: ownerStyles[action.owner]?.bg || 'var(--surface-1)',
+                            color: ownerStyles[action.owner]?.color || 'var(--text-secondary)',
+                          }}
+                        >
                           {action.owner}
                         </span>
                       )}
                     </div>
                   </div>
                   {action.frameworkRef && (
-                    <Badge variant="accent" className="mb-2">{action.frameworkRef}</Badge>
+                    <Badge variant="brand" className="mb-2">{action.frameworkRef}</Badge>
                   )}
                   <div className="flex items-center gap-2 mt-2">
                     {onStatusChange ? (
                       <select
                         value={action.status}
                         onChange={(e) => handleStatus(action.id, e.target.value)}
-                        className="text-[12px] px-2 py-1 border border-[var(--border)] rounded bg-[var(--bg)] focus:outline-none focus:border-[var(--accent)]"
+                        className="text-[12px] px-2 py-1 rounded focus:outline-none"
+                        style={{ border: '1px solid var(--border-default)', background: 'var(--surface-0)', color: 'var(--text-primary)' }}
+                        onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--border-focus)'; e.currentTarget.style.boxShadow = '0 0 0 2px var(--brand-soft)'; }}
+                        onBlur={(e) => { e.currentTarget.style.borderColor = 'var(--border-default)'; e.currentTarget.style.boxShadow = 'none'; }}
                       >
                         <option value="pending">Pending</option>
                         <option value="in_progress">In Progress</option>
@@ -109,7 +123,10 @@ export default function ActionPlanTracker({ actions, onStatusChange, onOwnerChan
                       <select
                         value={action.owner || ''}
                         onChange={(e) => handleOwner(action.id, e.target.value)}
-                        className="text-[12px] px-2 py-1 border border-[var(--border)] rounded bg-[var(--bg)] focus:outline-none focus:border-[var(--accent)]"
+                        className="text-[12px] px-2 py-1 rounded focus:outline-none"
+                        style={{ border: '1px solid var(--border-default)', background: 'var(--surface-0)', color: 'var(--text-primary)' }}
+                        onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--border-focus)'; e.currentTarget.style.boxShadow = '0 0 0 2px var(--brand-soft)'; }}
+                        onBlur={(e) => { e.currentTarget.style.borderColor = 'var(--border-default)'; e.currentTarget.style.boxShadow = 'none'; }}
                       >
                         <option value="">Assign Owner</option>
                         {['CAIO', 'CTO', 'CDO', 'Legal', 'HR', 'PM'].map(o => (
@@ -125,7 +142,7 @@ export default function ActionPlanTracker({ actions, onStatusChange, onOwnerChan
         );
       })}
       {actions.length === 0 && (
-        <p className="text-center text-[var(--text-3)] py-6">No action items generated</p>
+        <p className="text-center py-6" style={{ color: 'var(--text-tertiary)' }}>No action items generated</p>
       )}
     </div>
   );

@@ -33,32 +33,32 @@ export default async function MyDocumentsPage() {
   return (
     <div className="flex flex-col gap-6 animate-fade-in">
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight text-[var(--text)]">My Documents</h1>
-        <p className="text-sm text-[var(--text-3)] mt-1">All filled templates and documents across your projects.</p>
+        <h1 className="text-2xl font-semibold tracking-tight" style={{ color: 'var(--text-primary)' }}>My Documents</h1>
+        <p className="text-sm mt-1" style={{ color: 'var(--text-tertiary)' }}>All filled templates and documents across your projects.</p>
       </div>
 
       {/* Stats */}
       <div className="grid grid-cols-3 gap-4">
-        <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-4">
+        <div className="rounded-xl p-4" style={{ background: 'var(--surface-elevated)', border: '1px solid var(--border-default)' }}>
           <div className="flex items-center gap-2 mb-1">
-            <FileText size={16} className="text-[var(--accent)]" />
-            <span className="text-[11px] font-semibold text-[var(--text-3)] uppercase tracking-wider">Documents</span>
+            <FileText size={16} style={{ color: 'var(--brand-primary)' }} />
+            <span className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: 'var(--text-tertiary)' }}>Documents</span>
           </div>
-          <div className="text-2xl font-bold text-[var(--text)]">{fills.length}</div>
+          <div className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>{fills.length}</div>
         </div>
-        <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-4">
+        <div className="rounded-xl p-4" style={{ background: 'var(--surface-elevated)', border: '1px solid var(--border-default)' }}>
           <div className="flex items-center gap-2 mb-1">
-            <FolderOpen size={16} className="text-[var(--purple)]" />
-            <span className="text-[11px] font-semibold text-[var(--text-3)] uppercase tracking-wider">Templates Used</span>
+            <FolderOpen size={16} style={{ color: '#6b3fa0' }} />
+            <span className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: 'var(--text-tertiary)' }}>Templates Used</span>
           </div>
-          <div className="text-2xl font-bold text-[var(--text)]">{templateCount}</div>
+          <div className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>{templateCount}</div>
         </div>
-        <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-4">
+        <div className="rounded-xl p-4" style={{ background: 'var(--surface-elevated)', border: '1px solid var(--border-default)' }}>
           <div className="flex items-center gap-2 mb-1">
-            <FolderOpen size={16} className="text-[var(--green)]" />
-            <span className="text-[11px] font-semibold text-[var(--text-3)] uppercase tracking-wider">Projects</span>
+            <FolderOpen size={16} style={{ color: '#15803d' }} />
+            <span className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: 'var(--text-tertiary)' }}>Projects</span>
           </div>
-          <div className="text-2xl font-bold text-[var(--text)]">{projectCount}</div>
+          <div className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>{projectCount}</div>
         </div>
       </div>
 

@@ -205,18 +205,21 @@ export default function TemplateFillForm({ template, projectId, existingFill, on
     return (
       <Card key={field.key} padding="sm">
         <div className="flex items-center gap-1.5 mb-1.5">
-          <label className="text-[12px] font-bold text-[var(--text-2)]">
-            {field.label} {field.required && <span className="text-[var(--coral)]">*</span>}
+          <label className="text-[12px] font-bold" style={{ color: 'var(--text-secondary)' }}>
+            {field.label} {field.required && <span style={{ color: 'var(--status-error)' }}>*</span>}
           </label>
           {field.helpText && (
             <Tooltip content={field.helpText} position="top">
-              <HelpCircle size={13} className="text-[var(--text-4)] hover:text-[var(--accent)] cursor-help transition-colors" />
+              <HelpCircle size={13} className="cursor-help transition-colors" style={{ color: 'var(--text-quaternary)' }} />
             </Tooltip>
           )}
         </div>
         {field.type === 'textarea' ? (
           <textarea
-            className="w-full px-3 py-2 border border-[var(--border)] rounded-[var(--radius-sm)] text-[13px] bg-[var(--bg)] text-[var(--text)] focus:border-[var(--accent)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-soft)] resize-y transition-all"
+            className="w-full px-3 py-2 rounded-[var(--radius-sm)] text-[13px] transition-all focus:outline-none focus:ring-2 resize-y"
+            style={{ border: '1px solid var(--border-default)', background: 'var(--surface-0)', color: 'var(--text-primary)' }}
+            onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--border-focus)'; e.currentTarget.style.boxShadow = '0 0 0 2px color-mix(in srgb, var(--brand-primary) 15%, transparent)'; }}
+            onBlur={(e) => { e.currentTarget.style.borderColor = 'var(--border-default)'; e.currentTarget.style.boxShadow = 'none'; }}
             rows={4}
             placeholder={field.placeholder || ''}
             title={field.helpText || `Enter ${field.label.toLowerCase()}`}
@@ -225,7 +228,10 @@ export default function TemplateFillForm({ template, projectId, existingFill, on
           />
         ) : field.type === 'select' ? (
           <select
-            className="w-full px-3 py-2 border border-[var(--border)] rounded-[var(--radius-sm)] text-[13px] bg-[var(--bg)] text-[var(--text)] focus:border-[var(--accent)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-soft)] transition-all"
+            className="w-full px-3 py-2 rounded-[var(--radius-sm)] text-[13px] transition-all focus:outline-none focus:ring-2"
+            style={{ border: '1px solid var(--border-default)', background: 'var(--surface-0)', color: 'var(--text-primary)' }}
+            onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--border-focus)'; e.currentTarget.style.boxShadow = '0 0 0 2px color-mix(in srgb, var(--brand-primary) 15%, transparent)'; }}
+            onBlur={(e) => { e.currentTarget.style.borderColor = 'var(--border-default)'; e.currentTarget.style.boxShadow = 'none'; }}
             title={field.helpText || `Select ${field.label.toLowerCase()}`}
             value={value}
             onChange={(e) => onChange(e.target.value)}
@@ -239,21 +245,28 @@ export default function TemplateFillForm({ template, projectId, existingFill, on
               type="checkbox"
               checked={value === 'true'}
               onChange={(e) => onChange(e.target.checked ? 'true' : 'false')}
-              className="w-4 h-4 accent-[var(--accent)] rounded"
+              className="w-4 h-4 rounded"
+              style={{ accentColor: 'var(--brand-primary)' }}
             />
-            <span className="text-sm text-[var(--text-2)]">{field.label}</span>
+            <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>{field.label}</span>
           </label>
         ) : field.type === 'date' ? (
           <input
             type="date"
-            className="w-full px-3 py-2 border border-[var(--border)] rounded-[var(--radius-sm)] text-[13px] bg-[var(--bg)] text-[var(--text)] focus:border-[var(--accent)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-soft)] transition-all"
+            className="w-full px-3 py-2 rounded-[var(--radius-sm)] text-[13px] transition-all focus:outline-none focus:ring-2"
+            style={{ border: '1px solid var(--border-default)', background: 'var(--surface-0)', color: 'var(--text-primary)' }}
+            onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--border-focus)'; e.currentTarget.style.boxShadow = '0 0 0 2px color-mix(in srgb, var(--brand-primary) 15%, transparent)'; }}
+            onBlur={(e) => { e.currentTarget.style.borderColor = 'var(--border-default)'; e.currentTarget.style.boxShadow = 'none'; }}
             title={field.helpText || `Select ${field.label.toLowerCase()}`}
             value={value}
             onChange={(e) => onChange(e.target.value)}
           />
         ) : (
           <input
-            className="w-full px-3 py-2 border border-[var(--border)] rounded-[var(--radius-sm)] text-[13px] bg-[var(--bg)] text-[var(--text)] focus:border-[var(--accent)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-soft)] transition-all"
+            className="w-full px-3 py-2 rounded-[var(--radius-sm)] text-[13px] transition-all focus:outline-none focus:ring-2"
+            style={{ border: '1px solid var(--border-default)', background: 'var(--surface-0)', color: 'var(--text-primary)' }}
+            onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--border-focus)'; e.currentTarget.style.boxShadow = '0 0 0 2px color-mix(in srgb, var(--brand-primary) 15%, transparent)'; }}
+            onBlur={(e) => { e.currentTarget.style.borderColor = 'var(--border-default)'; e.currentTarget.style.boxShadow = 'none'; }}
             placeholder={field.placeholder || ''}
             title={field.helpText || `Enter ${field.label.toLowerCase()}`}
             value={value}
@@ -269,15 +282,15 @@ export default function TemplateFillForm({ template, projectId, existingFill, on
       <div className="flex items-start justify-between mb-4">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <FileText size={18} className="text-[var(--purple)]" />
-            <h2 className="text-xl font-bold tracking-tight text-[var(--text)]">{template.name}</h2>
+            <FileText size={18} style={{ color: 'var(--module-templates)' }} />
+            <h2 className="text-xl font-bold tracking-tight" style={{ color: 'var(--text-primary)' }}>{template.name}</h2>
           </div>
           {template.description && (
-            <p className="text-[13px] text-[var(--text-3)]">{template.description}</p>
+            <p className="text-[13px]" style={{ color: 'var(--text-tertiary)' }}>{template.description}</p>
           )}
           <div className="flex gap-2 mt-2">
-            <Badge variant="purple">{filledCount}/{totalFields} fields</Badge>
-            {existingFill && <Badge variant="green">Saved</Badge>}
+            <Badge variant="info">{filledCount}/{totalFields} fields</Badge>
+            {existingFill && <Badge variant="success">Saved</Badge>}
           </div>
         </div>
         <div className="flex gap-2">
@@ -299,7 +312,14 @@ export default function TemplateFillForm({ template, projectId, existingFill, on
 
       {/* Draft banner */}
       {hasDraft && (
-        <div className="flex items-center gap-2 px-4 py-2 rounded-[var(--radius-sm)] bg-[var(--warning-soft)] border border-[var(--warning)] text-[var(--warning)] text-[13px] mb-4">
+        <div
+          className="flex items-center gap-2 px-4 py-2 rounded-[var(--radius-sm)] text-[13px] mb-4"
+          style={{
+            background: 'var(--status-warning-soft)',
+            border: '1px solid color-mix(in srgb, var(--status-warning) 30%, transparent)',
+            color: 'var(--status-warning)',
+          }}
+        >
           <CloudOff size={14} />
           <span className="font-medium">Draft auto-saved locally.</span>
           <button
@@ -322,10 +342,17 @@ export default function TemplateFillForm({ template, projectId, existingFill, on
       {/* Title */}
       <Card className="mb-4">
         <Tooltip content="A descriptive title for this document instance">
-          <label className="block text-[11px] font-bold uppercase tracking-widest text-[var(--text-4)] mb-1.5 cursor-help">Document Title</label>
+          <label className="block text-[11px] font-bold uppercase tracking-widest mb-1.5 cursor-help" style={{ color: 'var(--text-quaternary)' }}>Document Title</label>
         </Tooltip>
         <input
-          className="w-full px-3 py-2 border border-[var(--border)] rounded-[var(--radius-sm)] text-[14px] bg-[var(--bg)] text-[var(--text)] focus:border-[var(--accent)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-soft)] transition-all"
+          className="w-full px-3 py-2 rounded-[var(--radius-sm)] text-[14px] transition-all focus:outline-none focus:ring-2"
+          style={{
+            border: '1px solid var(--border-default)',
+            background: 'var(--surface-0)',
+            color: 'var(--text-primary)',
+          }}
+          onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--border-focus)'; e.currentTarget.style.boxShadow = '0 0 0 2px color-mix(in srgb, var(--brand-primary) 15%, transparent)'; }}
+          onBlur={(e) => { e.currentTarget.style.borderColor = 'var(--border-default)'; e.currentTarget.style.boxShadow = 'none'; }}
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           placeholder="Title for this document"

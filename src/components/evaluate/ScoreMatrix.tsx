@@ -35,17 +35,18 @@ export default function ScoreMatrix({ options, criteria, scores, onChange }: Sco
     <div className="overflow-x-auto">
       <table className="w-full text-sm">
         <thead>
-          <tr className="bg-[var(--surface)]">
-            <th className="text-left px-4 py-3 font-semibold text-[var(--text-3)] border-b border-[var(--border)] min-w-[180px]">
+          <tr style={{ background: 'var(--surface-1)' }}>
+            <th className="text-left px-4 py-3 font-semibold min-w-[180px]" style={{ color: 'var(--text-tertiary)', borderBottom: '1px solid var(--border-default)' }}>
               Criterion
             </th>
-            <th className="px-2 py-3 font-medium text-[var(--text-4)] border-b border-[var(--border)] text-center text-xs">
+            <th className="px-2 py-3 font-medium text-center text-xs" style={{ color: 'var(--text-quaternary)', borderBottom: '1px solid var(--border-default)' }}>
               Weight
             </th>
             {options.map(opt => (
               <th
                 key={opt.key}
-                className="px-4 py-3 font-semibold text-[var(--text)] border-b border-[var(--border)] text-center min-w-[160px]"
+                className="px-4 py-3 font-semibold text-center min-w-[160px]"
+                style={{ color: 'var(--text-primary)', borderBottom: '1px solid var(--border-default)' }}
               >
                 {opt.name}
               </th>
@@ -57,15 +58,15 @@ export default function ScoreMatrix({ options, criteria, scores, onChange }: Sco
             const rowScores = options.map(opt => getScore(opt.key, crit.key));
             const maxInRow = Math.max(...rowScores, 0);
             return (
-              <tr key={crit.key} className="border-b border-[var(--border)] hover:bg-[var(--surface)] transition-colors">
+              <tr key={crit.key} style={{ borderBottom: '1px solid var(--border-default)' }}>
                 <td className="px-4 py-3">
-                  <div className="font-medium text-[var(--text)]">{crit.name}</div>
+                  <div className="font-medium" style={{ color: 'var(--text-primary)' }}>{crit.name}</div>
                   {crit.description && (
-                    <div className="text-xs text-[var(--text-4)] mt-0.5 max-w-[200px]">{crit.description}</div>
+                    <div className="text-xs mt-0.5 max-w-[200px]" style={{ color: 'var(--text-quaternary)' }}>{crit.description}</div>
                   )}
                 </td>
                 <td className="px-2 py-3 text-center">
-                  <span className="text-xs font-bold text-[var(--accent)] tabular-nums">
+                  <span className="text-xs font-bold tabular-nums" style={{ color: 'var(--module-evaluate)' }}>
                     {(crit.weight * 100).toFixed(0)}%
                   </span>
                 </td>
@@ -75,7 +76,8 @@ export default function ScoreMatrix({ options, criteria, scores, onChange }: Sco
                   return (
                     <td
                       key={opt.key}
-                      className={`px-4 py-3 text-center ${isLeader ? 'bg-[var(--success-soft)]' : ''}`}
+                      className="px-4 py-3 text-center"
+                      style={{ background: isLeader ? 'var(--status-success-soft)' : undefined }}
                     >
                       <div className="flex justify-center">
                         <ScoreCell score={score} onChange={v => setScore(opt.key, crit.key, v)} />
@@ -88,18 +90,18 @@ export default function ScoreMatrix({ options, criteria, scores, onChange }: Sco
           })}
         </tbody>
         <tfoot>
-          <tr className="bg-[var(--surface)]">
-            <td className="px-4 py-3 font-bold text-[var(--text)]">Weighted Total</td>
+          <tr style={{ background: 'var(--surface-1)' }}>
+            <td className="px-4 py-3 font-bold" style={{ color: 'var(--text-primary)' }}>Weighted Total</td>
             <td />
             {options.map(opt => {
               const t = totals.find(t => t.key === opt.key);
               const isMax = t && t.total === maxTotal && t.total > 0;
               return (
                 <td key={opt.key} className="px-4 py-3 text-center">
-                  <span className={`text-lg font-bold tabular-nums ${isMax ? 'text-[var(--success)]' : 'text-[var(--text)]'}`}>
+                  <span className="text-lg font-bold tabular-nums" style={{ color: isMax ? 'var(--status-success)' : 'var(--text-primary)' }}>
                     {(t?.total || 0).toFixed(2)}
                   </span>
-                  <span className="text-xs text-[var(--text-4)]"> / 5.00</span>
+                  <span className="text-xs" style={{ color: 'var(--text-quaternary)' }}> / 5.00</span>
                 </td>
               );
             })}

@@ -17,17 +17,21 @@ export default function StepAccordion({
 }: StepAccordionProps) {
   return (
     <Accordion number={stepNum} numberColor={color} title={title}>
-      <p className="text-[14px] text-[var(--text-2)] leading-relaxed mb-4">{body}</p>
+      <p className="text-[14px] leading-relaxed mb-4" style={{ color: 'var(--text-secondary)' }}>{body}</p>
 
       {deliverables.length > 0 && (
         <div className="mb-4">
-          <div className="text-[9px] font-extrabold tracking-[2.5px] uppercase text-[var(--green)] mb-2">
+          <div className="text-[10px] font-extrabold tracking-[2px] uppercase mb-2" style={{ color: 'var(--status-success)' }}>
             Deliverables
           </div>
           <ul className="space-y-1">
             {deliverables.map((d, i) => (
-              <li key={i} className="text-[13px] text-[var(--text-3)] pl-4 relative before:content-[''] before:absolute before:left-0 before:top-[9px] before:w-1.5 before:h-1.5 before:rounded-full before:bg-[var(--green)]">
-                {d}
+              <li key={i} className="text-[13px] pl-4 relative flex items-start gap-2" style={{ color: 'var(--text-tertiary)' }}>
+                <span
+                  className="w-1.5 h-1.5 rounded-full mt-[7px] shrink-0"
+                  style={{ background: 'var(--status-success)' }}
+                />
+                <span>{d}</span>
               </li>
             ))}
           </ul>
@@ -36,12 +40,12 @@ export default function StepAccordion({
 
       {tools.length > 0 && (
         <div className="mb-4">
-          <div className="text-[9px] font-extrabold tracking-[2.5px] uppercase text-[var(--purple)] mb-2">
+          <div className="text-[10px] font-extrabold tracking-[2px] uppercase mb-2" style={{ color: 'var(--status-info)' }}>
             Tools
           </div>
           <div className="flex flex-wrap gap-1.5">
             {tools.map((t, i) => (
-              <Badge key={i} variant="purple">{t}</Badge>
+              <Badge key={i} variant="info">{t}</Badge>
             ))}
           </div>
         </div>
@@ -49,19 +53,34 @@ export default function StepAccordion({
 
       {codeExample && (
         <div className="mb-4">
-          <div className="text-[9px] font-extrabold tracking-[2.5px] uppercase text-[var(--cyan)] mb-2">
+          <div className="text-[10px] font-extrabold tracking-[2px] uppercase mb-2" style={{ color: 'var(--module-templates)' }}>
             Code Example
           </div>
-          <pre className="text-xs">{codeExample}</pre>
+          <pre
+            className="text-xs rounded-[var(--radius-md)] p-4 overflow-x-auto"
+            style={{
+              background: 'var(--surface-1)',
+              color: 'var(--text-secondary)',
+              border: '1px solid var(--border-default)',
+            }}
+          >
+            {codeExample}
+          </pre>
         </div>
       )}
 
       {proTip && (
-        <div className="bg-[var(--amber-soft)] border border-[var(--amber)] border-opacity-20 rounded-lg p-4">
-          <div className="text-[9px] font-extrabold tracking-[2.5px] uppercase text-[var(--amber)] mb-1.5">
+        <div
+          className="rounded-[var(--radius-md)] p-4"
+          style={{
+            background: 'var(--status-warning-soft)',
+            border: '1px solid color-mix(in srgb, var(--status-warning) 20%, transparent)',
+          }}
+        >
+          <div className="text-[10px] font-extrabold tracking-[2px] uppercase mb-1.5" style={{ color: 'var(--status-warning)' }}>
             Pro Tip
           </div>
-          <p className="text-[13px] text-[var(--text-2)]">{proTip}</p>
+          <p className="text-[13px]" style={{ color: 'var(--text-secondary)' }}>{proTip}</p>
         </div>
       )}
     </Accordion>

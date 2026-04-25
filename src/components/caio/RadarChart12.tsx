@@ -54,19 +54,19 @@ export default function RadarChart12({ scores, targetScores }: RadarChart12Props
         min: 0,
         max: 5,
         ticks: { stepSize: 1, font: { size: 10 }, backdropColor: 'transparent' },
-        pointLabels: { font: { size: 10, family: 'Inter' } },
+        pointLabels: { font: { size: 10, family: 'Urbanist' } },
         grid: { color: 'rgba(0,0,0,0.06)' },
         angleLines: { color: 'rgba(0,0,0,0.06)' },
       },
     },
     plugins: {
-      legend: { position: 'bottom' as const, labels: { font: { size: 11, family: 'Inter' } } },
+      legend: { position: 'bottom' as const, labels: { font: { size: 11, family: 'Urbanist' } } },
     },
   };
 
   return (
-    <div className="bg-[var(--surface)] rounded-lg border border-[var(--border)] p-6">
-      <h3 className="text-[15px] font-semibold mb-4 text-[var(--text)]">CAIO 12-Domain Assessment</h3>
+    <div className="rounded-lg p-6" style={{ background: 'var(--surface-elevated)', border: '1px solid var(--border-default)' }}>
+      <h3 className="text-[15px] font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>CAIO 12-Domain Assessment</h3>
       <Radar data={{ labels: scores.map(s => s.domainName), datasets }} options={options} />
     </div>
   );
