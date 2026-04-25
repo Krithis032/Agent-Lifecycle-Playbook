@@ -2,8 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Urbanist:wght@300;400;500;600;700;800;900&display=swap');
-
 :root {
   /* ── Canvas & Surfaces ── */
   --canvas:            #ffffff;
@@ -118,7 +116,7 @@
 }
 
 body {
-  font-family: 'Urbanist', system-ui, -apple-system, sans-serif;
+  font-family: var(--font-urbanist), 'Urbanist', system-ui, -apple-system, sans-serif;
   background: var(--canvas);
   color: var(--text-primary);
   line-height: 1.6;

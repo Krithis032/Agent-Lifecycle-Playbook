@@ -115,6 +115,11 @@ async function main() {
       totalPhases++;
 
       // Delete existing steps and gates to prevent duplicates on re-seed
+      // Must delete child ProjectGateCheck rows before parent GateCheck rows (FK constraint)
+      const existingGates = await prisma.gateCheck.findMany({ where: { phaseId: dbPhase.id }, select: { id: true } });
+      if (existingGates.length > 0) {
+        await prisma.projectGateCheck.deleteMany({ where: { gateCheckId: { in: existingGates.map(g => g.id) } } });
+      }
       await prisma.playbookStep.deleteMany({ where: { phaseId: dbPhase.id } });
       await prisma.gateCheck.deleteMany({ where: { phaseId: dbPhase.id } });
 
