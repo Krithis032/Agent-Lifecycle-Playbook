@@ -193,7 +193,7 @@ export default function ProjectDetailPage({ params }: { params: { id: string } }
 
             {/* Step Completion Progress */}
             <Card padding="sm" className="mb-4">
-              <Progress value={completedSteps} max={totalSteps} label={`Steps (${completedSteps}/${totalSteps})`} color="var(--accent)" size="sm" />
+              <Progress value={completedSteps} max={Math.max(totalSteps, 1)} label={`Steps (${completedSteps}/${totalSteps})`} color="var(--accent)" size="sm" />
               <div className="mt-2">
                 <Progress value={checkedGates} max={Math.max(totalGates, 1)} label={`Gates (${checkedGates}/${totalGates})`} color="var(--green)" size="sm" />
               </div>
