@@ -6,6 +6,7 @@ import Badge from '@/components/ui/Badge';
 import PageHeader from '@/components/ui/PageHeader';
 import StatCard from '@/components/ui/StatCard';
 import SectionPanel from '@/components/ui/SectionPanel';
+import { fetchWithAuth } from '@/lib/fetchWithAuth';
 import {
   FolderKanban, BookOpen, Plus, ArrowRight, Activity,
   Shield, BarChart3, FileText, Award, AlertTriangle, Sparkles, BookMarked
@@ -68,11 +69,11 @@ export default function DashboardClient() {
     const opts = { signal: controller.signal };
 
     Promise.all([
-      fetch('/api/dashboard/stats', opts).then(r => r.ok ? r.json() : null),
-      fetch('/api/projects', opts).then(r => r.ok ? r.json() : []),
-      fetch('/api/evaluate', opts).then(r => r.ok ? r.json() : []),
-      fetch('/api/templates/fills', opts).then(r => r.ok ? r.json() : []),
-      fetch('/api/kb/domains', opts).then(r => r.ok ? r.json() : []),
+      fetchWithAuth('/api/dashboard/stats', opts).then(r => r.ok ? r.json() : null),
+      fetchWithAuth('/api/projects', opts).then(r => r.ok ? r.json() : []),
+      fetchWithAuth('/api/evaluate', opts).then(r => r.ok ? r.json() : []),
+      fetchWithAuth('/api/templates/fills', opts).then(r => r.ok ? r.json() : []),
+      fetchWithAuth('/api/kb/domains', opts).then(r => r.ok ? r.json() : []),
     ])
       .then(([dashStats, projects, evals, fills, domains]) => {
         if (controller.signal.aborted) return;

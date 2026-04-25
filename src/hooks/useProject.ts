@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { fetchWithAuth } from '@/lib/fetchWithAuth';
 import type { Project, CreateProjectInput, PlaybookPhaseData, TemplateData } from '@/types/project';
 
 export function useProjects() {
@@ -10,7 +11,7 @@ export function useProjects() {
 
   const fetchProjects = useCallback(() => {
     setLoading(true);
-    fetch('/api/projects')
+    fetchWithAuth('/api/projects')
       .then((r) => r.json())
       .then((data) => { setProjects(Array.isArray(data) ? data : []); setLoading(false); })
       .catch((e) => { setError(e.message); setLoading(false); });
@@ -19,7 +20,7 @@ export function useProjects() {
   useEffect(() => {
     const controller = new AbortController();
     setLoading(true);
-    fetch('/api/projects', { signal: controller.signal })
+    fetchWithAuth('/api/projects', { signal: controller.signal })
       .then((r) => r.json())
       .then((data) => { setProjects(Array.isArray(data) ? data : []); setLoading(false); })
       .catch((e) => { if (!controller.signal.aborted) { setError(e.message); setLoading(false); } });

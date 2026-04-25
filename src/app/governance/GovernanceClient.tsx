@@ -6,6 +6,7 @@ import Badge from '@/components/ui/Badge';
 import PageHeader from '@/components/ui/PageHeader';
 import SectionPanel from '@/components/ui/SectionPanel';
 import StatCard from '@/components/ui/StatCard';
+import { fetchWithAuth } from '@/lib/fetchWithAuth';
 import { Shield, AlertTriangle, ArrowRight, TrendingUp } from 'lucide-react';
 
 interface Assessment {
@@ -31,7 +32,7 @@ export default function GovernanceClient() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('/api/governance/assess')
+    fetchWithAuth('/api/governance/assess')
       .then((res) => res.ok ? res.json() : [])
       .then((data) => {
         setAssessments(Array.isArray(data) ? data : []);

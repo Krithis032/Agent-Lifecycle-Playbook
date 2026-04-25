@@ -17,6 +17,7 @@ export const config = {
     '/evaluate/:path*',
     '/templates/:path*',
     '/documents/:path*',
+    '/my-documents/:path*',
     '/settings/:path*',
     '/playbook/:path*',
     '/interview/:path*',

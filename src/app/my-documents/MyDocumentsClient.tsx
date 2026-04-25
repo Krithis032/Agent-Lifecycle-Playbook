@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Card from '@/components/ui/Card';
 import FillHistoryTable from '@/components/templates/FillHistoryTable';
+import { fetchWithAuth } from '@/lib/fetchWithAuth';
 import { FileText, FolderOpen } from 'lucide-react';
 
 interface Fill {
@@ -18,7 +19,7 @@ export default function MyDocumentsClient() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('/api/documents')
+    fetchWithAuth('/api/documents')
       .then((res) => res.ok ? res.json() : [])
       .then((data) => {
         setFills(Array.isArray(data) ? data : []);

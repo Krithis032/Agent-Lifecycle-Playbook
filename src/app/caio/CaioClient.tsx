@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Card from '@/components/ui/Card';
 import Badge from '@/components/ui/Badge';
 import PageHeader from '@/components/ui/PageHeader';
+import { fetchWithAuth } from '@/lib/fetchWithAuth';
 import { Award, Plus, ArrowRight, Database } from 'lucide-react';
 import { MATURITY_LEVELS } from '@/types/caio';
 
@@ -29,7 +30,7 @@ export default function CaioClient() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('/api/caio')
+    fetchWithAuth('/api/caio')
       .then((res) => res.ok ? res.json() : [])
       .then((data) => {
         setAssessments(Array.isArray(data) ? data : []);

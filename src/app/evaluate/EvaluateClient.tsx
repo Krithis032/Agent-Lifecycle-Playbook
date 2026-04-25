@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Card from '@/components/ui/Card';
 import Badge from '@/components/ui/Badge';
 import PageHeader from '@/components/ui/PageHeader';
+import { fetchWithAuth } from '@/lib/fetchWithAuth';
 import { BarChart3, Plus, ArrowRight, Layers, Cpu, Sparkles } from 'lucide-react';
 
 interface Evaluation {
@@ -31,7 +32,7 @@ export default function EvaluateClient() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('/api/evaluate')
+    fetchWithAuth('/api/evaluate')
       .then((res) => res.ok ? res.json() : [])
       .then((data) => {
         setEvaluations(Array.isArray(data) ? data : []);
