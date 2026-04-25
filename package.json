@@ -5,8 +5,8 @@
   "scripts": {
     "dev": "next dev",
     "postinstall": "prisma generate",
-    "build": "next build",
-    "start": "node .next/standalone/server.js",
+    "build": "next build && cp -r public .next/standalone/ && cp -r .next/static .next/standalone/.next/",
+    "start": "HOSTNAME=0.0.0.0 node .next/standalone/server.js",
     "lint": "next lint",
     "test": "playwright test",
     "test:functionality": "playwright test --project=functionality",
