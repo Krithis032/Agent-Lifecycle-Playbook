@@ -32,13 +32,14 @@ export default function GovernanceClient() {
 
   useEffect(() => {
     fetch('/api/governance/assess')
-      .then((res) => res.json())
+      .then((res) => res.ok ? res.json() : [])
       .then((data) => {
-        setAssessments(data);
+        setAssessments(Array.isArray(data) ? data : []);
         setLoading(false);
       })
       .catch((err) => {
         console.error('Failed to fetch assessments:', err);
+        setAssessments([]);
         setLoading(false);
       });
   }, []);

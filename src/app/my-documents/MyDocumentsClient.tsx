@@ -19,13 +19,14 @@ export default function MyDocumentsClient() {
 
   useEffect(() => {
     fetch('/api/documents')
-      .then((res) => res.json())
+      .then((res) => res.ok ? res.json() : [])
       .then((data) => {
-        setFills(data);
+        setFills(Array.isArray(data) ? data : []);
         setLoading(false);
       })
       .catch((err) => {
         console.error('Failed to fetch documents:', err);
+        setFills([]);
         setLoading(false);
       });
   }, []);

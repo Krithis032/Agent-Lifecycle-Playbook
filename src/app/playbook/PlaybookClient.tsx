@@ -22,13 +22,14 @@ export default function PlaybookClient() {
 
   useEffect(() => {
     fetch('/api/playbook/phases')
-      .then((res) => res.json())
+      .then((res) => res.ok ? res.json() : [])
       .then((data) => {
-        setPhases(data);
+        setPhases(Array.isArray(data) ? data : []);
         setLoading(false);
       })
       .catch((err) => {
         console.error('Failed to fetch phases:', err);
+        setPhases([]);
         setLoading(false);
       });
   }, []);

@@ -10,9 +10,9 @@ export function usePlaybook() {
 
   useEffect(() => {
     fetch('/api/playbook/phases')
-      .then((r) => r.json())
-      .then((data) => { setPhases(data); setLoading(false); })
-      .catch((e) => { setError(e.message); setLoading(false); });
+      .then((r) => r.ok ? r.json() : [])
+      .then((data) => { setPhases(Array.isArray(data) ? data : []); setLoading(false); })
+      .catch((e) => { setError(e.message); setPhases([]); setLoading(false); });
   }, []);
 
   return { phases, loading, error };
@@ -26,7 +26,7 @@ export function usePhase(slug: string) {
   useEffect(() => {
     if (!slug) return;
     fetch(`/api/playbook/phases/${slug}`)
-      .then((r) => r.json())
+      .then((r) => { if (!r.ok) throw new Error('Not found'); return r.json(); })
       .then((data) => { setPhase(data); setLoading(false); })
       .catch((e) => { setError(e.message); setLoading(false); });
   }, [slug]);
@@ -40,7 +40,7 @@ export function useReference() {
 
   useEffect(() => {
     fetch('/api/playbook/reference')
-      .then((r) => r.json())
+      .then((r) => r.ok ? r.json() : null)
       .then((d) => { setData(d); setLoading(false); })
       .catch(() => setLoading(false));
   }, []);

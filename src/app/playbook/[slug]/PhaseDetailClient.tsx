@@ -57,14 +57,15 @@ export default function PhaseDetailClient({ slug }: { slug: string }) {
 
   useEffect(() => {
     Promise.all([
-      fetch('/api/playbook/phases').then(res => res.json()),
+      fetch('/api/playbook/phases').then(res => res.ok ? res.json() : []),
       fetch(`/api/playbook/phases/${slug}`).then(res => {
         if (!res.ok) throw new Error('Not found');
         return res.json();
       })
     ])
       .then(([phases, phaseData]) => {
-        setAllPhases(phases.map((p: Phase) => ({
+        const phasesArr = Array.isArray(phases) ? phases : [];
+        setAllPhases(phasesArr.map((p: Phase) => ({
           phaseNum: p.phaseNum,
           name: p.name,
           icon: p.icon,

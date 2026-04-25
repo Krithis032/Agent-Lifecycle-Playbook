@@ -32,13 +32,14 @@ export default function EvaluateClient() {
 
   useEffect(() => {
     fetch('/api/evaluate')
-      .then((res) => res.json())
+      .then((res) => res.ok ? res.json() : [])
       .then((data) => {
-        setEvaluations(data);
+        setEvaluations(Array.isArray(data) ? data : []);
         setLoading(false);
       })
       .catch((err) => {
         console.error('Failed to fetch evaluations:', err);
+        setEvaluations([]);
         setLoading(false);
       });
   }, []);

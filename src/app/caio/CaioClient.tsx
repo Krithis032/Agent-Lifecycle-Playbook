@@ -30,13 +30,14 @@ export default function CaioClient() {
 
   useEffect(() => {
     fetch('/api/caio')
-      .then((res) => res.json())
+      .then((res) => res.ok ? res.json() : [])
       .then((data) => {
-        setAssessments(data);
+        setAssessments(Array.isArray(data) ? data : []);
         setLoading(false);
       })
       .catch((err) => {
         console.error('Failed to fetch assessments:', err);
+        setAssessments([]);
         setLoading(false);
       });
   }, []);

@@ -30,13 +30,14 @@ export default function TemplatesClient() {
 
   useEffect(() => {
     fetch('/api/templates')
-      .then((res) => res.json())
+      .then((res) => res.ok ? res.json() : [])
       .then((data) => {
-        setTemplates(data);
+        setTemplates(Array.isArray(data) ? data : []);
         setLoading(false);
       })
       .catch((err) => {
         console.error('Failed to fetch templates:', err);
+        setTemplates([]);
         setLoading(false);
       });
   }, []);
