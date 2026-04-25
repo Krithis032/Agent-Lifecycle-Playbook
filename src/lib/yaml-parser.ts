@@ -389,6 +389,410 @@ function parseGlossaryKb(data: Record<string, unknown>, kbSource: string): Parse
   return domains;
 }
 
+/* ── Format E: AI Governance Periodic Table ── */
+/* Structure: categories[].{id, name, elements[].{code, name, full_description, why_it_matters, implementation_checklist, ...}} */
+/* Also: agent_architecture_governance.layers[], regulatory_mappings.*, companion_skill_mapping.*, system_type_emphasis.* */
+
+function parsePeriodicTableKb(data: Record<string, unknown>, kbSource: string): ParsedDomain[] {
+  const domains: ParsedDomain[] = [];
+  const categories = data.categories as Record<string, unknown>[] | undefined;
+  if (!Array.isArray(categories)) return [];
+
+  const metadata = data.metadata as Record<string, unknown> | undefined;
+  const scoring = data.scoring as Record<string, unknown> | undefined;
+
+  // Parse each category as a domain, each element as a concept
+  for (const cat of categories) {
+    if (!cat || typeof cat !== 'object') continue;
+    const catId = cat.id ? String(cat.id) : '';
+    const catName = cat.name ? String(cat.name) : '';
+    const catPurpose = cat.purpose ? String(cat.purpose).trim() : '';
+    const catColor = cat.color_name ? String(cat.color_name) : '';
+    const elements = Array.isArray(cat.elements) ? cat.elements : [];
+
+    const concepts: ParsedConcept[] = [];
+
+    for (const elem of elements) {
+      if (!elem || typeof elem !== 'object') continue;
+      const el = elem as Record<string, unknown>;
+      const code = el.code ? String(el.code) : '';
+      const name = el.name ? String(el.name) : '';
+      const fullDesc = el.full_description ? String(el.full_description) : '';
+      const whyMatters = el.why_it_matters ? String(el.why_it_matters).trim() : '';
+      const checklist = Array.isArray(el.implementation_checklist) ? el.implementation_checklist.map(String) : [];
+      const codeScaffolding = Array.isArray(el.code_scaffolding) ? el.code_scaffolding.map(String) : [];
+      const crossRefs = el.cross_references as Record<string, unknown> | undefined;
+      const agentLayer = el.agent_layer ? String(el.agent_layer) : '';
+
+      // Build explanation from why_it_matters + implementation_checklist
+      const explanationParts: string[] = [];
+      if (whyMatters) explanationParts.push(`Why it matters: ${whyMatters}`);
+      if (checklist.length > 0) {
+        explanationParts.push(`Implementation checklist:\n${checklist.map((item) => `- ${item}`).join('\n')}`);
+      }
+      if (agentLayer) {
+        explanationParts.push(`Agent architecture layer: ${agentLayer.replace(/_/g, ' ')}`);
+      }
+
+      // Build relationships from cross_references
+      const relationships: { depends_on: string[]; enables: string[]; compare_with: string[] } = {
+        depends_on: [],
+        enables: [],
+        compare_with: [],
+      };
+      if (crossRefs) {
+        if (crossRefs.primary) relationships.depends_on.push(String(crossRefs.primary));
+        if (crossRefs.secondary) relationships.compare_with.push(String(crossRefs.secondary));
+      }
+
+      concepts.push({
+        conceptKey: code.toLowerCase(),
+        conceptName: `${code} — ${name}`,
+        definition: fullDesc,
+        explanation: explanationParts.join('\n\n'),
+        sources: [`AI Governance Periodic Table 2026 — ${catName}`],
+        codeScaffold: codeScaffolding.length > 0 ? codeScaffolding.map((s) => `• ${s}`).join('\n') : null,
+        relationships: (relationships.depends_on.length > 0 || relationships.compare_with.length > 0) ? relationships : null,
+        metadata: {
+          element_code: code,
+          category_id: catId,
+          category_color: catColor,
+          agent_layer: agentLayer,
+        },
+      });
+    }
+
+    if (concepts.length > 0) {
+      domains.push({
+        domainKey: `governance_${catId}`,
+        domainName: `Governance: ${catName}`,
+        description: catPurpose || `${kbSource}: ${catName}`,
+        concepts,
+      });
+    }
+  }
+
+  // Parse agent_architecture_governance layers as a separate domain
+  const archGov = data.agent_architecture_governance as Record<string, unknown> | undefined;
+  if (archGov?.layers && Array.isArray(archGov.layers)) {
+    const layerConcepts: ParsedConcept[] = [];
+
+    for (const layer of archGov.layers as Record<string, unknown>[]) {
+      if (!layer || typeof layer !== 'object') continue;
+      const layerName = layer.layer ? String(layer.layer) : '';
+      const layerDesc = layer.description ? String(layer.description) : '';
+      const criticalElements = Array.isArray(layer.critical_elements) ? layer.critical_elements.map(String) : [];
+      const rationale = layer.rationale ? String(layer.rationale).trim() : '';
+
+      layerConcepts.push({
+        conceptKey: `agent_layer_${layerName}`,
+        conceptName: `Agent Layer: ${layerName.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())}`,
+        definition: layerDesc,
+        explanation: `${rationale}\n\nCritical governance elements: ${criticalElements.join(', ')}`,
+        sources: ['AI Governance Periodic Table 2026 — Agent Architecture Governance'],
+        codeScaffold: null,
+        relationships: {
+          depends_on: criticalElements.map((e) => e.toLowerCase()),
+          enables: [],
+          compare_with: [],
+        },
+        metadata: { critical_elements: criticalElements },
+      });
+    }
+
+    if (layerConcepts.length > 0) {
+      domains.push({
+        domainKey: 'governance_agent_architecture',
+        domainName: 'Governance: Agent Architecture Layers',
+        description: archGov.description ? String(archGov.description).trim() : 'Agent architecture governance mapping',
+        concepts: layerConcepts,
+      });
+    }
+  }
+
+  // Parse regulatory_mappings as a separate domain
+  const regMappings = data.regulatory_mappings as Record<string, unknown> | undefined;
+  if (regMappings && typeof regMappings === 'object') {
+    const regConcepts: ParsedConcept[] = [];
+
+    for (const [regKey, regData] of Object.entries(regMappings)) {
+      if (!regData || typeof regData !== 'object') continue;
+      const rd = regData as Record<string, unknown>;
+      const regName = rd.name ? String(rd.name) : formatDomainName(regKey);
+      const regDesc = rd.description ? String(rd.description) : '';
+      const requiredElements = Array.isArray(rd.required_elements) ? rd.required_elements.map(String) : [];
+
+      // Build explanation from clause/article/section mappings
+      const explanationParts: string[] = [];
+      if (regDesc) explanationParts.push(regDesc);
+      if (requiredElements.length > 0) {
+        explanationParts.push(`Required governance elements: ${requiredElements.join(', ')}`);
+      }
+
+      // Process clause/article/section/function mappings
+      const mappingTypes = ['clause_mapping', 'article_mapping', 'function_mapping', 'section_mapping'];
+      for (const mapType of mappingTypes) {
+        const mappings = rd[mapType] as Record<string, unknown>[] | undefined;
+        if (Array.isArray(mappings)) {
+          const label = mapType.replace('_mapping', '').replace(/\b\w/g, (c) => c.toUpperCase());
+          const mappingLines = mappings.map((m) => {
+            const clauseKey = m.clause || m.article || m.function || m.section || '';
+            const elements = Array.isArray(m.elements) ? m.elements.map(String).join(', ') : '';
+            return `${clauseKey}: [${elements}]`;
+          });
+          explanationParts.push(`${label} to Element Mapping:\n${mappingLines.join('\n')}`);
+        }
+      }
+
+      // Handle EU AI Act risk tiers specifically
+      if (rd.risk_tiers && typeof rd.risk_tiers === 'object') {
+        const tiers = rd.risk_tiers as Record<string, Record<string, unknown>>;
+        for (const [tierName, tierData] of Object.entries(tiers)) {
+          if (!tierData || typeof tierData !== 'object') continue;
+          const tierDesc = tierData.description ? String(tierData.description) : '';
+          const tierElements = Array.isArray(tierData.required_elements) ? tierData.required_elements.map(String) : [];
+          const recElements = Array.isArray(tierData.recommended_elements) ? tierData.recommended_elements.map(String) : [];
+          const parts: string[] = [];
+          if (tierDesc) parts.push(tierDesc);
+          if (tierElements.length > 0) parts.push(`Required: ${tierElements.join(', ')}`);
+          if (recElements.length > 0) parts.push(`Recommended: ${recElements.join(', ')}`);
+          explanationParts.push(`Risk tier "${tierName}": ${parts.join('. ')}`);
+
+          // Process article mappings within tier
+          if (Array.isArray(tierData.article_mapping)) {
+            const artLines = (tierData.article_mapping as Record<string, unknown>[]).map((m) => {
+              const art = m.article ? String(m.article) : '';
+              const els = Array.isArray(m.elements) ? m.elements.map(String).join(', ') : '';
+              return `  ${art}: [${els}]`;
+            });
+            explanationParts.push(artLines.join('\n'));
+          }
+        }
+      }
+
+      regConcepts.push({
+        conceptKey: `regulation_${regKey}`,
+        conceptName: `Regulatory Mapping: ${regName}`,
+        definition: `${regName} compliance mapping — identifies which governance elements satisfy ${regName} requirements`,
+        explanation: explanationParts.join('\n\n'),
+        sources: ['AI Governance Periodic Table 2026 — Regulatory Mappings'],
+        codeScaffold: null,
+        relationships: {
+          depends_on: requiredElements.map((e) => e.toLowerCase()),
+          enables: [],
+          compare_with: [],
+        },
+        metadata: { regulation: regKey, required_elements: requiredElements },
+      });
+    }
+
+    if (regConcepts.length > 0) {
+      domains.push({
+        domainKey: 'governance_regulatory_mappings',
+        domainName: 'Governance: Regulatory Compliance Mappings',
+        description: 'Maps governance elements to regulatory frameworks (ISO 42001, EU AI Act, GDPR, NIST AI RMF, India DPDP, COPPA)',
+        concepts: regConcepts,
+      });
+    }
+  }
+
+  // Parse cross_regulation_priority as a concept within regulatory domain
+  const crossRegPriority = data.cross_regulation_priority as Record<string, unknown> | undefined;
+  if (crossRegPriority && typeof crossRegPriority === 'object') {
+    const priorityConcepts: ParsedConcept[] = [];
+    for (const [level, info] of Object.entries(crossRegPriority)) {
+      if (!info || typeof info !== 'object') continue;
+      const pi = info as Record<string, unknown>;
+      const desc = pi.description ? String(pi.description) : '';
+      const elements = Array.isArray(pi.elements) ? pi.elements.map(String) : [];
+
+      priorityConcepts.push({
+        conceptKey: `cross_reg_${level}`,
+        conceptName: `Cross-Regulation Priority: ${formatDomainName(level)}`,
+        definition: `${desc} — elements: ${elements.join(', ')}`,
+        explanation: `These governance elements are ${desc.toLowerCase()}. Elements: ${elements.join(', ')}`,
+        sources: ['AI Governance Periodic Table 2026 — Cross-Regulation Priority'],
+        codeScaffold: null,
+        relationships: {
+          depends_on: elements.map((e) => e.toLowerCase()),
+          enables: [],
+          compare_with: [],
+        },
+        metadata: { priority_level: level, elements },
+      });
+    }
+
+    if (priorityConcepts.length > 0) {
+      domains.push({
+        domainKey: 'governance_cross_regulation_priority',
+        domainName: 'Governance: Cross-Regulation Element Priority',
+        description: 'Element priority based on cross-regulation requirement frequency',
+        concepts: priorityConcepts,
+      });
+    }
+  }
+
+  // Parse companion_skill_mapping as domains
+  const skillMapping = data.companion_skill_mapping as Record<string, unknown> | undefined;
+  if (skillMapping && typeof skillMapping === 'object') {
+    // Wharton domains mapping
+    const whartonMapping = skillMapping.wharton_domains_to_elements as Record<string, unknown>[] | undefined;
+    if (Array.isArray(whartonMapping)) {
+      const whartonConcepts: ParsedConcept[] = [];
+      for (const mapping of whartonMapping) {
+        if (!mapping || typeof mapping !== 'object') continue;
+        const m = mapping as Record<string, unknown>;
+        const domain = m.domain ? String(m.domain) : '';
+        const primary = Array.isArray(m.primary_elements) ? m.primary_elements.map(String) : [];
+        const secondary = Array.isArray(m.secondary_elements) ? m.secondary_elements.map(String) : [];
+
+        const domKey = domain.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '');
+        whartonConcepts.push({
+          conceptKey: `wharton_map_${domKey}`,
+          conceptName: `Wharton Mapping: ${domain}`,
+          definition: `Maps Wharton governance domain "${domain}" to periodic table elements`,
+          explanation: `Primary elements: ${primary.join(', ')}\nSecondary elements: ${secondary.join(', ')}`,
+          sources: ['AI Governance Periodic Table 2026 — Wharton Domain Mapping'],
+          codeScaffold: null,
+          relationships: {
+            depends_on: primary.map((e) => e.toLowerCase()),
+            enables: [],
+            compare_with: secondary.map((e) => e.toLowerCase()),
+          },
+          metadata: { wharton_domain: domain, primary_elements: primary, secondary_elements: secondary },
+        });
+      }
+
+      if (whartonConcepts.length > 0) {
+        domains.push({
+          domainKey: 'governance_wharton_element_mapping',
+          domainName: 'Governance: Wharton Domain Element Mapping',
+          description: 'Maps 10 Wharton AI governance domains to periodic table elements',
+          concepts: whartonConcepts,
+        });
+      }
+    }
+
+    // CAIO domains mapping
+    const caioMapping = skillMapping.caio_domains_to_elements as Record<string, unknown>[] | undefined;
+    if (Array.isArray(caioMapping)) {
+      const caioConcepts: ParsedConcept[] = [];
+      for (const mapping of caioMapping) {
+        if (!mapping || typeof mapping !== 'object') continue;
+        const m = mapping as Record<string, unknown>;
+        const domain = m.domain ? String(m.domain) : '';
+        const elements = Array.isArray(m.elements) ? m.elements.map(String) : [];
+
+        const domKey = domain.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '');
+        caioConcepts.push({
+          conceptKey: `caio_map_${domKey}`,
+          conceptName: `CAIO Mapping: ${domain}`,
+          definition: `Maps CAIO maturity domain "${domain}" to periodic table elements`,
+          explanation: `Required governance elements: ${elements.join(', ')}`,
+          sources: ['AI Governance Periodic Table 2026 — CAIO Domain Mapping'],
+          codeScaffold: null,
+          relationships: {
+            depends_on: elements.map((e) => e.toLowerCase()),
+            enables: [],
+            compare_with: [],
+          },
+          metadata: { caio_domain: domain, elements },
+        });
+      }
+
+      if (caioConcepts.length > 0) {
+        domains.push({
+          domainKey: 'governance_caio_element_mapping',
+          domainName: 'Governance: CAIO Domain Element Mapping',
+          description: 'Maps CAIO AI maturity domains to periodic table elements',
+          concepts: caioConcepts,
+        });
+      }
+    }
+  }
+
+  // Parse system_type_emphasis as a domain
+  const sysTypes = data.system_type_emphasis as Record<string, unknown> | undefined;
+  if (sysTypes && typeof sysTypes === 'object') {
+    const sysTypeConcepts: ParsedConcept[] = [];
+    for (const [typeKey, typeData] of Object.entries(sysTypes)) {
+      if (!typeData || typeof typeData !== 'object') continue;
+      const td = typeData as Record<string, unknown>;
+      const description = td.description ? String(td.description) : '';
+      const emphasize = Array.isArray(td.emphasize) ? td.emphasize.map(String) : [];
+      const rationale = td.rationale ? String(td.rationale) : '';
+
+      sysTypeConcepts.push({
+        conceptKey: `sys_type_${typeKey}`,
+        conceptName: `System Type: ${formatDomainName(typeKey)}`,
+        definition: `Governance emphasis for ${description.toLowerCase()} — prioritise: ${emphasize.join(', ')}`,
+        explanation: `${rationale}\n\nEmphasised elements: ${emphasize.join(', ')}`,
+        sources: ['AI Governance Periodic Table 2026 — System Type Emphasis'],
+        codeScaffold: null,
+        relationships: {
+          depends_on: emphasize.map((e) => e.toLowerCase()),
+          enables: [],
+          compare_with: [],
+        },
+        metadata: { system_type: typeKey, emphasize },
+      });
+    }
+
+    if (sysTypeConcepts.length > 0) {
+      domains.push({
+        domainKey: 'governance_system_type_emphasis',
+        domainName: 'Governance: System Type Emphasis',
+        description: 'Contextual governance emphasis based on AI system type (agentic, RAG, customer-facing, internal)',
+        concepts: sysTypeConcepts,
+      });
+    }
+  }
+
+  // Parse scoring methodology as a concept
+  if (scoring && typeof scoring === 'object') {
+    const scoringConcepts: ParsedConcept[] = [];
+    const scale = Array.isArray(scoring.element_scale) ? scoring.element_scale : [];
+    const weights = scoring.category_weights as Record<string, unknown> | undefined;
+    const riskClass = Array.isArray(scoring.risk_classification) ? scoring.risk_classification : [];
+
+    const scaleDesc = scale.map((s: Record<string, unknown>) =>
+      `Score ${s.score}: ${s.label} — ${s.meaning}`
+    ).join('\n');
+
+    const weightsDesc = weights ? Object.entries(weights).map(([k, v]) =>
+      `${formatDomainName(k)}: ${(Number(v) * 100).toFixed(0)}%`
+    ).join('\n') : '';
+
+    const riskDesc = riskClass.map((r: Record<string, unknown>) =>
+      `${r.range} (${r.label}): ${r.description}`
+    ).join('\n');
+
+    scoringConcepts.push({
+      conceptKey: 'governance_scoring_methodology',
+      conceptName: 'Governance Scoring Methodology',
+      definition: 'Scoring framework for evaluating AI governance maturity across 42 elements using a 0-4 scale with weighted categories',
+      explanation: `Element Scale (0-4):\n${scaleDesc}\n\nCategory Weights:\n${weightsDesc}\n\nRisk Classification:\n${riskDesc}`,
+      sources: ['AI Governance Periodic Table 2026 — Scoring Methodology'],
+      codeScaffold: null,
+      relationships: null,
+      metadata: {
+        total_elements: metadata?.total_elements || 42,
+        total_categories: metadata?.total_categories || 6,
+        modes: metadata?.modes || [],
+      },
+    });
+
+    domains.push({
+      domainKey: 'governance_scoring',
+      domainName: 'Governance: Scoring Methodology',
+      description: 'Element scoring scale, category weights, and risk classification for governance assessment',
+      concepts: scoringConcepts,
+    });
+  }
+
+  return domains;
+}
+
 /* ── Main entry point: auto-detect format ── */
 
 export function parseKbYaml(filePath: string, kbSource: string): ParsedDomain[] {
@@ -428,6 +832,11 @@ export function parseKbYaml(filePath: string, kbSource: string): ParsedDomain[] 
   const topKeys = Object.keys(data);
   if (topKeys.length === 1 && topKeys[0] === 'metadata') return [];
   if (topKeys.every((k) => k === 'metadata' || k.startsWith('_source'))) return [];
+
+  // Format E: AI Governance Periodic Table (categories[].elements[])
+  if (Array.isArray(data.categories) && data.scoring && data.metadata) {
+    return parsePeriodicTableKb(data, kbSource);
+  }
 
   // Format B: knowledge_base.domains.* (RAG_MCP.yaml)
   if (data.knowledge_base && typeof data.knowledge_base === 'object') {

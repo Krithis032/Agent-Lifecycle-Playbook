@@ -1,0 +1,1171 @@
+# =============================================================================
+# AI GOVERNANCE & SECURITY PERIODIC TABLE (2026)
+# Knowledge Base for Agent Deployment Playbook
+# =============================================================================
+# 42-element reference architecture for secure, scalable enterprise AI systems
+# Integrates with: wharton-ai-governance, chief-ai-security-officer,
+#   caio-assessment, melodic-software-ai-governance
+# =============================================================================
+
+metadata:
+  name: ai-governance-periodic-table
+  version: "1.0.0"
+  year: 2026
+  subtitle: Core building blocks for secure, scalable enterprise AI systems
+  total_elements: 36
+  total_categories: 6
+  modes:
+    - audit
+    - implement
+    - comply
+  outputs:
+    - interactive_html_dashboard
+    - word_document_report
+    - code_scaffolding
+  companion_skills:
+    - name: wharton-ai-governance
+      role: Strategic assessment across 10 governance domains
+      integration: Maps Wharton domains to periodic table elements
+    - name: chief-ai-security-officer
+      role: TRiSM strategy, risk profiling, AIRS framework
+      integration: Translates CAISO recommendations into element-level controls
+    - name: caio-assessment
+      role: 12-domain CAIO maturity review
+      integration: Provides security and infrastructure elements CAIO domains require
+    - name: melodic-software-ai-governance
+      role: EU AI Act, NIST AI RMF, ISO 42001 compliance
+      integration: Maps regulatory requirements to satisfying elements
+
+# =============================================================================
+# SCORING METHODOLOGY
+# =============================================================================
+
+scoring:
+  element_scale:
+    - score: 0
+      label: Not Implemented
+      meaning: No evidence this element exists
+    - score: 1
+      label: Ad Hoc
+      meaning: Some awareness but no formal process
+    - score: 2
+      label: Defined
+      meaning: Formal process exists but inconsistently applied
+    - score: 3
+      label: Managed
+      meaning: Consistently applied with monitoring
+    - score: 4
+      label: Optimized
+      meaning: Continuously improved with metrics-driven optimization
+
+  category_weights:
+    identity_access_control: 0.20
+    data_protection: 0.18
+    risk_management: 0.18
+    compliance_governance: 0.20
+    monitoring_observability: 0.12
+    audit_accountability: 0.12
+
+  risk_classification:
+    - range: "80-100"
+      label: STRONG
+      description: Mature governance posture, focus on continuous improvement
+    - range: "60-79"
+      label: MODERATE
+      description: Foundations in place, critical gaps need attention
+    - range: "40-59"
+      label: WEAK
+      description: Significant gaps, prioritise high-risk elements immediately
+    - range: "0-39"
+      label: CRITICAL
+      description: Minimal governance, systemic risk exposure
+
+# =============================================================================
+# CATEGORIES
+# =============================================================================
+
+categories:
+
+  # ---------------------------------------------------------------------------
+  # CATEGORY 1: IDENTITY & ACCESS CONTROL
+  # ---------------------------------------------------------------------------
+  - id: iac
+    name: Identity & Access Control
+    color: "#4CAF50"
+    color_name: green
+    weight: 0.20
+    element_count: 7
+    purpose: >
+      Ensure only authorised users and systems access AI resources
+      with appropriate permissions
+    elements:
+
+      - code: RBAC
+        name: Role-Based Access Control
+        full_description: Assign permissions based on user roles across AI systems and workflows
+        why_it_matters: >
+          Without RBAC, any user can access any AI model endpoint, training data,
+          or output — creating data leakage and unauthorized model manipulation risks
+        implementation_checklist:
+          - Role definitions exist for AI system users (admin, developer, data scientist, auditor, viewer)
+          - Permissions matrix maps roles to AI operations (train, deploy, query, retrain, delete)
+          - Role assignments are documented and reviewed quarterly
+          - Least-privilege principle applied — no role has more access than needed
+          - Role changes trigger audit log entries
+        code_scaffolding:
+          - RBAC middleware config
+          - Role-permission matrix JSON
+          - Access control decorators
+        cross_references:
+          primary: chief-ai-security-officer (AIRS framework - access control)
+          secondary: wharton-ai-governance (Governance domain)
+        agent_layer: orchestrator
+
+      - code: ABAC
+        name: Attribute-Based Access Control
+        full_description: Dynamic access using user, data, and environment attributes
+        why_it_matters: >
+          RBAC alone is too coarse for AI systems where access should vary by data
+          sensitivity, model risk tier, user department, time of day, or geographic location
+        implementation_checklist:
+          - Attribute schema defined (user attributes, resource attributes, environment attributes)
+          - Policy engine configured to evaluate attribute combinations
+          - High-risk AI models have additional attribute gates
+          - Attribute values are validated against authoritative sources
+          - Dynamic access decisions are logged with full attribute context
+        code_scaffolding:
+          - ABAC policy engine config
+          - Attribute schema definitions
+          - Policy evaluation middleware
+        cross_references:
+          primary: chief-ai-security-officer (frameworks - access tiers)
+        agent_layer: orchestrator
+
+      - code: MFA
+        name: Multi-Factor Authentication
+        full_description: Adds extra security layers beyond passwords for AI system access
+        why_it_matters: >
+          AI systems contain sensitive training data, model weights, and can produce
+          outputs with real-world impact. Single-factor auth is insufficient
+        implementation_checklist:
+          - MFA required for all AI model management interfaces
+          - MFA required for training data access and modification
+          - MFA required for production model deployment
+          - Hardware tokens or biometric options available for high-risk operations
+          - MFA bypass attempts are logged and alerted
+        code_scaffolding:
+          - MFA integration config
+          - Authentication flow middleware
+        cross_references:
+          primary: chief-ai-security-officer (AIRS framework)
+        agent_layer: inter_agent_communication
+
+      - code: SSO
+        name: Single Sign-On
+        full_description: Unified authentication across multiple AI tools and enterprise platforms
+        why_it_matters: >
+          AI practitioners use many tools (MLflow, notebooks, model registries, monitoring
+          dashboards). Fragmented auth creates credential sprawl and shadow AI risks
+        implementation_checklist:
+          - SSO provider integrated with all AI development tools
+          - SSO covers model registries, experiment tracking, monitoring dashboards
+          - Session management policies defined (timeout, re-authentication for sensitive ops)
+          - SSO integration tested across all AI platform components
+          - Offboarding immediately revokes access across all AI tools
+        code_scaffolding:
+          - SSO provider config
+          - SAML/OIDC integration templates
+        cross_references:
+          primary: chief-ai-security-officer (operating model - CoE access)
+        agent_layer: inter_agent_communication
+
+      - code: IAM
+        name: Identity & Access Management
+        full_description: Centralized system for managing identities and permissions
+        why_it_matters: >
+          The foundational layer — without IAM, RBAC, ABAC, MFA, and SSO cannot be
+          coordinated. IAM ensures a single source of truth for who can do what with AI systems
+        implementation_checklist:
+          - Centralized identity provider manages all AI system users
+          - Service accounts for AI pipelines have scoped permissions
+          - API keys for model endpoints are rotated on schedule
+          - Identity lifecycle management (provisioning, modification, deprovisioning) is automated
+          - Privileged access to AI infrastructure requires approval workflows
+        code_scaffolding:
+          - IAM provider config
+          - Service account templates
+          - API key rotation scripts
+        cross_references:
+          primary: chief-ai-security-officer (operating model)
+          secondary: caio-assessment (Domain 10 Security)
+        agent_layer: orchestrator
+
+      - code: ZTA
+        name: Zero Trust Architecture
+        full_description: Never trust, always verify access to AI systems and data
+        why_it_matters: >
+          AI systems span cloud, edge, and on-premises. Perimeter-based security fails
+          in distributed AI architectures. Every request must be authenticated and authorized
+        implementation_checklist:
+          - No implicit trust for any network segment accessing AI systems
+          - Every API call to AI models is authenticated and authorized
+          - Micro-segmentation isolates AI training environments from production
+          - Continuous verification — not just at login but throughout sessions
+          - Data flows between AI components are encrypted and authenticated
+        code_scaffolding:
+          - Zero trust network config
+          - Micro-segmentation policies
+          - Mutual TLS configs
+        cross_references:
+          primary: chief-ai-security-officer (AIRS framework - network security)
+        agent_layer: orchestrator
+
+      - code: DLP
+        name: Data Loss Prevention
+        full_description: Prevent sensitive data leakage across prompts, outputs, and pipelines
+        why_it_matters: >
+          AI systems can inadvertently leak PII, trade secrets, or sensitive data through
+          model outputs, training data exposure, or prompt injection attacks
+        implementation_checklist:
+          - DLP policies scan AI model inputs for sensitive data patterns
+          - DLP policies scan AI model outputs for PII/sensitive data leakage
+          - Training data pipelines have DLP gates before ingestion
+          - Model artifacts (weights, embeddings) are classified and protected
+          - DLP alerts trigger incident response workflows
+        code_scaffolding:
+          - DLP scanner middleware
+          - Regex/pattern configs for PII detection
+          - Output sanitization
+        cross_references:
+          primary: wharton-ai-governance (Privacy domain)
+          secondary: chief-ai-security-officer (risk-taxonomy - data risks)
+        agent_layer: individual_agents
+
+  # ---------------------------------------------------------------------------
+  # CATEGORY 2: DATA PROTECTION
+  # ---------------------------------------------------------------------------
+  - id: dp
+    name: Data Protection
+    color: "#FF9800"
+    color_name: salmon_orange
+    weight: 0.18
+    element_count: 6
+    purpose: >
+      Protect the data that flows through AI systems — at rest, in transit,
+      and during processing
+    elements:
+
+      - code: RISK
+        name: Risk Scoring
+        full_description: Evaluate potential risks in AI outputs and system behavior
+        why_it_matters: >
+          Not all AI outputs carry equal risk. A product recommendation has different risk
+          than a medical diagnosis. Risk scoring enables proportionate governance
+        implementation_checklist:
+          - Risk scoring framework defined (impact x likelihood matrix)
+          - AI use cases classified by risk tier (minimal, limited, high, unacceptable)
+          - Risk scores assigned to each AI model/pipeline in inventory
+          - Risk thresholds trigger different governance requirements
+          - Risk scores reviewed when models are retrained or data changes
+        code_scaffolding:
+          - Risk scoring engine
+          - Risk matrix config
+          - Tiered governance trigger rules
+        cross_references:
+          primary: chief-ai-security-officer (risk-taxonomy)
+          secondary: melodic-software-ai-governance (EU AI Act risk tiers)
+        agent_layer: data_layer
+
+      - code: VDB
+        name: Secure Vector Database
+        full_description: Protect embeddings and retrieval systems from unauthorized access
+        why_it_matters: >
+          Vector databases in RAG systems contain encoded representations of proprietary data.
+          Unauthorized access to embeddings can reveal sensitive information even without
+          accessing raw data
+        implementation_checklist:
+          - Vector database access requires authentication and authorization
+          - Embedding namespaces are isolated by data sensitivity level
+          - Retrieval queries are logged with user identity and context
+          - Vector database backups are encrypted
+          - Access to embedding generation pipelines is restricted
+        code_scaffolding:
+          - Vector DB access control config
+          - Namespace isolation templates
+          - Query audit logging
+        cross_references:
+          primary: caio-assessment (Domain 8 Technology Architecture)
+        agent_layer: data_layer
+
+      - code: PIPE
+        name: Secure Data Pipelines
+        full_description: Ensure safe data flow across ingestion, processing, and storage
+        why_it_matters: >
+          AI data pipelines move sensitive data through multiple stages. Each stage is an
+          attack surface and a potential compliance violation point
+        implementation_checklist:
+          - Data lineage tracked from source through transformation to model input
+          - Pipeline stages have access controls and encryption
+          - Data validation gates at ingestion prevent poisoned data
+          - Pipeline failures trigger alerts and block downstream processing
+          - Pipeline configurations are version-controlled and auditable
+        code_scaffolding:
+          - Pipeline config templates
+          - Data validation schemas
+          - Lineage tracking setup
+        cross_references:
+          primary: caio-assessment (Domain 5 Data Governance)
+          secondary: wharton-ai-governance (Data Infrastructure)
+        agent_layer: data_layer
+
+      - code: TOKEN
+        name: Tokenization
+        full_description: Replace sensitive data with non-sensitive tokens
+        why_it_matters: >
+          AI models often do not need raw PII to function. Tokenization lets models work
+          with de-identified data while maintaining analytical value
+        implementation_checklist:
+          - Tokenization applied to PII before it enters AI training pipelines
+          - Token vault is access-controlled and encrypted
+          - De-tokenization requires separate authorization
+          - Tokenization scheme preserves data utility for AI model training
+          - Token mappings are included in data lineage documentation
+        code_scaffolding:
+          - Tokenization service config
+          - Token vault setup
+          - De-tokenization access controls
+        cross_references:
+          primary: wharton-ai-governance (Privacy domain - de-identification)
+        agent_layer: data_layer
+
+      - code: ENC
+        name: Encryption
+        full_description: Protect data at rest and in transit across AI systems
+        why_it_matters: >
+          AI training data, model weights, inference results, and inter-service
+          communications all contain sensitive information that must be encrypted
+        implementation_checklist:
+          - Data at rest encrypted (training data, model artifacts, vector databases)
+          - Data in transit encrypted (TLS 1.3 minimum for all AI API endpoints)
+          - Encryption keys managed through a centralized key management service
+          - Key rotation scheduled and automated
+          - Encryption standards documented and compliant with regulatory requirements
+        code_scaffolding:
+          - TLS config templates
+          - KMS integration
+          - Encryption-at-rest configs
+        cross_references:
+          primary: chief-ai-security-officer (AIRS framework)
+          secondary: melodic-software-ai-governance (NIST AI RMF security)
+        agent_layer: data_layer
+
+      - code: MASK
+        name: Data Masking
+        full_description: Hide or obfuscate sensitive data during AI processing
+        why_it_matters: >
+          Development and testing environments often use production data. Masking ensures
+          sensitive data is not exposed in non-production AI contexts
+        implementation_checklist:
+          - Masking rules defined for each sensitive data category
+          - Non-production AI environments use masked data
+          - Masking preserves statistical properties needed for model training
+          - Dynamic masking applied based on user role and context
+          - Masking effectiveness validated — no re-identification possible
+        code_scaffolding:
+          - Data masking pipeline config
+          - Masking rule definitions
+          - Validation tests
+        cross_references:
+          primary: wharton-ai-governance (Privacy domain)
+          secondary: chief-ai-security-officer (data risks)
+        agent_layer: data_layer
+
+  # ---------------------------------------------------------------------------
+  # CATEGORY 3: RISK MANAGEMENT
+  # ---------------------------------------------------------------------------
+  - id: rm
+    name: Risk Management
+    color: "#FFEB3B"
+    color_name: yellow
+    weight: 0.18
+    element_count: 5
+    purpose: >
+      Identify, assess, and mitigate risks specific to AI systems
+    elements:
+
+      - code: DRIFT
+        name: Model Drift
+        full_description: Detect performance degradation over time
+        why_it_matters: >
+          AI models degrade as the real world changes. A model trained on 2024 data may
+          produce increasingly wrong results in 2026. Drift detection prevents silent failures
+        implementation_checklist:
+          - Drift detection metrics defined (PSI, KL divergence, accuracy decay)
+          - Drift monitoring runs on scheduled intervals
+          - Drift thresholds trigger alerts and human review
+          - Retraining pipelines can be triggered by drift alerts
+          - Historical drift data is retained for trend analysis
+        code_scaffolding:
+          - Drift detection service
+          - Monitoring dashboard config
+          - Alert rules and retraining triggers
+        cross_references:
+          primary: caio-assessment (Domain 12 Continuous Improvement)
+          secondary: wharton-ai-governance (Overfitting risks)
+        agent_layer: individual_agents
+
+      - code: BIAS
+        name: Bias Detection
+        full_description: Identify unfair or skewed AI outputs
+        why_it_matters: >
+          Biased AI causes real harm — unfair hiring, discriminatory lending, unequal
+          healthcare. Detection is the first step toward mitigation
+        implementation_checklist:
+          - Fairness metrics selected and documented (demographic parity, equalized odds, etc.)
+          - Bias testing performed pre-deployment and post-deployment
+          - Protected attributes identified and tested across
+          - Bias detection results documented in model cards
+          - Bias remediation actions are tracked to completion
+        code_scaffolding:
+          - Bias detection pipeline
+          - Fairness metrics calculator
+          - Model card bias section template
+        cross_references:
+          primary: wharton-ai-governance (Domain 3 Algorithmic Bias and Fairness)
+          secondary: chief-ai-security-officer (risk-taxonomy)
+        agent_layer: individual_agents
+
+      - code: HALL
+        name: Hallucination Detection
+        full_description: Monitor incorrect or fabricated responses
+        why_it_matters: >
+          LLMs generate plausible-sounding but factually wrong content. In enterprise
+          contexts, hallucinations can cause financial, legal, or safety harm
+        implementation_checklist:
+          - Hallucination detection mechanisms in place for generative AI outputs
+          - Ground truth comparison for factual claims where possible
+          - Confidence scoring attached to model outputs
+          - High-stakes outputs require human verification before action
+          - Hallucination rates tracked as a quality metric over time
+        code_scaffolding:
+          - Hallucination detection middleware
+          - Confidence scoring service
+          - Ground truth comparison
+        cross_references:
+          primary: caio-assessment (Domain 7 Ethics)
+          secondary: wharton-ai-governance (Explainability)
+        agent_layer: individual_agents
+
+      - code: THREAT
+        name: Threat Intelligence
+        full_description: Identify emerging AI vulnerabilities and attack vectors
+        why_it_matters: >
+          AI systems face unique attacks — adversarial inputs, prompt injection, model
+          extraction, data poisoning. Threat intelligence keeps defenses current
+        implementation_checklist:
+          - AI-specific threat intelligence feeds monitored
+          - OWASP Top 10 for LLM Applications reviewed and mitigated
+          - Prompt injection defenses implemented and tested
+          - Adversarial input testing performed regularly
+          - Threat landscape reviewed quarterly and controls updated
+        code_scaffolding:
+          - Threat monitoring config
+          - Prompt injection defense middleware
+          - Adversarial testing suite
+        cross_references:
+          primary: chief-ai-security-officer (AIRS framework - attack surfaces)
+          secondary: chief-ai-security-officer (risk-taxonomy - security risks)
+        agent_layer: individual_agents
+
+      - code: REDT
+        name: Red Team Testing
+        full_description: Simulate attacks to identify system weaknesses
+        why_it_matters: >
+          Defensive measures alone are insufficient. Red teaming validates that security
+          controls actually work against realistic attack scenarios
+        implementation_checklist:
+          - Red team exercises scheduled (at least annually or before major releases)
+          - Red team scope covers prompt injection, data extraction, model manipulation
+          - Red team findings are documented and prioritized
+          - Remediation actions tracked to completion
+          - Red team methodology is documented and repeatable
+        code_scaffolding:
+          - Red team playbook templates
+          - Attack scenario configs
+          - Findings tracker
+        cross_references:
+          primary: chief-ai-security-officer (AIRS framework)
+          secondary: melodic-software-ai-governance (NIST AI RMF MANAGE)
+        agent_layer: individual_agents
+
+  # ---------------------------------------------------------------------------
+  # CATEGORY 4: COMPLIANCE & GOVERNANCE
+  # ---------------------------------------------------------------------------
+  - id: cg
+    name: Compliance & Governance
+    color: "#2196F3"
+    color_name: blue
+    weight: 0.20
+    element_count: 6
+    purpose: >
+      Ensure AI systems meet regulatory and organisational policy requirements
+    elements:
+
+      - code: DOC
+        name: Documentation
+        full_description: Maintain clear records of models, data, and workflows
+        why_it_matters: >
+          Without documentation, AI systems are black boxes. Regulators, auditors, and
+          teams need documentation to understand, verify, and improve AI systems
+        implementation_checklist:
+          - Model cards created for every production AI model
+          - Data sheets created for every training/evaluation dataset
+          - Architecture documentation current and accessible
+          - Change logs maintained for model updates and retraining
+          - Documentation reviewed and updated on a defined schedule
+        code_scaffolding:
+          - Model card templates
+          - Data sheet templates
+          - Architecture doc templates
+          - Changelog formats
+        cross_references:
+          primary: caio-assessment (Domain 9 Documentation)
+          secondary: wharton-ai-governance (Transparency)
+        agent_layer: compliance_layer
+
+      - code: AUDIT
+        name: Auditability
+        full_description: Enable review and verification of AI system behavior
+        why_it_matters: >
+          Regulators, internal auditors, and affected individuals need to verify AI
+          decisions. Auditability is a prerequisite for accountability
+        implementation_checklist:
+          - Audit trail captures all AI model decisions with inputs and outputs
+          - Audit logs are tamper-proof and retained per policy
+          - Audit access controls separate auditors from operators
+          - Audit reports can be generated on demand
+          - External audit readiness tested annually
+        code_scaffolding:
+          - Audit logging service
+          - Tamper-proof storage config
+          - Audit report generator
+        cross_references:
+          primary: wharton-ai-governance (Governance domain)
+          secondary: caio-assessment (Domain 11 Governance)
+        agent_layer: compliance_layer
+
+      - code: TRACE
+        name: Traceability
+        full_description: Maintain logs of AI decisions and data usage
+        why_it_matters: >
+          When an AI system makes a wrong or harmful decision, traceability lets you
+          understand what happened — what data was used, what model version, what parameters
+        implementation_checklist:
+          - Every AI inference logged with input, output, model version, timestamp, user
+          - Data lineage tracked from source to model output
+          - Model version history maintained with deployment timestamps
+          - Trace data linked to business outcomes for impact analysis
+          - Trace retention policy defined and enforced
+        code_scaffolding:
+          - Tracing middleware
+          - OpenTelemetry config for AI pipelines
+          - Lineage tracking
+        cross_references:
+          primary: caio-assessment (Domain 9 Documentation)
+          secondary: wharton-ai-governance (Explainability)
+        agent_layer: compliance_layer
+
+      - code: ISO42K
+        name: ISO 42001
+        full_description: AI management system standard for governance and compliance
+        why_it_matters: >
+          ISO 42001 is the first international standard specifically for AI management
+          systems. Certification signals governance maturity to customers, regulators, and partners
+        implementation_checklist:
+          - Gap analysis performed against ISO 42001 requirements
+          - AI management system (AIMS) established with defined scope
+          - Risk assessment process aligned with ISO 42001 Annex A controls
+          - Internal audit program established for AIMS
+          - Management review of AIMS conducted at planned intervals
+        code_scaffolding:
+          - ISO 42001 gap analysis template
+          - AIMS documentation structure
+          - Audit checklist
+        cross_references:
+          primary: chief-ai-security-officer (regulatory - ISO/IEC 42001)
+          secondary: melodic-software-ai-governance (NIST AI RMF mapping)
+        agent_layer: compliance_layer
+
+      - code: AIACT
+        name: EU AI Act
+        full_description: Regulatory framework for risk-based AI governance
+        why_it_matters: >
+          The EU AI Act applies to any AI system affecting EU citizens — regardless of
+          where the provider is based. Non-compliance carries fines up to 7 percent of global revenue
+        implementation_checklist:
+          - All AI systems classified by EU AI Act risk tier
+          - High-risk systems meet conformity assessment requirements
+          - Transparency obligations met for limited-risk systems
+          - Prohibited AI practices identified and eliminated
+          - Compliance timeline tracked against EU AI Act implementation dates
+        code_scaffolding:
+          - Risk classification engine
+          - Conformity assessment checklist
+          - Compliance tracker
+        cross_references:
+          primary: melodic-software-ai-governance (EU AI Act classification)
+          secondary: wharton-ai-governance (Governance)
+        agent_layer: compliance_layer
+
+      - code: GDPR
+        name: General Data Protection Regulation
+        full_description: Ensure AI systems comply with data privacy laws
+        why_it_matters: >
+          AI processing of personal data triggers GDPR obligations. Automated
+          decision-making has specific GDPR requirements including the right to human review
+        implementation_checklist:
+          - DPIA completed for AI systems processing personal data
+          - Legal basis for processing established (consent, legitimate interest, etc.)
+          - Data subject rights implemented (access, rectification, erasure, objection)
+          - Article 22 compliance for automated decision-making (human review option)
+          - Data processing agreements in place with AI service providers
+        code_scaffolding:
+          - DPIA template
+          - Data subject rights API endpoints
+          - Consent management config
+        cross_references:
+          primary: wharton-ai-governance (Privacy domain)
+          secondary: melodic-software-ai-governance (GDPR checklist)
+        agent_layer: compliance_layer
+
+  # ---------------------------------------------------------------------------
+  # CATEGORY 5: MONITORING & OBSERVABILITY
+  # ---------------------------------------------------------------------------
+  - id: mo
+    name: Monitoring & Observability
+    color: "#9C27B0"
+    color_name: purple
+    weight: 0.12
+    element_count: 6
+    purpose: >
+      Provide visibility into AI system behaviour, performance, and usage patterns
+    elements:
+
+      - code: MON
+        name: Monitoring
+        full_description: Track system performance and reliability in real time
+        why_it_matters: >
+          AI systems can fail silently — accuracy degrades, latency increases, errors go
+          unnoticed. Real-time monitoring catches problems before they impact users
+        implementation_checklist:
+          - Real-time monitoring dashboards for all production AI models
+          - Key metrics tracked (accuracy, latency, throughput, error rate)
+          - Alerting configured for metric threshold breaches
+          - Monitoring covers model performance AND infrastructure health
+          - Historical metrics retained for trend analysis and SLA compliance
+        code_scaffolding:
+          - Monitoring dashboard config
+          - Prometheus/Grafana templates
+          - Alert rules
+        cross_references:
+          primary: caio-assessment (Domain 12 Continuous Improvement)
+        agent_layer: individual_agents
+
+      - code: ANOM
+        name: Anomaly Detection
+        full_description: Identify unusual patterns in AI behavior
+        why_it_matters: >
+          Anomalies can indicate attacks (adversarial inputs, data poisoning), model
+          degradation, or data quality issues. Early detection prevents cascading failures
+        implementation_checklist:
+          - Anomaly detection monitors AI model inputs for distribution shifts
+          - Anomaly detection monitors AI model outputs for unexpected patterns
+          - Baseline behavior profiles established for each production model
+          - Anomaly alerts trigger investigation workflows
+          - False positive rate tracked and detection tuned accordingly
+        code_scaffolding:
+          - Anomaly detection service
+          - Baseline profiling
+          - Statistical monitoring config
+        cross_references:
+          primary: chief-ai-security-officer (AIRS framework)
+          secondary: caio-assessment (Domain 12)
+        agent_layer: individual_agents
+
+      - code: LOG
+        name: Logging
+        full_description: Record inputs, outputs, and system actions
+        why_it_matters: >
+          Logging is the raw material for auditing, monitoring, tracing, and incident
+          investigation. Without comprehensive logging, all other observability elements
+          are incomplete
+        implementation_checklist:
+          - Structured logging format standardized across all AI components
+          - Log levels defined (DEBUG, INFO, WARN, ERROR, CRITICAL)
+          - Sensitive data redacted from logs (PII, credentials)
+          - Log aggregation and search infrastructure in place
+          - Log retention policy defined and enforced
+        code_scaffolding:
+          - Logging config templates
+          - Log format standards
+          - Aggregation pipeline config
+        cross_references:
+          primary: All skills — logging is foundational
+        agent_layer: individual_agents
+
+      - code: LAT
+        name: Latency Monitoring
+        full_description: Track response times across AI systems
+        why_it_matters: >
+          AI latency directly impacts user experience and can indicate system health issues.
+          SLA compliance requires latency tracking
+        implementation_checklist:
+          - Latency measured at each stage of AI inference pipeline
+          - Latency SLAs defined for each AI service
+          - Latency alerts trigger when SLAs are at risk
+          - Latency trends tracked for capacity planning
+          - Latency optimization recommendations generated from monitoring data
+        code_scaffolding:
+          - Latency monitoring middleware
+          - SLA config
+          - Performance dashboard
+        cross_references:
+          primary: caio-assessment (Domain 8 Technology Architecture)
+        agent_layer: inter_agent_communication
+
+      - code: USAGE
+        name: Usage Analytics
+        full_description: Monitor how AI systems are used across teams
+        why_it_matters: >
+          Understanding usage patterns reveals shadow AI, underutilized investments,
+          unexpected use cases, and potential misuse
+        implementation_checklist:
+          - Usage metrics collected for all AI systems (queries, users, departments)
+          - Usage trends analyzed monthly
+          - Shadow AI discovery process identifies unauthorized AI tool usage
+          - Usage data informs capacity planning and cost optimization
+          - Usage patterns reviewed for potential misuse indicators
+        code_scaffolding:
+          - Usage analytics dashboard
+          - Shadow AI scanner
+          - Usage reporting templates
+        cross_references:
+          primary: caio-assessment (Domain 4 AI Portfolio Management)
+        agent_layer: output_layer
+
+      - code: PERF
+        name: Performance Tracking
+        full_description: Evaluate accuracy, efficiency, and output quality
+        why_it_matters: >
+          Performance tracking closes the loop — it tells you whether your AI systems are
+          actually delivering value and whether governance measures are working
+        implementation_checklist:
+          - Performance metrics defined for each AI model (accuracy, precision, recall, F1)
+          - Performance baselines established and tracked over time
+          - Performance degradation triggers review and potential retraining
+          - Performance reports generated for stakeholders on schedule
+          - Performance compared against business KPIs to measure value delivery
+        code_scaffolding:
+          - Performance tracking dashboard
+          - Metric calculation pipeline
+          - Reporting templates
+        cross_references:
+          primary: wharton-ai-governance (Metrics Pyramid)
+          secondary: caio-assessment (Domain 12)
+        agent_layer: output_layer
+
+  # ---------------------------------------------------------------------------
+  # CATEGORY 6: AUDIT & ACCOUNTABILITY
+  # ---------------------------------------------------------------------------
+  - id: aa
+    name: Audit & Accountability
+    color: "#E91E63"
+    color_name: pink_rose
+    weight: 0.12
+    element_count: 6
+    purpose: >
+      Establish clear responsibility chains and human oversight for AI decisions
+    elements:
+
+      - code: POLICY
+        name: Policy Enforcement
+        full_description: Ensure AI actions follow predefined rules and constraints
+        why_it_matters: >
+          Policies translate governance principles into enforceable rules. Without
+          enforcement, policies are just documents gathering dust
+        implementation_checklist:
+          - AI acceptable use policy published and acknowledged by all users
+          - Automated policy checks in CI/CD pipelines for AI models
+          - Policy violations trigger alerts and block deployment
+          - Policy exceptions require documented approval
+          - Policy compliance reported to governance board regularly
+        code_scaffolding:
+          - Policy-as-code configs
+          - CI/CD policy gates
+          - Policy violation alerting
+        cross_references:
+          primary: chief-ai-security-officer (operating model - governance committees)
+          secondary: wharton-ai-governance (Governance domain)
+        agent_layer: output_layer
+
+      - code: RESP
+        name: Responsibility Mapping
+        full_description: Define ownership of AI decisions and outcomes
+        why_it_matters: >
+          When an AI system causes harm, someone must be accountable. Without clear
+          responsibility mapping, organizations face legal liability and governance gaps
+        implementation_checklist:
+          - RACI matrix defined for each AI system (Responsible, Accountable, Consulted, Informed)
+          - Model owners assigned for every production AI model
+          - Data owners assigned for every training/evaluation dataset
+          - Escalation paths documented for AI incidents
+          - Responsibility reviewed when team changes occur
+        code_scaffolding:
+          - RACI matrix template
+          - Ownership registry
+          - Escalation workflow config
+        cross_references:
+          primary: wharton-ai-governance (Governance domain)
+          secondary: caio-assessment (Domain 11 Governance)
+        agent_layer: orchestrator
+
+      - code: RCAUSE
+        name: Root Cause Analysis
+        full_description: Identify reasons behind AI failures or incorrect outputs
+        why_it_matters: >
+          Fixing symptoms without understanding root causes leads to recurring failures.
+          Structured RCA prevents the same AI failures from happening again
+        implementation_checklist:
+          - RCA process defined for AI incidents (5 Whys, fishbone, fault tree)
+          - RCA triggered automatically for high-severity AI incidents
+          - RCA findings documented and shared across AI teams
+          - Corrective actions tracked to implementation and verification
+          - RCA database maintained for pattern analysis across incidents
+        code_scaffolding:
+          - RCA template
+          - Incident tracking integration
+          - Corrective action tracker
+        cross_references:
+          primary: chief-ai-security-officer (risk-taxonomy)
+          secondary: caio-assessment (Domain 12)
+        agent_layer: output_layer
+
+      - code: ESC
+        name: Escalation
+        full_description: Route high-risk cases to human reviewers
+        why_it_matters: >
+          Not all AI decisions should be autonomous. Escalation ensures that edge cases,
+          high-risk scenarios, and confidence-low outputs get human attention
+        implementation_checklist:
+          - Escalation criteria defined (confidence thresholds, risk levels, anomaly flags)
+          - Escalation routing rules map to appropriate human reviewers
+          - Escalation response time SLAs defined
+          - Escalated cases tracked and outcomes fed back to model improvement
+          - Escalation volume monitored — too many escalations indicates model problems
+        code_scaffolding:
+          - Escalation engine config
+          - Routing rules
+          - SLA monitoring
+          - Feedback loop
+        cross_references:
+          primary: chief-ai-security-officer (AIRS framework)
+          secondary: wharton-ai-governance (Governance)
+        agent_layer: output_layer
+
+      - code: APPROVE
+        name: Approval Systems
+        full_description: Require human validation before critical outputs are executed
+        why_it_matters: >
+          For high-stakes AI outputs (financial decisions, medical recommendations, legal
+          actions), automated execution without human approval creates unacceptable risk
+        implementation_checklist:
+          - Critical AI outputs identified that require human approval
+          - Approval workflows defined with appropriate approvers
+          - Approval decisions logged with approver identity and rationale
+          - Approval SLAs balance speed with governance requirements
+          - Override mechanisms exist with additional documentation requirements
+        code_scaffolding:
+          - Approval workflow engine
+          - Approval UI components
+          - Decision logging
+        cross_references:
+          primary: chief-ai-security-officer (operating model)
+          secondary: wharton-ai-governance (Governance)
+        agent_layer: output_layer
+
+      - code: HITL
+        name: Human-in-the-Loop
+        full_description: Introduce human oversight in critical decision workflows
+        why_it_matters: >
+          HITL is the overarching principle — humans must remain in control of AI systems,
+          especially for decisions affecting people's lives, livelihoods, and rights
+        implementation_checklist:
+          - HITL requirements defined based on AI risk classification
+          - Human review points designed into AI decision workflows
+          - Humans have sufficient information and tools to meaningfully review AI outputs
+          - HITL effectiveness measured (are humans actually catching errors?)
+          - HITL does not create rubber-stamping — reviewers are empowered to override
+        code_scaffolding:
+          - HITL workflow orchestrator
+          - Review UI templates
+          - Override mechanisms
+        cross_references:
+          primary: wharton-ai-governance (Governance domain - explainability for reviewers)
+          secondary: caio-assessment (Domain 7)
+        agent_layer: output_layer
+
+# =============================================================================
+# AGENT ARCHITECTURE GOVERNANCE MAPPING
+# =============================================================================
+
+agent_architecture_governance:
+  description: >
+    When governing multi-agent systems, apply elements at each architectural layer.
+    This mapping shows which elements are critical at each layer of an agent system.
+
+  layers:
+    - layer: orchestrator
+      description: Central coordination agent that routes tasks and manages workflow
+      critical_elements: [RBAC, IAM, ZTA, POLICY, AUDIT, RESP, ESC, APPROVE]
+      rationale: >
+        The orchestrator has highest privilege — it can invoke any sub-agent.
+        Access control, policy enforcement, and accountability are paramount.
+
+    - layer: individual_agents
+      description: Specialized agents that perform domain-specific tasks
+      critical_elements: [LOG, TRACE, BIAS, HALL, DLP, MASK, MON, DRIFT]
+      rationale: >
+        Each agent processes data and generates outputs. Monitor for bias,
+        hallucination, and data leakage at the individual agent level.
+
+    - layer: data_layer
+      description: Vector databases, embeddings, training data, retrieval systems
+      critical_elements: [VDB, PIPE, TOKEN, ENC, RISK]
+      rationale: >
+        The data layer contains the raw material. Protect it with encryption,
+        tokenization, and secure pipeline controls.
+
+    - layer: inter_agent_communication
+      description: Messages and data passed between agents
+      critical_elements: [SSO, MFA, TRACE, ANOM, LAT]
+      rationale: >
+        Agent-to-agent communication is an attack surface. Authenticate,
+        trace, and monitor all inter-agent messages.
+
+    - layer: output_layer
+      description: Final outputs delivered to users or downstream systems
+      critical_elements: [HITL, APPROVE, ESC, PERF, USAGE, RCAUSE]
+      rationale: >
+        Outputs have real-world impact. Gate high-risk outputs with human review,
+        track performance, and enable root cause analysis for failures.
+
+    - layer: compliance_layer
+      description: Cross-cutting compliance and documentation requirements
+      critical_elements: [DOC, ISO42K, AIACT, GDPR, POLICY]
+      rationale: >
+        Compliance applies across all layers. Documentation, regulatory adherence,
+        and policy enforcement are continuous obligations.
+
+# =============================================================================
+# REGULATORY COMPLIANCE MAPPINGS
+# =============================================================================
+
+regulatory_mappings:
+
+  iso_42001:
+    name: ISO/IEC 42001:2023
+    description: AI Management System Standard
+    required_elements: [DOC, POLICY, RISK, AUDIT, MON, RESP, BIAS, DRIFT, PERF, LOG, HITL, RCAUSE]
+    clause_mapping:
+      - clause: "4.1-4.2 Context"
+        elements: [DOC, RESP]
+      - clause: "5.1-5.3 Leadership"
+        elements: [POLICY, RESP]
+      - clause: "6.1 Risk and Opportunity"
+        elements: [RISK, BIAS, DRIFT]
+      - clause: "6.2 Objectives"
+        elements: [PERF, USAGE]
+      - clause: "8.2 AI Risk Assessment"
+        elements: [RISK, BIAS, HALL, THREAT]
+      - clause: "8.3 AI Risk Treatment"
+        elements: [HITL, ESC, APPROVE, REDT]
+      - clause: "9.1 Monitoring"
+        elements: [MON, AUDIT, LOG, PERF]
+      - clause: "9.2 Internal Audit"
+        elements: [AUDIT, TRACE]
+      - clause: "10 Improvement"
+        elements: [RCAUSE, DRIFT, PERF]
+
+  eu_ai_act:
+    name: EU AI Act (Regulation 2024/1689)
+    description: Risk-based regulatory framework for AI governance
+    risk_tiers:
+      unacceptable:
+        description: System cannot be deployed — must redesign or abandon
+        elements: []
+      high_risk:
+        required_elements: [RISK, BIAS, DOC, TRACE, HITL, MON, LOG, AUDIT, RESP, PERF, PIPE, ESC, APPROVE, REDT, ZTA]
+        article_mapping:
+          - article: "Art 9 Risk Management"
+            elements: [RISK, DRIFT, THREAT]
+          - article: "Art 10 Data Governance"
+            elements: [PIPE, VDB, BIAS, DOC]
+          - article: "Art 11 Technical Documentation"
+            elements: [DOC]
+          - article: "Art 12 Record-Keeping"
+            elements: [LOG, TRACE, AUDIT]
+          - article: "Art 13 Transparency"
+            elements: [DOC, POLICY]
+          - article: "Art 14 Human Oversight"
+            elements: [HITL, ESC, APPROVE]
+          - article: "Art 15 Accuracy, Robustness, Security"
+            elements: [PERF, MON, REDT, ZTA]
+      limited_risk:
+        required_elements: [DOC, POLICY, LOG]
+      minimal_risk:
+        required_elements: []
+        recommended_elements: [DOC, MON]
+
+  gdpr:
+    name: General Data Protection Regulation
+    description: EU data privacy regulation
+    required_elements: [DLP, MASK, TOKEN, ENC, GDPR, DOC, AUDIT, LOG, HITL, IAM, MFA, ZTA, MON, ANOM, RISK]
+    article_mapping:
+      - article: "Art 5 Principles"
+        elements: [POLICY, DOC, DLP, MASK]
+      - article: "Art 22 Automated Decision-Making"
+        elements: [HITL, ESC, APPROVE, DOC]
+      - article: "Art 25 Data Protection by Design"
+        elements: [DLP, MASK, TOKEN, ENC]
+      - article: "Art 32 Security"
+        elements: [ENC, ZTA, MFA, IAM]
+      - article: "Art 33-34 Breach Notification"
+        elements: [MON, ANOM, RCAUSE, ESC]
+      - article: "Art 35 DPIA"
+        elements: [RISK, BIAS, DOC]
+
+  nist_ai_rmf:
+    name: NIST AI Risk Management Framework 1.0
+    description: US federal AI risk management guidance
+    required_elements: [POLICY, DOC, RESP, RISK, BIAS, HALL, DRIFT, MON, PERF, TRACE, THREAT, REDT, ESC, HITL, APPROVE, RCAUSE, AUDIT]
+    function_mapping:
+      - function: GOVERN
+        elements: [POLICY, DOC, RESP, AUDIT]
+      - function: MAP
+        elements: [RISK, BIAS, DOC, RESP]
+      - function: MEASURE
+        elements: [BIAS, HALL, DRIFT, MON, PERF, TRACE]
+      - function: MANAGE
+        elements: [THREAT, REDT, ESC, HITL, APPROVE, RCAUSE]
+
+  india_dpdp:
+    name: India Digital Personal Data Protection Act 2023
+    description: Indian data privacy regulation
+    required_elements: [DLP, MASK, TOKEN, ENC, DOC, AUDIT, LOG, POLICY, PIPE, IAM, MFA, ZTA]
+    section_mapping:
+      - section: "Sec 4 Consent"
+        elements: [DOC, POLICY, LOG]
+      - section: "Sec 6 Data Minimisation"
+        elements: [DLP, MASK, TOKEN]
+      - section: "Sec 9 Security Safeguards"
+        elements: [ENC, ZTA, MFA, IAM]
+      - section: "Sec 12 Children's Data"
+        elements: [DLP, MASK, TOKEN, APPROVE, HITL]
+
+  coppa:
+    name: Children's Online Privacy Protection Act
+    description: US children's data privacy law
+    required_elements: [DLP, MASK, TOKEN, DOC, POLICY, AUDIT, LOG, APPROVE, HITL, ENC, IAM, ZTA]
+
+# =============================================================================
+# CROSS-REGULATION ELEMENT PRIORITY
+# =============================================================================
+
+cross_regulation_priority:
+  universal_must_haves:
+    description: Required by 5 or more regulations
+    elements: [DOC, AUDIT, LOG, POLICY, HITL, MON]
+  high_priority:
+    description: Required by 3-4 regulations
+    elements: [RISK, BIAS, RESP, PERF, DLP, MASK, TOKEN, ENC]
+  standard:
+    description: Required by 1-2 regulations
+    elements: [DRIFT, TRACE, HALL, THREAT, REDT, VDB, PIPE, ANOM, USAGE, LAT]
+
+# =============================================================================
+# COMPANION SKILL CROSS-REFERENCE MAPPING
+# =============================================================================
+
+companion_skill_mapping:
+
+  wharton_domains_to_elements:
+    - domain: "D1 AI Strategy Alignment"
+      primary_elements: [DOC, POLICY, RESP]
+      secondary_elements: [USAGE, PERF]
+    - domain: "D2 Innovation and Readiness"
+      primary_elements: [PERF, USAGE, MON]
+      secondary_elements: [DRIFT, DOC]
+    - domain: "D3 Algorithmic Bias and Fairness"
+      primary_elements: [BIAS, AUDIT, TRACE]
+      secondary_elements: [HITL, ESC, DOC]
+    - domain: "D4 Ethics and Manipulation"
+      primary_elements: [POLICY, HITL, APPROVE]
+      secondary_elements: [BIAS, DOC, RESP]
+    - domain: "D5 Privacy and Data Protection"
+      primary_elements: [DLP, MASK, TOKEN, ENC, GDPR]
+      secondary_elements: [PIPE, VDB, AUDIT]
+    - domain: "D6 Governance and Explainability"
+      primary_elements: [DOC, AUDIT, TRACE, RESP]
+      secondary_elements: [POLICY, ISO42K, LOG]
+    - domain: "D7 Enterprise Readiness (PEEK)"
+      primary_elements: [IAM, SSO, MON, LOG]
+      secondary_elements: [ZTA, PERF, USAGE]
+    - domain: "D8 Implementation (BRIDGE/SCALE)"
+      primary_elements: [PIPE, VDB, MON, LOG, LAT]
+      secondary_elements: [DRIFT, PERF]
+    - domain: "D9 Change Management (ADAPT)"
+      primary_elements: [DOC, RESP, USAGE]
+      secondary_elements: [POLICY, HITL]
+    - domain: "D10 ROI Measurement"
+      primary_elements: [PERF, USAGE, LAT, MON]
+      secondary_elements: [LOG, AUDIT]
+
+  caio_domains_to_elements:
+    - domain: "Strategic Vision"
+      elements: [DOC, POLICY, RESP]
+    - domain: "Data Governance"
+      elements: [PIPE, VDB, TOKEN, MASK, ENC, DLP]
+    - domain: "Ethics and Responsible AI"
+      elements: [BIAS, HITL, APPROVE, ESC, POLICY]
+    - domain: "Security and Risk"
+      elements: [ZTA, MFA, THREAT, REDT, RISK, ANOM]
+    - domain: "Technology Architecture"
+      elements: [IAM, SSO, MON, LOG, LAT, PIPE]
+    - domain: "Governance Operating Model"
+      elements: [AUDIT, POLICY, ISO42K, DOC, RESP]
+
+# =============================================================================
+# CONTEXTUAL ADAPTATION BY AI SYSTEM TYPE
+# =============================================================================
+
+system_type_emphasis:
+
+  agentic_ai:
+    description: Multi-agent systems, autonomous workflows
+    emphasize: [RBAC, ZTA, HITL, APPROVE, ESC, TRACE, ANOM, THREAT]
+    rationale: Agents take autonomous actions — accountability and access control are critical
+
+  rag_systems:
+    description: Retrieval-augmented generation pipelines
+    emphasize: [VDB, PIPE, HALL, DLP, MASK, TOKEN, TRACE]
+    rationale: Protect the retrieval layer, prevent data leakage, detect hallucinations
+
+  customer_facing:
+    description: Chatbots, recommendation engines, decision support
+    emphasize: [BIAS, GDPR, AIACT, HITL, PERF, LAT, USAGE, DOC]
+    rationale: User-facing risks and regulatory exposure are the priorities
+
+  internal_tools:
+    description: Analytics, automation, productivity tools
+    emphasize: [RBAC, LOG, MON, DOC, USAGE, POLICY]
+    rationale: Lighter governance but essential controls still apply

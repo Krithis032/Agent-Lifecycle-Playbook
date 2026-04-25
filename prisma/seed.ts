@@ -14,6 +14,9 @@ function detectKbSource(filename: string): string {
   if (lower.includes('ibm')) return 'ibm';
   if (lower.includes('rag_mcp') || lower.includes('rag-mcp')) return 'rag_mcp';
   if (lower.includes('linkedin')) return 'linkedin';
+  // Periodic table file is the governance & security KB
+  if (lower.includes('periodic-table') || lower.includes('periodic_table')) return 'governance';
+  // Strategy files (including kb_strategy_governance) remain in strategy tier
   if (lower.includes('strategy')) return 'strategy';
   return 'core';
 }

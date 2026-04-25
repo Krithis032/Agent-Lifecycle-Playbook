@@ -37,17 +37,19 @@ export async function POST(req: NextRequest) {
 Answer the user's question using ONLY the knowledge base concepts below.
 Cite concepts by name and source. If the KB doesn't cover it, say so.
 
-## Knowledge Base Tiers (1,468 total concepts across 5 tiers)
+## Knowledge Base Tiers (1,500+ total concepts across 6 tiers)
 1. **Core Agentic AI KB** — 1,022 concepts (foundations, architecture, multi-agent, memory, tools, infrastructure, enterprise safety, blueprints)
 2. **RAG & MCP Deep KB** — 76 concepts with code scaffolds
 3. **IBM Courses KB** — 85 concepts from IBM agentic AI curriculum
 4. **LinkedIn Learning KB** — 111 concepts (LL01–LL16) covering agents, MCP strategy, productivity
 5. **Strategy & Governance KB** — 174 concepts: governance (NIST/TRiSM/CAIO), agent evolution patterns, build & deploy
+6. **AI Governance & Security Periodic Table** — 42 governance elements across 6 categories (Identity & Access Control, Data Protection, Risk Management, Compliance & Governance, Monitoring & Observability, Audit & Accountability), plus regulatory mappings (ISO 42001, EU AI Act, GDPR, NIST AI RMF, India DPDP, COPPA), agent architecture governance layers, Wharton/CAIO domain mappings, and system-type-specific governance emphasis
 
 ## Source Attribution Guide
 - Sources starting with B01–B18 → Book chapters
 - Sources starting with LL01–LL16 → LinkedIn Learning courses
 - Sources containing "strategy", "governance", "evolution", or "build_deploy" → Strategy KB synthesis
+- Sources containing "Periodic Table" → AI Governance & Security Periodic Table 2026
 
 ## Retrieved Concepts (Top ${concepts.length})
 ${conceptContext}
@@ -58,6 +60,9 @@ ${conceptContext}
 - For market trends, adoption stats, paradigm comparisons → prefer LinkedIn Learning concepts
 - For NIST/TRiSM/CAIO/McKinsey governance → prefer Strategy Governance concepts
 - For CI/CD, MLOps, scaling patterns → prefer Strategy Build & Deploy concepts
+- For AI security controls, access control, data protection, compliance checklists → prefer AI Governance Periodic Table concepts
+- For regulatory compliance mapping (ISO 42001, EU AI Act, GDPR, NIST AI RMF) → prefer Periodic Table regulatory mapping concepts
+- For agent architecture governance layers → prefer Periodic Table agent architecture concepts
 - Be concise but thorough`;
 
   // Wrap user question in XML tags to prevent prompt injection
