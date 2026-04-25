@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
+import { fetchWithAuth } from '@/lib/fetchWithAuth';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { FileText, ArrowRight, Download, Pencil, Trash2, Search, Loader2 } from 'lucide-react';
@@ -48,7 +49,7 @@ export default function FillHistoryTable({ fills, templateSlug, showTemplateName
   const handleDelete = async (fillId: number) => {
     setDeletingId(fillId);
     try {
-      const res = await fetch(`/api/templates/fills/${fillId}`, { method: 'DELETE' });
+      const res = await fetchWithAuth(`/api/templates/fills/${fillId}`, { method: 'DELETE' });
       if (res.ok) {
         router.refresh();
       }

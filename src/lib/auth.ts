@@ -1,8 +1,6 @@
-import { getServerSession } from 'next-auth';
 import { getToken } from 'next-auth/jwt';
 import { NextResponse } from 'next/server';
 import { headers, cookies } from 'next/headers';
-import { authOptions } from '@/app/api/auth/[...nextauth]/auth-options';
 
 export interface AuthSession {
   user: { id: string; email: string; name?: string | null; role?: string };
@@ -10,23 +8,24 @@ export interface AuthSession {
 
 /**
  * Returns the session or a 401 response.
- * Uses getServerSession first, then falls back to JWT token extraction.
- * The fallback ensures auth works even when NEXTAUTH_URL is not configured
- * (e.g., on Railway where the middleware already validates the JWT).
+ * Uses direct JWT token extraction from cookies (fast path).
+ * This avoids the expensive getServerSession() call which doubles latency
+ * when the token is invalid (e.g., after NEXTAUTH_SECRET rotation).
  */
 export async function requireAuth(): Promise<
   [AuthSession, null] | [null, NextResponse]
 > {
-  // Try getServerSession first (works when NEXTAUTH_URL is set correctly)
-  const session = await getServerSession(authOptions);
-  if (session?.user) {
-    return [session as unknown as AuthSession, null];
+  // Fast path: check if session cookie even exists before trying to decode
+  const cookieStore = await cookies();
+  const sessionCookie = cookieStore.get('next-auth.session-token')
+    || cookieStore.get('__Secure-next-auth.session-token');
+
+  if (!sessionCookie?.value) {
+    return [null, NextResponse.json({ error: 'Unauthorized' }, { status: 401 })];
   }
 
-  // Fallback: extract JWT token directly from cookies
-  // This works even without NEXTAUTH_URL because it only needs NEXTAUTH_SECRET
+  // Extract JWT token directly from cookies — fast, only needs NEXTAUTH_SECRET
   try {
-    const cookieStore = await cookies();
     const headerStore = await headers();
     const token = await getToken({
       req: {

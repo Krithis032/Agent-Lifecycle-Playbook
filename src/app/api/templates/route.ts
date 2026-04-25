@@ -17,11 +17,7 @@ export async function GET() {
       },
       orderBy: { id: 'asc' },
     });
-    return NextResponse.json(templates.map(t => ({
-      ...t,
-      fillCount: t._count.fills,
-      _count: undefined,
-    })));
+    return NextResponse.json(templates);
   } catch (err) {
     logError('GET /api/templates', err);
     return NextResponse.json({ error: 'Failed to fetch templates' }, { status: 500 });

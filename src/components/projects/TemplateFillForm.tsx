@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import { fetchWithAuth } from '@/lib/fetchWithAuth';
 import Card from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
 import Badge from '@/components/ui/Badge';
@@ -86,14 +87,14 @@ export default function TemplateFillForm({ template, projectId, existingFill, on
     try {
       if (existingFill?.id) {
         // Update existing fill
-        await fetch(`/api/templates/fills/${existingFill.id}`, {
+        await fetchWithAuth(`/api/templates/fills/${existingFill.id}`, {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ title, fieldValues, projectId }),
         });
       } else {
         // Create new fill using template slug
-        await fetch(`/api/templates/${template.slug}/fill`, {
+        await fetchWithAuth(`/api/templates/${template.slug}/fill`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ projectId, title, fieldValues }),

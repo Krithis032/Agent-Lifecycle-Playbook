@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { fetchWithAuth } from '@/lib/fetchWithAuth';
 import Link from 'next/link';
 import Card from '@/components/ui/Card';
 import Badge from '@/components/ui/Badge';
@@ -19,7 +20,7 @@ export default function GovernanceDetailPage({ params }: { params: { assessmentI
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch(`/api/governance/detail/${params.assessmentId}`)
+    fetchWithAuth(`/api/governance/detail/${params.assessmentId}`)
       .then(r => r.json())
       .then(data => { setAssessment(data); setLoading(false); })
       .catch(() => setLoading(false));

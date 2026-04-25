@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { fetchWithAuth } from '@/lib/fetchWithAuth';
 import { Sparkles, Loader2 } from 'lucide-react';
 
 interface AIAssistButtonProps {
@@ -23,7 +24,7 @@ export default function AIAssistButton({
   const handleAssist = async () => {
     setLoading(true);
     try {
-      const res = await fetch('/api/templates/assist', {
+      const res = await fetchWithAuth('/api/templates/assist', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ templateName, fieldLabel, fieldHelpText, existingValues }),

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useSession } from 'next-auth/react';
+import { fetchWithAuth } from '@/lib/fetchWithAuth';
 import {
   Key, Database, Info, CheckCircle, XCircle,
   Users, UserPlus, Shield, Trash2, Edit3, UsersRound, Plus, X,
@@ -251,7 +252,7 @@ function UsersTab({ teams }: { teams: TeamRow[] }) {
   const [hoveredButton, setHoveredButton] = useState<string | null>(null);
 
   const fetchUsers = useCallback(async () => {
-    const res = await fetch('/api/users');
+    const res = await fetchWithAuth('/api/users');
     if (res.ok) setUsers(await res.json());
     setLoading(false);
   }, []);
@@ -260,13 +261,13 @@ function UsersTab({ teams }: { teams: TeamRow[] }) {
 
   const handleDelete = async (id: number) => {
     if (!confirm('Delete this user? This cannot be undone.')) return;
-    const res = await fetch(`/api/users/${id}`, { method: 'DELETE' });
+    const res = await fetchWithAuth(`/api/users/${id}`, { method: 'DELETE' });
     if (res.ok) fetchUsers();
   };
 
   const handleToggleStatus = async (user: UserRow) => {
     const newStatus = user.status === 'active' ? 'suspended' : 'active';
-    const res = await fetch(`/api/users/${user.id}`, {
+    const res = await fetchWithAuth(`/api/users/${user.id}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ status: newStatus }),
@@ -462,7 +463,7 @@ function CreateUserModal({ open, onClose, teams, onCreated }: {
     setError('');
     setLoading(true);
 
-    const res = await fetch('/api/users', {
+    const res = await fetchWithAuth('/api/users', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -668,7 +669,7 @@ function EditUserModal({ user, teams, onClose, onUpdated }: {
     };
     if (form.password) payload.password = form.password;
 
-    const res = await fetch(`/api/users/${user.id}`, {
+    const res = await fetchWithAuth(`/api/users/${user.id}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
@@ -829,7 +830,7 @@ function TeamsTab({ teams, onRefresh }: { teams: TeamRow[]; onRefresh: () => voi
 
   const handleDelete = async (id: number) => {
     if (!confirm('Delete this team? Members will be unassigned.')) return;
-    const res = await fetch(`/api/teams/${id}`, { method: 'DELETE' });
+    const res = await fetchWithAuth(`/api/teams/${id}`, { method: 'DELETE' });
     if (res.ok) onRefresh();
   };
 
@@ -966,7 +967,7 @@ function CreateTeamModal({ open, onClose, onCreated }: {
     setError('');
     setLoading(true);
 
-    const res = await fetch('/api/teams', {
+    const res = await fetchWithAuth('/api/teams', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(form),
@@ -1083,7 +1084,7 @@ function EditTeamModal({ team, onClose, onUpdated }: {
     setError('');
     setLoading(true);
 
-    const res = await fetch(`/api/teams/${team.id}`, {
+    const res = await fetchWithAuth(`/api/teams/${team.id}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(form),
@@ -1192,7 +1193,7 @@ export default function SettingsPage() {
   const [teams, setTeams] = useState<TeamRow[]>([]);
 
   const fetchTeams = useCallback(async () => {
-    const res = await fetch('/api/teams');
+    const res = await fetchWithAuth('/api/teams');
     if (res.ok) setTeams(await res.json());
   }, []);
 

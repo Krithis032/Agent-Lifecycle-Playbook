@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { notFound } from 'next/navigation';
+import { fetchWithAuth } from '@/lib/fetchWithAuth';
 import Link from 'next/link';
 import { calculateEvalWeightedScores } from '@/lib/scoring';
 import ComparisonView from '@/components/evaluate/ComparisonView';
@@ -29,7 +30,7 @@ export default function CompareClient({ id }: { id: string }) {
       return;
     }
 
-    fetch(`/api/evaluate/${evalId}`)
+    fetchWithAuth(`/api/evaluate/${evalId}`)
       .then((res) => {
         if (!res.ok) throw new Error('Not found');
         return res.json();

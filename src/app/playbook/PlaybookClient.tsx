@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { fetchWithAuth } from '@/lib/fetchWithAuth';
 import PhaseCard from '@/components/playbook/PhaseCard';
 import PageHeader from '@/components/ui/PageHeader';
 
@@ -21,7 +22,7 @@ export default function PlaybookClient() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('/api/playbook/phases')
+    fetchWithAuth('/api/playbook/phases')
       .then((res) => res.ok ? res.json() : [])
       .then((data) => {
         setPhases(Array.isArray(data) ? data : []);

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { fetchWithAuth } from '@/lib/fetchWithAuth';
 import EvalWizard from '@/components/evaluate/EvalWizard';
 import EvalTypeSelector from '@/components/evaluate/EvalTypeSelector';
 import OptionConfigurator from '@/components/evaluate/OptionConfigurator';
@@ -44,7 +45,7 @@ function NewEvaluationPageInner() {
   }, [searchParams]);
 
   const loadFrameworks = useCallback(async () => {
-    const res = await fetch('/api/evaluate/frameworks');
+    const res = await fetchWithAuth('/api/evaluate/frameworks');
     const data = await res.json();
     setOptions(data.map((f: Record<string, string>) => ({
       key: f.name.toLowerCase().replace(/[^a-z0-9]+/g, '_'),
@@ -56,7 +57,7 @@ function NewEvaluationPageInner() {
   }, []);
 
   const loadPatterns = useCallback(async () => {
-    const res = await fetch('/api/evaluate/patterns');
+    const res = await fetchWithAuth('/api/evaluate/patterns');
     const data = await res.json();
     setOptions(data.map((p: Record<string, string>) => ({
       key: p.name.toLowerCase().replace(/[^a-z0-9]+/g, '_'),
@@ -68,7 +69,7 @@ function NewEvaluationPageInner() {
   }, []);
 
   const loadPresets = useCallback(async () => {
-    const res = await fetch('/api/evaluate/presets');
+    const res = await fetchWithAuth('/api/evaluate/presets');
     const data = await res.json();
     setPresets(data);
   }, []);
@@ -126,7 +127,7 @@ function NewEvaluationPageInner() {
   const handleSubmit = async () => {
     setSubmitting(true);
     try {
-      const res = await fetch('/api/evaluate', {
+      const res = await fetchWithAuth('/api/evaluate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ evalType, title, options, criteria, scores }),

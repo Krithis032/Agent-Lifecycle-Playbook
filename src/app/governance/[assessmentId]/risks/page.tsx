@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { fetchWithAuth } from '@/lib/fetchWithAuth';
 import Link from 'next/link';
 import Card from '@/components/ui/Card';
 import Badge from '@/components/ui/Badge';
@@ -19,14 +20,14 @@ export default function RiskRegisterPage({ params }: { params: { assessmentId: s
   const [newRisk, setNewRisk] = useState({ category: 'data', severity: 'medium', title: '', description: '', mitigation: '' });
 
   useEffect(() => {
-    fetch(`/api/governance/detail/${params.assessmentId}`)
+    fetchWithAuth(`/api/governance/detail/${params.assessmentId}`)
       .then(r => r.json())
       .then(data => { setRisks(data.riskItems || []); setLoading(false); })
       .catch(() => setLoading(false));
   }, [params.assessmentId]);
 
   const handleStatusChange = async (riskId: number, status: string) => {
-    await fetch(`/api/governance/risks/${riskId}`, {
+    await fetchWithAuth(`/api/governance/risks/${riskId}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ status }),
@@ -35,7 +36,7 @@ export default function RiskRegisterPage({ params }: { params: { assessmentId: s
   };
 
   const handleMitigationChange = async (riskId: number, mitigation: string) => {
-    await fetch(`/api/governance/risks/${riskId}`, {
+    await fetchWithAuth(`/api/governance/risks/${riskId}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ mitigation }),
@@ -45,7 +46,7 @@ export default function RiskRegisterPage({ params }: { params: { assessmentId: s
 
   const handleAddRisk = async () => {
     if (!newRisk.title.trim()) return;
-    const res = await fetch('/api/governance/risks', {
+    const res = await fetchWithAuth('/api/governance/risks', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ ...newRisk, assessmentId: parseInt(params.assessmentId) }),

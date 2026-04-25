@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { fetchWithAuth } from '@/lib/fetchWithAuth';
 import type { CaioAssessment } from '@/types/caio';
 
 export function useCaioList() {
@@ -9,7 +10,7 @@ export function useCaioList() {
 
   const fetchAll = useCallback(() => {
     setLoading(true);
-    fetch('/api/caio')
+    fetchWithAuth('/api/caio')
       .then(r => r.json())
       .then(data => { setAssessments(Array.isArray(data) ? data : []); setLoading(false); })
       .catch(() => { setAssessments([]); setLoading(false); });
@@ -27,7 +28,7 @@ export function useCaioDetail(id: number | null) {
   const fetchDetail = useCallback(() => {
     if (!id) return;
     setLoading(true);
-    fetch(`/api/caio/${id}`)
+    fetchWithAuth(`/api/caio/${id}`)
       .then(r => r.json())
       .then(data => { setAssessment(data); setLoading(false); })
       .catch(() => setLoading(false));
@@ -39,7 +40,7 @@ export function useCaioDetail(id: number | null) {
 }
 
 export async function updateActionItem(actionId: number, data: Record<string, unknown>) {
-  const res = await fetch(`/api/caio/actions/${actionId}`, {
+  const res = await fetchWithAuth(`/api/caio/actions/${actionId}`, {
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data),

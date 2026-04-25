@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { fetchWithAuth } from '@/lib/fetchWithAuth';
 import EvalRadarChart from '@/components/evaluate/EvalRadarChart';
 import EvalBarChart from '@/components/evaluate/EvalBarChart';
 import { Trophy, Sparkles, Loader2 } from 'lucide-react';
@@ -29,7 +30,7 @@ export default function EvalDetailClient({ evalId, criteria, scores, weightedSco
   const handleAnalyze = async () => {
     setAnalyzing(true);
     try {
-      const res = await fetch(`/api/evaluate/${evalId}/analyze`, { method: 'POST' });
+      const res = await fetchWithAuth(`/api/evaluate/${evalId}/analyze`, { method: 'POST' });
       const data = await res.json();
       setAnalysis(data);
     } catch (e) {

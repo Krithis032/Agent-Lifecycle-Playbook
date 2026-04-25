@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { fetchWithAuth } from '@/lib/fetchWithAuth';
 import { useProject } from '@/hooks/useProject';
 import GateTracker from '@/components/projects/GateTracker';
 import PageHeader from '@/components/ui/PageHeader';
@@ -24,7 +25,7 @@ export default function ProjectGatesPage({ params }: { params: { id: string } })
   useEffect(() => {
     if (!project) return;
     // Fetch all gate checks for this project and build the list
-    fetch(`/api/playbook/phases`)
+    fetchWithAuth(`/api/playbook/phases`)
       .then((r) => r.json())
       .then((phases) => {
         const items: GateCheckData[] = [];

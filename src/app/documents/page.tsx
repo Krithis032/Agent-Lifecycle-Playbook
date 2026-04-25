@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { fetchWithAuth } from '@/lib/fetchWithAuth';
 import {
   Upload, FileText, Trash2, Download, Search, Filter,
   File, Image, Table, Presentation, X
@@ -87,7 +88,7 @@ export default function DocumentsPage() {
 
   const fetchDocuments = useCallback(async () => {
     try {
-      const res = await fetch('/api/documents');
+      const res = await fetchWithAuth('/api/documents');
       if (res.ok) {
         const data = await res.json();
         setDocuments(data);
@@ -114,7 +115,7 @@ export default function DocumentsPage() {
       formData.append('title', uploadTitle.trim());
       if (uploadCategory) formData.append('category', uploadCategory);
 
-      const res = await fetch('/api/documents', { method: 'POST', body: formData });
+      const res = await fetchWithAuth('/api/documents', { method: 'POST', body: formData });
       if (res.ok) {
         setUploadTitle('');
         setUploadCategory('');
@@ -136,7 +137,7 @@ export default function DocumentsPage() {
   const handleDelete = async (id: number) => {
     if (!confirm('Delete this document? This cannot be undone.')) return;
     try {
-      const res = await fetch(`/api/documents/${id}`, { method: 'DELETE' });
+      const res = await fetchWithAuth(`/api/documents/${id}`, { method: 'DELETE' });
       if (res.ok) {
         setDocuments((prev) => prev.filter((d) => d.id !== id));
       }

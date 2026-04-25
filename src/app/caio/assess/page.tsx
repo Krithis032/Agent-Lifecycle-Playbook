@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { fetchWithAuth } from '@/lib/fetchWithAuth';
 import Card from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
 import Badge from '@/components/ui/Badge';
@@ -58,7 +59,7 @@ export default function CaioAssessPage() {
   } | null>(null);
 
   useEffect(() => {
-    fetch('/api/projects')
+    fetchWithAuth('/api/projects')
       .then(r => r.json())
       .then(data => setProjects(Array.isArray(data) ? data : []))
       .catch(() => {});
@@ -84,7 +85,7 @@ export default function CaioAssessPage() {
   const handleGenerate = async () => {
     setGenerating(true);
     try {
-      const res = await fetch('/api/caio/assess', {
+      const res = await fetchWithAuth('/api/caio/assess', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

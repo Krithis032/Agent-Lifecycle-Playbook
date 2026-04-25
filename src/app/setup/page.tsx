@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { fetchWithAuth } from '@/lib/fetchWithAuth';
 import { Eye, EyeOff, ShieldCheck } from 'lucide-react';
 
 export default function SetupPage() {
@@ -18,7 +19,7 @@ export default function SetupPage() {
 
   // Check if setup is still needed
   useEffect(() => {
-    fetch('/api/setup')
+    fetchWithAuth('/api/setup')
       .then((res) => res.json())
       .then((data) => {
         if (!data.setupRequired) {
@@ -47,7 +48,7 @@ export default function SetupPage() {
     setLoading(true);
 
     try {
-      const res = await fetch('/api/setup', {
+      const res = await fetchWithAuth('/api/setup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, name, password }),

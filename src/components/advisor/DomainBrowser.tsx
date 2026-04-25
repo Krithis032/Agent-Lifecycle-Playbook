@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { fetchWithAuth } from '@/lib/fetchWithAuth';
 import Badge from '@/components/ui/Badge';
 import Accordion from '@/components/ui/Accordion';
 
@@ -29,7 +30,7 @@ export default function DomainBrowser() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('/api/kb/domains')
+    fetchWithAuth('/api/kb/domains')
       .then((r) => r.json())
       .then((d) => { setDomains(d); setLoading(false); })
       .catch(() => setLoading(false));
@@ -37,7 +38,7 @@ export default function DomainBrowser() {
 
   const loadConcepts = async (domainId: number) => {
     setSelectedDomain(domainId);
-    const res = await fetch(`/api/kb/domains?domainId=${domainId}`);
+    const res = await fetchWithAuth(`/api/kb/domains?domainId=${domainId}`);
     const data = await res.json();
     setConcepts(data.concepts || []);
   };

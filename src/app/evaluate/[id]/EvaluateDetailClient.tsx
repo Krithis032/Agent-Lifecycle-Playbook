@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { notFound } from 'next/navigation';
+import { fetchWithAuth } from '@/lib/fetchWithAuth';
 import Link from 'next/link';
 import Card from '@/components/ui/Card';
 import Badge from '@/components/ui/Badge';
@@ -36,7 +37,7 @@ export default function EvaluateDetailClientWrapper({ id }: { id: string }) {
   const [notFoundError, setNotFoundError] = useState(false);
 
   useEffect(() => {
-    fetch(`/api/evaluate/${id}`)
+    fetchWithAuth(`/api/evaluate/${id}`)
       .then((res) => {
         if (!res.ok) throw new Error('Not found');
         return res.json();

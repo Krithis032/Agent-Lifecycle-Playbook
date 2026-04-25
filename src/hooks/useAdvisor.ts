@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useCallback } from 'react';
+import { fetchWithAuth } from '@/lib/fetchWithAuth';
 import type { KbSearchResult, KbAskResponse, KbDomain } from '@/types/kb';
 
 export function useAdvisor() {
@@ -14,7 +15,7 @@ export function useAdvisor() {
     if (!query.trim()) { setSearchResults([]); return; }
     setSearching(true);
     try {
-      const res = await fetch(`/api/kb/search?q=${encodeURIComponent(query)}`);
+      const res = await fetchWithAuth(`/api/kb/search?q=${encodeURIComponent(query)}`);
       const data = await res.json();
       setSearchResults(data);
     } catch {
@@ -28,7 +29,7 @@ export function useAdvisor() {
     setAsking(true);
     setAnswer(null);
     try {
-      const res = await fetch('/api/kb/ask', {
+      const res = await fetchWithAuth('/api/kb/ask', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ question, projectId }),
@@ -44,7 +45,7 @@ export function useAdvisor() {
 
   const fetchDomains = useCallback(async () => {
     try {
-      const res = await fetch('/api/kb/domains');
+      const res = await fetchWithAuth('/api/kb/domains');
       const data = await res.json();
       setDomains(data);
     } catch {

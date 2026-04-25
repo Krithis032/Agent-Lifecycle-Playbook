@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { fetchWithAuth } from '@/lib/fetchWithAuth';
 import Card from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
 import Badge from '@/components/ui/Badge';
@@ -133,7 +134,7 @@ export default function GovernanceAssessPage() {
 
   // Load projects
   useEffect(() => {
-    fetch('/api/projects')
+    fetchWithAuth('/api/projects')
       .then(r => r.json())
       .then(data => setProjects(Array.isArray(data) ? data.map((p: { id: number; name: string }) => ({ id: p.id, name: p.name })) : []))
       .catch(() => {});
@@ -198,7 +199,7 @@ export default function GovernanceAssessPage() {
     if (!projectId) return alert('Please select a project');
     setSaving(true);
     try {
-      const res = await fetch('/api/governance/assess', {
+      const res = await fetchWithAuth('/api/governance/assess', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

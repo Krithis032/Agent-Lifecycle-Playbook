@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { notFound } from 'next/navigation';
+import { fetchWithAuth } from '@/lib/fetchWithAuth';
 import StepAccordion from '@/components/playbook/StepAccordion';
 import GateChecklist from '@/components/playbook/GateChecklist';
 import InterviewAngle from '@/components/playbook/InterviewAngle';
@@ -57,8 +58,8 @@ export default function PhaseDetailClient({ slug }: { slug: string }) {
 
   useEffect(() => {
     Promise.all([
-      fetch('/api/playbook/phases').then(res => res.ok ? res.json() : []),
-      fetch(`/api/playbook/phases/${slug}`).then(res => {
+      fetchWithAuth('/api/playbook/phases').then(res => res.ok ? res.json() : []),
+      fetchWithAuth(`/api/playbook/phases/${slug}`).then(res => {
         if (!res.ok) throw new Error('Not found');
         return res.json();
       })

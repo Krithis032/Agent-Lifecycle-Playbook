@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { notFound } from 'next/navigation';
+import { fetchWithAuth } from '@/lib/fetchWithAuth';
 import Link from 'next/link';
 import Card from '@/components/ui/Card';
 import FillHistoryTable from '@/components/templates/FillHistoryTable';
@@ -26,7 +27,7 @@ export default function FillHistoryClient({ slug }: { slug: string }) {
   const [notFoundError, setNotFoundError] = useState(false);
 
   useEffect(() => {
-    fetch('/api/templates/fills')
+    fetchWithAuth('/api/templates/fills')
       .then((res) => {
         if (!res.ok) throw new Error('Not found');
         return res.json();

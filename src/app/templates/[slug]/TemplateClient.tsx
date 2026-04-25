@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { notFound, useSearchParams } from 'next/navigation';
+import { fetchWithAuth } from '@/lib/fetchWithAuth';
 import Link from 'next/link';
 import TemplateForm from '@/components/templates/TemplateForm';
 import { ArrowLeft } from 'lucide-react';
@@ -43,7 +44,7 @@ export default function TemplateClient({ slug }: { slug: string }) {
   const [notFoundError, setNotFoundError] = useState(false);
 
   useEffect(() => {
-    fetch(`/api/templates/${slug}`)
+    fetchWithAuth(`/api/templates/${slug}`)
       .then((res) => {
         if (!res.ok) throw new Error('Not found');
         return res.json();
@@ -55,7 +56,7 @@ export default function TemplateClient({ slug }: { slug: string }) {
         if (editId) {
           const fillId = parseInt(editId, 10);
           if (!isNaN(fillId)) {
-            return fetch(`/api/templates/fills/${fillId}`)
+            return fetchWithAuth(`/api/templates/fills/${fillId}`)
               .then(res => res.json())
               .then((fill: Fill) => {
                 if (fill.templateId === data.id) {

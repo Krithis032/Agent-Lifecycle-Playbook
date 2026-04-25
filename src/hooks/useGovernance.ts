@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { fetchWithAuth } from '@/lib/fetchWithAuth';
 import type { GovernanceAssessment } from '@/types/governance';
 
 export function useGovernanceList() {
@@ -9,7 +10,7 @@ export function useGovernanceList() {
 
   const fetchAll = useCallback(() => {
     setLoading(true);
-    fetch('/api/governance/assess')
+    fetchWithAuth('/api/governance/assess')
       .then(r => r.json())
       .then(data => { setAssessments(Array.isArray(data) ? data : []); setLoading(false); })
       .catch(() => { setAssessments([]); setLoading(false); });
@@ -18,7 +19,7 @@ export function useGovernanceList() {
   useEffect(() => {
     const controller = new AbortController();
     setLoading(true);
-    fetch('/api/governance/assess', { signal: controller.signal })
+    fetchWithAuth('/api/governance/assess', { signal: controller.signal })
       .then(r => r.json())
       .then(data => { if (!controller.signal.aborted) { setAssessments(Array.isArray(data) ? data : []); setLoading(false); } })
       .catch(() => { if (!controller.signal.aborted) { setAssessments([]); setLoading(false); } });
@@ -39,7 +40,7 @@ export function useGovernanceDetail(id: number | null) {
     const controller = new AbortController();
     abortRef.current = controller;
     setLoading(true);
-    fetch(`/api/governance/detail/${id}`, { signal: controller.signal })
+    fetchWithAuth(`/api/governance/detail/${id}`, { signal: controller.signal })
       .then(r => r.json())
       .then(data => { if (!controller.signal.aborted) { setAssessment(data); setLoading(false); } })
       .catch(() => { if (!controller.signal.aborted) setLoading(false); });
@@ -54,7 +55,7 @@ export function useGovernanceDetail(id: number | null) {
 }
 
 export async function createAssessment(data: Record<string, unknown>) {
-  const res = await fetch('/api/governance/assess', {
+  const res = await fetchWithAuth('/api/governance/assess', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data),
@@ -64,7 +65,7 @@ export async function createAssessment(data: Record<string, unknown>) {
 }
 
 export async function createRiskItem(data: Record<string, unknown>) {
-  const res = await fetch('/api/governance/risks', {
+  const res = await fetchWithAuth('/api/governance/risks', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data),
@@ -74,7 +75,7 @@ export async function createRiskItem(data: Record<string, unknown>) {
 }
 
 export async function updateRiskItem(id: number, data: Record<string, unknown>) {
-  const res = await fetch(`/api/governance/risks/${id}`, {
+  const res = await fetchWithAuth(`/api/governance/risks/${id}`, {
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data),
@@ -84,7 +85,7 @@ export async function updateRiskItem(id: number, data: Record<string, unknown>) 
 }
 
 export async function deleteRiskItem(id: number) {
-  const res = await fetch(`/api/governance/risks/${id}`, { method: 'DELETE' });
+  const res = await fetchWithAuth(`/api/governance/risks/${id}`, { method: 'DELETE' });
   if (!res.ok) throw new Error('Failed to delete risk');
   return res.json();
 }

@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { fetchWithAuth } from '@/lib/fetchWithAuth';
 import { Trash2, Loader2 } from 'lucide-react';
 
 interface DeleteFillButtonProps {
@@ -17,7 +18,7 @@ export default function DeleteFillButton({ fillId, templateSlug }: DeleteFillBut
   const handleDelete = async () => {
     setDeleting(true);
     try {
-      const res = await fetch(`/api/templates/fills/${fillId}`, { method: 'DELETE' });
+      const res = await fetchWithAuth(`/api/templates/fills/${fillId}`, { method: 'DELETE' });
       if (res.ok) {
         router.push(`/templates/${templateSlug}/fills`);
         router.refresh();

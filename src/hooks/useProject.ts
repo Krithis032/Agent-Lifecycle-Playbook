@@ -28,7 +28,7 @@ export function useProjects() {
   }, []);
 
   const createProject = async (input: CreateProjectInput) => {
-    const res = await fetch('/api/projects', {
+    const res = await fetchWithAuth('/api/projects', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(input),
@@ -55,7 +55,7 @@ export function useProject(id: number) {
     const controller = new AbortController();
     abortRef.current = controller;
     setLoading(true);
-    fetch(`/api/projects/${id}`, { signal: controller.signal })
+    fetchWithAuth(`/api/projects/${id}`, { signal: controller.signal })
       .then((r) => r.json())
       .then((data) => { if (!controller.signal.aborted) { setProject(data); setLoading(false); } })
       .catch((e) => { if (!controller.signal.aborted) { setError(e.message); setLoading(false); } });
@@ -67,7 +67,7 @@ export function useProject(id: number) {
   }, [fetchProject]);
 
   const toggleGate = async (gateCheckId: number, itemIndex: number, checked: boolean) => {
-    await fetch(`/api/projects/${id}/gates`, {
+    await fetchWithAuth(`/api/projects/${id}/gates`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ gateCheckId, itemIndex, checked }),
@@ -76,7 +76,7 @@ export function useProject(id: number) {
   };
 
   const updateStepProgress = async (stepId: number, data: { status?: string; notes?: string; deliverableData?: Record<string, string> }) => {
-    await fetch(`/api/projects/${id}/steps`, {
+    await fetchWithAuth(`/api/projects/${id}/steps`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ stepId, ...data }),
@@ -85,7 +85,7 @@ export function useProject(id: number) {
   };
 
   const updatePhaseStatus = async (phaseId: number, status: string) => {
-    await fetch(`/api/projects/${id}/phases`, {
+    await fetchWithAuth(`/api/projects/${id}/phases`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ phaseId, status }),
@@ -102,7 +102,7 @@ export function usePlaybookPhases() {
 
   useEffect(() => {
     const controller = new AbortController();
-    fetch('/api/playbook/phases', { signal: controller.signal })
+    fetchWithAuth('/api/playbook/phases', { signal: controller.signal })
       .then((r) => r.json())
       .then((data) => { if (!controller.signal.aborted) { setPhases(data); setLoading(false); } })
       .catch(() => { if (!controller.signal.aborted) setLoading(false); });
@@ -118,7 +118,7 @@ export function useTemplates() {
 
   useEffect(() => {
     const controller = new AbortController();
-    fetch('/api/templates', { signal: controller.signal })
+    fetchWithAuth('/api/templates', { signal: controller.signal })
       .then((r) => r.json())
       .then((data) => { if (!controller.signal.aborted) { setTemplates(data); setLoading(false); } })
       .catch(() => { if (!controller.signal.aborted) setLoading(false); });

@@ -19,7 +19,7 @@ export default function MyDocumentsClient() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchWithAuth('/api/documents')
+    fetchWithAuth('/api/templates/fills')
       .then((res) => res.ok ? res.json() : [])
       .then((data) => {
         setFills(Array.isArray(data) ? data : []);

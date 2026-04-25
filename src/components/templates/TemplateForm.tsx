@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
+import { fetchWithAuth } from '@/lib/fetchWithAuth';
 import SectionGroup from './SectionGroup';
 import { Save, Loader2, CloudOff, CheckCircle } from 'lucide-react';
 import Tooltip from '@/components/ui/Tooltip';
@@ -181,7 +182,7 @@ export default function TemplateForm({
     setError('');
     try {
       if (fillId) {
-        const res = await fetch(`/api/templates/fills/${fillId}`, {
+        const res = await fetchWithAuth(`/api/templates/fills/${fillId}`, {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ title, fieldValues: values }),
@@ -194,7 +195,7 @@ export default function TemplateForm({
         clearDraft();
         router.push(`/templates/${templateSlug}/${fillId}`);
       } else {
-        const res = await fetch(`/api/templates/${templateSlug}/fill`, {
+        const res = await fetchWithAuth(`/api/templates/${templateSlug}/fill`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ title, fieldValues: values }),

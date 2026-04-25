@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { fetchWithAuth } from '@/lib/fetchWithAuth';
 import Link from 'next/link';
 import Card from '@/components/ui/Card';
 import Badge from '@/components/ui/Badge';
@@ -16,14 +17,14 @@ export default function CaioActionsPage({ params }: { params: { id: string } }) 
   const [filterStatus, setFilterStatus] = useState('');
 
   useEffect(() => {
-    fetch(`/api/caio/${params.id}`)
+    fetchWithAuth(`/api/caio/${params.id}`)
       .then(r => r.json())
       .then(data => { setActions(data.actionItems || []); setLoading(false); })
       .catch(() => setLoading(false));
   }, [params.id]);
 
   const handleStatusChange = async (actionId: number, status: string) => {
-    const res = await fetch(`/api/caio/actions/${actionId}`, {
+    const res = await fetchWithAuth(`/api/caio/actions/${actionId}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ status }),
@@ -34,7 +35,7 @@ export default function CaioActionsPage({ params }: { params: { id: string } }) 
   };
 
   const handleOwnerChange = async (actionId: number, owner: string) => {
-    const res = await fetch(`/api/caio/actions/${actionId}`, {
+    const res = await fetchWithAuth(`/api/caio/actions/${actionId}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ owner }),

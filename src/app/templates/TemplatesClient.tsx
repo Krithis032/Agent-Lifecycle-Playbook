@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Card from '@/components/ui/Card';
 import Badge from '@/components/ui/Badge';
+import { fetchWithAuth } from '@/lib/fetchWithAuth';
 import { FileText, Plus, ArrowRight, Clock, CheckCircle } from 'lucide-react';
 
 interface Template {
@@ -29,7 +30,7 @@ export default function TemplatesClient() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('/api/templates')
+    fetchWithAuth('/api/templates')
       .then((res) => res.ok ? res.json() : [])
       .then((data) => {
         setTemplates(Array.isArray(data) ? data : []);

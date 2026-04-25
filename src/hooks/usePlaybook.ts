@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { fetchWithAuth } from '@/lib/fetchWithAuth';
 import type { PlaybookPhase, ReferenceData } from '@/types/playbook';
 
 export function usePlaybook() {
@@ -9,7 +10,7 @@ export function usePlaybook() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch('/api/playbook/phases')
+    fetchWithAuth('/api/playbook/phases')
       .then((r) => r.ok ? r.json() : [])
       .then((data) => { setPhases(Array.isArray(data) ? data : []); setLoading(false); })
       .catch((e) => { setError(e.message); setPhases([]); setLoading(false); });
@@ -25,7 +26,7 @@ export function usePhase(slug: string) {
 
   useEffect(() => {
     if (!slug) return;
-    fetch(`/api/playbook/phases/${slug}`)
+    fetchWithAuth(`/api/playbook/phases/${slug}`)
       .then((r) => { if (!r.ok) throw new Error('Not found'); return r.json(); })
       .then((data) => { setPhase(data); setLoading(false); })
       .catch((e) => { setError(e.message); setLoading(false); });
@@ -39,7 +40,7 @@ export function useReference() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('/api/playbook/reference')
+    fetchWithAuth('/api/playbook/reference')
       .then((r) => r.ok ? r.json() : null)
       .then((d) => { setData(d); setLoading(false); })
       .catch(() => setLoading(false));
