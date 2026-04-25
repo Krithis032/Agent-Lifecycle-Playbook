@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { requireAuth } from '@/lib/auth';
 
-export const revalidate = 30;
 
 export async function GET(
   _req: NextRequest,

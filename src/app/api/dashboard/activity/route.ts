@@ -3,7 +3,6 @@ import { requireAuth } from '@/lib/auth';
 import prisma from '@/lib/prisma';
 import { logError } from '@/lib/logger';
 
-export const revalidate = 30;
 
 interface ActivityItem {
   type: string;

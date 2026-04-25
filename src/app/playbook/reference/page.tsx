@@ -7,7 +7,6 @@ import PageHeader from '@/components/ui/PageHeader';
 import SectionPanel from '@/components/ui/SectionPanel';
 import { Layers, GitCompare, Cpu, AlertTriangle } from 'lucide-react';
 
-export const revalidate = 30;
 
 interface Pattern {
   name: string;

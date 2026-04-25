@@ -3,7 +3,6 @@ import prisma from '@/lib/prisma';
 import { requireAuth } from '@/lib/auth';
 import { logError } from '@/lib/logger';
 
-export const revalidate = 30;
 
 export async function GET() {
   const [, authError] = await requireAuth();
