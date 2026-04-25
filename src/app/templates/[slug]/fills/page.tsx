@@ -5,7 +5,7 @@ import Card from '@/components/ui/Card';
 import FillHistoryTable from '@/components/templates/FillHistoryTable';
 import { ArrowLeft, Plus } from 'lucide-react';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 30;
 
 export default async function FillHistoryPage({ params }: { params: { slug: string } }) {
   const template = await prisma.template.findUnique({

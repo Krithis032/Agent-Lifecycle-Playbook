@@ -4,7 +4,7 @@ import { notFound } from 'next/navigation';
 import TemplateForm from '@/components/templates/TemplateForm';
 import { ArrowLeft } from 'lucide-react';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 30;
 
 interface FieldDef {
   key: string;

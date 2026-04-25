@@ -6,7 +6,7 @@ import SectionPanel from '@/components/ui/SectionPanel';
 import StatCard from '@/components/ui/StatCard';
 import { Shield, AlertTriangle, ArrowRight, TrendingUp } from 'lucide-react';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 30;
 
 export default async function GovernanceDashboard() {
   const assessments = await prisma.governanceAssessment.findMany({

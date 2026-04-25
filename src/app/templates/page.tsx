@@ -4,7 +4,7 @@ import Card from '@/components/ui/Card';
 import Badge from '@/components/ui/Badge';
 import { FileText, Plus, ArrowRight, Clock, CheckCircle } from 'lucide-react';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 30;
 
 const phaseColor = (slug: string | undefined) => {
   const map: Record<string, string> = {

@@ -3,8 +3,6 @@ import prisma from '@/lib/prisma';
 import { requireAuth } from '@/lib/auth';
 import { logError } from '@/lib/logger';
 
-export const dynamic = 'force-dynamic';
-
 export async function GET() {
   const [, authError] = await requireAuth();
   if (authError) return authError;

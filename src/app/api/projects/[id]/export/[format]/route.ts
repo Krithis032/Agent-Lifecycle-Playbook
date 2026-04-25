@@ -4,7 +4,7 @@ import { generateProjectPdf } from '@/lib/pdf-export';
 import { requireAuth } from '@/lib/auth';
 import { logError } from '@/lib/logger';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 30;
 
 export async function GET(
   req: NextRequest,

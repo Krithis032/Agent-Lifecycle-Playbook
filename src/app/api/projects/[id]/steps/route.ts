@@ -3,8 +3,6 @@ import prisma from '@/lib/prisma';
 import { requireAuth } from '@/lib/auth';
 import { logError } from '@/lib/logger';
 
-export const dynamic = 'force-dynamic';
-
 // GET /api/projects/:id/steps — all step progress for a project
 export async function GET(
   _req: NextRequest,

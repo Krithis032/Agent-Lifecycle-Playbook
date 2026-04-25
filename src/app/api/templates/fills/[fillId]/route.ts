@@ -4,8 +4,6 @@ import prisma from '@/lib/prisma';
 import { logError } from '@/lib/logger';
 import { validateFieldValuesSize } from '@/lib/safe-json';
 
-export const dynamic = 'force-dynamic';
-
 export async function GET(
   _req: NextRequest,
   { params }: { params: { fillId: string } }

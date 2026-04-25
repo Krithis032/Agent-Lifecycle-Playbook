@@ -3,8 +3,6 @@ import prisma from '@/lib/prisma';
 import { requireAuth } from '@/lib/auth';
 import { logError } from '@/lib/logger';
 
-export const dynamic = 'force-dynamic';
-
 // PATCH /api/projects/:id/phases — advance or update phase progress
 export async function PATCH(
   req: NextRequest,

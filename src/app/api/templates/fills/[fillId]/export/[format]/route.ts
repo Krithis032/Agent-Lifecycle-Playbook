@@ -6,7 +6,7 @@ import { generateProjectPptx } from '@/lib/pptx-export';
 import { requireAuth } from '@/lib/auth';
 import { logError } from '@/lib/logger';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 30;
 
 interface TemplateField {
   key: string;

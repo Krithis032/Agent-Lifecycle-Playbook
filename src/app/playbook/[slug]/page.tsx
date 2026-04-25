@@ -9,7 +9,7 @@ import Badge from '@/components/ui/Badge';
 import SectionPanel from '@/components/ui/SectionPanel';
 import { ListChecks, ClipboardCheck } from 'lucide-react';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 30;
 
 interface Props {
   params: Promise<{ slug: string }>;

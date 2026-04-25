@@ -5,7 +5,7 @@ import Badge from '@/components/ui/Badge';
 import PageHeader from '@/components/ui/PageHeader';
 import { BarChart3, Plus, ArrowRight, Layers, Cpu, Sparkles } from 'lucide-react';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 30;
 
 const typeBadge = (t: string) => {
   const map: Record<string, { variant: 'brand' | 'success' | 'info' | 'warning'; label: string }> = {

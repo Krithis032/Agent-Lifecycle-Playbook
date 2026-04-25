@@ -6,7 +6,6 @@ import { requireAuth } from '@/lib/auth';
 import { rateLimit } from '@/lib/rate-limit';
 import { logError } from '@/lib/logger';
 
-export const dynamic = 'force-dynamic';
 export const maxDuration = 60; // Allow longer for Opus calls
 
 export async function POST(req: NextRequest) {

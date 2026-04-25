@@ -5,8 +5,6 @@ import { searchConceptsFallback } from '@/lib/search';
 import { askClaude } from '@/lib/claude';
 import prisma from '@/lib/prisma';
 
-export const dynamic = 'force-dynamic';
-
 export async function POST(req: NextRequest) {
   const [, authError] = await requireAuth();
   if (authError) return authError;

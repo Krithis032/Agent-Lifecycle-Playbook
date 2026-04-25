@@ -3,7 +3,7 @@ import Card from '@/components/ui/Card';
 import FillHistoryTable from '@/components/templates/FillHistoryTable';
 import { FileText, FolderOpen } from 'lucide-react';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 30;
 
 export default async function MyDocumentsPage() {
   const fills = await prisma.templateFill.findMany({

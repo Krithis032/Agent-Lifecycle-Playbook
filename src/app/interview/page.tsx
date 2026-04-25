@@ -2,7 +2,7 @@ import prisma from '@/lib/prisma';
 import Card from '@/components/ui/Card';
 import InterviewAngle from '@/components/playbook/InterviewAngle';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 30;
 
 export default async function InterviewPage() {
   const phases = await prisma.playbookPhase.findMany({

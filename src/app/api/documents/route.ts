@@ -6,8 +6,6 @@ import path from 'path';
 import crypto from 'crypto';
 import { logError } from '@/lib/logger';
 
-export const dynamic = 'force-dynamic';
-
 const UPLOAD_DIR = path.join(process.cwd(), 'public', 'uploads');
 const MAX_FILE_SIZE = 20 * 1024 * 1024; // 20MB
 const MAX_TITLE_LENGTH = 255;

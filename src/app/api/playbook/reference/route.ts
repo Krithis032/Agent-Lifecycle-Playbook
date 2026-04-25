@@ -4,7 +4,7 @@ import path from 'path';
 import yaml from 'js-yaml';
 import { requireAuth } from '@/lib/auth';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 30;
 
 export async function GET() {
   const [, authError] = await requireAuth();

@@ -5,8 +5,6 @@ import { unlink } from 'fs/promises';
 import path from 'path';
 import { logError } from '@/lib/logger';
 
-export const dynamic = 'force-dynamic';
-
 export async function GET(
   _req: NextRequest,
   { params }: { params: Promise<{ id: string }> }

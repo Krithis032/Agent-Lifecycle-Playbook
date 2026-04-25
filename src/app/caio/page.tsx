@@ -6,7 +6,7 @@ import PageHeader from '@/components/ui/PageHeader';
 import { Award, Plus, ArrowRight, Database } from 'lucide-react';
 import { MATURITY_LEVELS } from '@/types/caio';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 30;
 
 export default async function CaioDashboard() {
   const assessments = await prisma.caioAssessment.findMany({

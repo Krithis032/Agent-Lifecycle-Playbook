@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { requireAuth } from '@/lib/auth';
 import { searchConceptsFallback } from '@/lib/search';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 30;
 
 export async function GET(req: NextRequest) {
   const [, authError] = await requireAuth();

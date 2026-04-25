@@ -5,8 +5,6 @@ import { calculateEvalWeightedScores, generateRecommendation } from '@/lib/scori
 import { logError } from '@/lib/logger';
 import type { EvalOption, EvalCriterion, EvalScore } from '@/types/evaluation';
 
-export const dynamic = 'force-dynamic';
-
 export async function GET() {
   const [, authError] = await requireAuth();
   if (authError) return authError;

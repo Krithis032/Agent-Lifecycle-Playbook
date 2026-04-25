@@ -8,7 +8,7 @@ import type { EvalOption, EvalCriterion, EvalScore } from '@/types/evaluation';
 import EvalDetailClient from './EvalDetailClient';
 import { ArrowLeft, GitCompare } from 'lucide-react';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 30;
 
 export default async function EvaluationDetailPage({ params }: { params: { id: string } }) {
   const id = parseInt(params.id, 10);

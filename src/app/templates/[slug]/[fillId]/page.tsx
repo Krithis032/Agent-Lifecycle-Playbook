@@ -6,7 +6,7 @@ import Badge from '@/components/ui/Badge';
 import DeleteFillButton from '@/components/templates/DeleteFillButton';
 import { ArrowLeft, Download, CheckCircle, Pencil, FileText } from 'lucide-react';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 30;
 
 interface FieldDef {
   key: string;

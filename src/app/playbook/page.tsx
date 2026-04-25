@@ -2,7 +2,7 @@ import prisma from '@/lib/prisma';
 import PhaseCard from '@/components/playbook/PhaseCard';
 import PageHeader from '@/components/ui/PageHeader';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 30;
 
 export default async function PlaybookPage() {
   const phases = await prisma.playbookPhase.findMany({

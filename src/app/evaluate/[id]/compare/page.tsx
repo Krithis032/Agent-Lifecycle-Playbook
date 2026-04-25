@@ -6,7 +6,7 @@ import ComparisonView from '@/components/evaluate/ComparisonView';
 import type { EvalOption, EvalCriterion, EvalScore } from '@/types/evaluation';
 import { ArrowLeft } from 'lucide-react';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 30;
 
 export default async function ComparisonPage({ params }: { params: { id: string } }) {
   const id = parseInt(params.id, 10);

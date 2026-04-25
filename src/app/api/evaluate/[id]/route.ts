@@ -5,8 +5,6 @@ import { calculateEvalWeightedScores } from '@/lib/scoring';
 import type { EvalOption, EvalCriterion, EvalScore } from '@/types/evaluation';
 import { logError } from '@/lib/logger';
 
-export const dynamic = 'force-dynamic';
-
 export async function GET(
   _req: NextRequest,
   { params }: { params: { id: string } }
