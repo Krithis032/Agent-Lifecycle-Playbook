@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { signOut, useSession } from 'next-auth/react';
+import { signOut } from 'next-auth/react';
 import {
   Home, BookOpen, FolderKanban, FileText, FolderOpen, ClipboardList,
   Shield, Award, BarChart3,
@@ -43,10 +43,8 @@ const authPages = ['/login', '/forgot-password', '/reset-password', '/setup'];
 
 export default function Nav() {
   const pathname = usePathname();
-  const { status } = useSession();
 
-  // Hide nav on auth pages or while session is still loading
-  if (authPages.includes(pathname) || status !== 'authenticated') return null;
+  if (authPages.includes(pathname)) return null;
 
   const isActive = (href: string) => {
     if (href === '/') return pathname === '/';
