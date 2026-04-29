@@ -1,6 +1,7 @@
 'use client';
 
 import { usePathname } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 import Nav from './Nav';
 
 const authPages = ['/login', '/forgot-password', '/reset-password', '/setup'];
@@ -8,6 +9,19 @@ const authPages = ['/login', '/forgot-password', '/reset-password', '/setup'];
 export default function LayoutShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const isAuthPage = authPages.includes(pathname);
+  const { status } = useSession();
+
+  // Auth pages always render immediately — no session gate needed.
+  // Protected pages: suppress all content while session is loading so the
+  // dashboard/sidebar never flash before the middleware redirect fires.
+  if (!isAuthPage && status === 'loading') {
+    return (
+      <div
+        aria-hidden
+        style={{ position: 'fixed', inset: 0, background: 'var(--canvas)' }}
+      />
+    );
+  }
 
   return (
     <>
