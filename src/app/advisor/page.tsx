@@ -1,7 +1,5 @@
 import ChatInterface from '@/components/advisor/ChatInterface';
 
-export const dynamic = 'force-dynamic';
-
 export default function AdvisorPage() {
   return (
     <div className="animate-fade-in">

@@ -1,7 +1,5 @@
 import DomainBrowser from '@/components/advisor/DomainBrowser';
 
-export const dynamic = 'force-dynamic';
-
 export default function ExplorePage() {
   return (
     <div>
